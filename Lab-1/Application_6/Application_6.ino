@@ -130,19 +130,18 @@ void loop(void)
         msDelay=Serial.parseInt();                //sets the user defined delay                       
     }
     Serial.setTimeout(TIMEOUT_DELAY);             //sets the timeout delay at 20 milliseconds to reduce the waiting time of Serial.parseInt
-    long goodDelay=0;      
+    long goodDelay=0;
     while(1)
     {
-        goodDelay=msDelay-20;           //goodDelay is the user-defined delay minus the timeout delay from Serial.parseInt, this negates the delay effect of Serial.parseInt timeout "delay"
         long start = millis();
-        printDelay("A B C D", &goodDelay);         //procedure call in order to print 'A B C D' and delay by 'ms' milliseconds
+        printDelay("A B C D", &msDelay);         //procedure call in order to print 'A B C D' and delay by 'ms' milliseconds
         Serial.print("time(ms) taken to print characters: ");
         Serial.println(millis()-start);
         start = millis();
-        goodDelay=msDelay-TIMEOUT_DELAY;
+        goodDelay=msDelay-TIMEOUT_DELAY;          //goodDelay is the user-defined delay minus the timeout delay from Serial.parseInt, this negates the delay effect of Serial.parseInt timeout "delay"
         printDelay("", &(goodDelay));             //procedure call in order to print nothing and delay by goodDelay
         goodDelay=Serial.parseInt();              //checking to see if the user wants to set a new delay for the program
-        if(goodDelay>0)                          // ^
+        if(goodDelay>0)                           // ^
         {                                        
             msDelay=goodDelay;           //set the normal delay to the newly-defined delay if it is greater than zero
         }
