@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-/*int main()
+int main()
 {
     int delay = 1;
 
@@ -14,9 +14,12 @@
     }
 }
 
+// Function that simulate a delay
+// Arguments:
+//    - delay (int): delay time in second
 void printDelay(int delay) {
     clock_t start = clock();
 
     while (clock() - start < delay * CLOCKS_PER_SEC) {
     }
-}*/
+}

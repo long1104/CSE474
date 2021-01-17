@@ -8,7 +8,7 @@ int main()
 {
     int delay;
 
-    scanf("%i", &delay);
+    scanf("%i", &delay);                // Get the users input for the amount of delay in second
 
     while (1) {
         printDelay("A B C D", &delay);
