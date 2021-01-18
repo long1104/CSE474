@@ -40,7 +40,7 @@
 #define WHITE   0xFFFF
 
 //the delay used for parsing integers from the serial monitor, measured in milliseconds
-#define TIMEOUT_DELAY 80
+#define TIMEOUT_DELAY 10
 
 
 Elegoo_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
@@ -124,7 +124,8 @@ void loop(void)
 {                                   
     tft.setTextColor(GREEN); tft.setTextSize(2);  //sets the text color and text size for printing on the display
     Serial.flush();                               //flushes all serial data to make sure user-input is clear
-    long msDelay=0;                                //user-defined delay in milliseconds, max is ~ 2147483 seconds
+    long msDelay=0;                               //user-defined delay in milliseconds, max is ~ 2147483 seconds
+    Serial.println("Please input a time for the delay (ms)");
     while(msDelay<=0)                             //checks the serial monitor and waits until data (other than 0) is sent into it, in order to get the delay from the user
     {                                 
         msDelay=Serial.parseInt();                //sets the user defined delay                       
