@@ -3,7 +3,8 @@
 #include <stdbool.h>
 #include <Elegoo_GFX.h>    // Core graphics library
 #include <Elegoo_TFTLCD.h> // Hardware-specific library
-
+#include <TouchScreen.h>
+#include "StarterFile.h"
 #include "Measurement.h"
 #include "TaskControlBlock.h"
 #include "Alarm.h"
@@ -20,7 +21,33 @@
 
 #define LCD_RESET A4
 
+#define YP A3  // must be an analog pin, use "An" notation!
+#define XM A2  // must be an analog pin, use "An" notation!
+#define YM 9   // can be a digital pin
+#define XP 8   // can be a digital pin
+#define TS_MINX 120
+#define TS_MAXX 900
+
+#define TS_MINY 70
+#define TS_MAXY 920
+
+#define BLACK   0x0000
+#define BLUE    0x001F
+#define RED     0xF800
+#define GREEN   0x07E0
+#define CYAN    0x07FF
+#define MAGENTA 0xF81F
+#define YELLOW  0xFFE0
+#define WHITE   0xFFFF
+
 Elegoo_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
+TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);
+
+XYButton nextButton = {0,0,10,10};
+XYButton previousButton = {40,40, 20,20};
+XYButton batteryToggle = {120,120, 40,40};
+
+XYButton buttons[] = {nextButton, previousButton, batteryToggle};
 
 //Task Control Blocks
 TCB measurementTCB;         // Declare measurement TCB
@@ -61,13 +88,30 @@ void loop() {
     *                       that create a user interface to a battery management system
     * Author(s): 
     *****************/
-    while(1){
-    }
+    getTouchInput();
+   // while(1){
+  //  }
 //    Serial.println(alarm_states[0]);
 }
 
 
+void drawButton(XYButton button, int color){
+  tft.fillRect(button.x, button.y, button.xLength, button.yLength, color);
+}
 
+void getTouchInput(){
+  TSPoint point = ts.getPoint();
+  // scale from 0->1023 to tft.width
+  point.x = map(point.x, TS_MINX, TS_MAXX, tft.width(), 0);
+  //p.x = tft.width()-map(p.x, TS_MINX, TS_MAXX, tft.width(), 0);
+  point.y = (tft.height()-map(point.y, TS_MINY, TS_MAXY, tft.height(), 0));
+  if(((point.x-batteryToggle.x)<batteryToggle.xLength && (point.x-batteryToggle.x)>0) && (point.y - batteryToggle.y)<batteryToggle.yLength && (point.y - batteryToggle.y)>0){
+    Serial.println("hello");
+      Serial.println(point.x);
+    Serial.println(point.y);
+  }else{
+  }
+}
 
 void setup() {  
   /****************
@@ -78,7 +122,7 @@ void setup() {
     * Author(s): 
     *****************/
 
-       
+    
     // Initialize Measurement & Sensors
     measure                     = {&HVIL, &hvilPin, &temperature, &hvCurrent, &hvVoltage};
     measurementTCB.task         = &measurementTask;
@@ -148,5 +192,10 @@ void setup() {
       identifier=0x9328;
     }
     tft.begin(identifier);
+
+    drawButton(nextButton, BLACK);
+    drawButton(previousButton, RED);
+    drawButton(batteryToggle, GREEN);
+
     return;
 }
