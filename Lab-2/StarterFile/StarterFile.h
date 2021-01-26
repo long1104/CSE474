@@ -4,12 +4,8 @@ extern "C" {
 
 
 typedef struct XYButtonStruct {
-  int x,y;
-  int xLength;
-  int yLength;
-  
+  int x,y, xLength, yLength, color;
 } XYButton;
-
 
 
 

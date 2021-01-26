@@ -43,9 +43,9 @@
 Elegoo_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);
 
-XYButton nextButton = {0,0,10,10};
-XYButton previousButton = {40,40, 20,20};
-XYButton batteryToggle = {120,120, 40,40};
+XYButton nextButton = {0,0,10,10, BLACK};
+XYButton previousButton = {40,40, 20,20, RED};
+XYButton batteryToggle = {120,120, 40,40, BLUE};
 
 XYButton buttons[] = {nextButton, previousButton, batteryToggle};
 
@@ -78,7 +78,7 @@ bool batteryOnOff = false;
 // SOC data
 socData soc;
 float socVal = 0;
-
+int i=0;
 void loop() {
   /****************
     * Function name:    loop
@@ -89,14 +89,19 @@ void loop() {
     * Author(s): 
     *****************/
     getTouchInput();
+    tft.setCursor(0,0);
+    tft.setTextColor(GREEN); tft.setTextSize(2); 
+    tft.print("A");
+    i++;
+    delay(500);
    // while(1){
   //  }
 //    Serial.println(alarm_states[0]);
 }
 
 
-void drawButton(XYButton button, int color){
-  tft.fillRect(button.x, button.y, button.xLength, button.yLength, color);
+void drawButton(XYButton button){
+  tft.fillRect(button.x, button.y, button.xLength, button.yLength, button.color);
 }
 
 void getTouchInput(){
@@ -191,10 +196,10 @@ void setup() {
       identifier=0x9328;
     }
     tft.begin(identifier);
-
-    drawButton(nextButton, BLACK);
-    drawButton(previousButton, RED);
-    drawButton(batteryToggle, GREEN);
+    tft.fillScreen(BLACK);
+    //drawButton(nextButton);
+    drawButton(previousButton);
+    drawButton(batteryToggle);
 
     return;
 }
