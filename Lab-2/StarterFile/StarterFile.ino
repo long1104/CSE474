@@ -79,6 +79,7 @@ bool batteryOnOff = false;
 socData soc;
 float socVal = 0;
 int i=0;
+PrintedData x = {0,0,0,"Temperature: ", "C"};
 void loop() {
   /****************
     * Function name:    loop
@@ -89,9 +90,18 @@ void loop() {
     * Author(s): 
     *****************/
     getTouchInput();
-    tft.setCursor(0,0);
-    tft.setTextColor(GREEN); tft.setTextSize(2); 
-    tft.print("A");
+    tft.setTextSize(2);
+    tft.setCursor(x.x,x.y);
+    tft.setTextColor(BLACK);
+    tft.print(x.label);
+    tft.print(x.data);
+    tft.print(x.units);
+    tft.setCursor(x.x,x.y);
+    tft.setTextColor(GREEN);
+    x.data=i;
+    tft.print(x.label);
+    tft.print(x.data);
+    tft.print(x.units);
     i++;
     delay(500);
    // while(1){
@@ -106,6 +116,8 @@ void drawButton(XYButton button){
 
 void getTouchInput(){
   TSPoint point = ts.getPoint();
+  pinMode(XM, OUTPUT);
+  pinMode(YP, OUTPUT);
   // scale from 0->1023 to tft.width
   //point.x = map(point.x, TS_MINX, TS_MAXX, tft.width(), 0);
   point.x = tft.width()-map(point.x, TS_MINX, TS_MAXX, tft.width(), 0);
@@ -113,7 +125,6 @@ void getTouchInput(){
   point.y = map(point.y, TS_MINY, TS_MAXY, tft.height(), 0);
   if(((point.x-batteryToggle.x)<batteryToggle.xLength && (point.x-batteryToggle.x)>0) && (point.y - batteryToggle.y)<batteryToggle.yLength && (point.y - batteryToggle.y)>0){
     Serial.println("hello");
-  }else{
   }
 }
 
