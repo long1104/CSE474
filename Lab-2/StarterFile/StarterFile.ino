@@ -43,11 +43,13 @@
 Elegoo_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);
 
-XYButton nextButton = {0,0,10,10, BLACK};
+int BACKGROUND_COLOR = BLACK;
+
+//XYButton nextButton = {0,0,10,10, BLACK};
 XYButton previousButton = {40,40, 20,20, RED};
 XYButton batteryToggle = {120,120, 40,40, BLUE};
 
-XYButton buttons[] = {nextButton, previousButton, batteryToggle};
+//XYButton buttons[] = {nextButton, previousButton, batteryToggle};
 
 //Task Control Blocks
 TCB measurementTCB;         // Declare measurement TCB
@@ -79,7 +81,6 @@ bool batteryOnOff = false;
 socData soc;
 float socVal = 0;
 int i=0;
-PrintedData x = {0,0,0,"Temperature: ", "C"};
 void loop() {
   /****************
     * Function name:    loop
@@ -89,33 +90,42 @@ void loop() {
     *                       that create a user interface to a battery management system
     * Author(s): 
     *****************/
-    getTouchInput();
-    tft.setTextSize(2);
-    tft.setCursor(x.x,x.y);
-    tft.setTextColor(GREEN);
-    tft.print(x.label);
-    tft.setTextColor(BLACK);
-    tft.print(x.data);
-    tft.print(x.units);
-    tft.setCursor(x.x,x.y);
-    tft.setTextColor(GREEN);
-    x.data=i;
-    tft.print(x.label);
-    tft.print(x.data);
-    tft.print(x.units);
-    i++;
-    delay(500);
-   // while(1){
-  //  }
-//    Serial.println(alarm_states[0]);
+    PrintedData printedTemp = {0,0,GREEN,0,&temperature,"Temperature: ", "C"};
+    XYButton previous = {0,280,80, 40, BLUE};
+    XYButton next = {160, 280, 80, 40, GREEN};
+    drawButton(previous);
+    drawButton(next);
+    while(1){
+       getTouchInput();
+       printedTemp.oldData=drawData(printedTemp);
+       temperature++;
+       delay(1000);
+    }
 }
 
+
+float drawData(PrintedData printable){
+    tft.setTextSize(2);
+    tft.setCursor(printable.x,printable.y);
+    tft.setTextColor(printable.color);
+    tft.print(printable.label);
+    tft.setTextColor(BACKGROUND_COLOR);
+    tft.print(printable.oldData);
+    tft.print(printable.units);
+    tft.setCursor(printable.x,printable.y);
+    tft.setTextColor(printable.color);
+    printable.oldData = *printable.dataIn;
+    tft.print(printable.label);
+    tft.print(printable.oldData);
+    tft.print(printable.units);
+    return printable.oldData;
+}
 
 void drawButton(XYButton button){
   tft.fillRect(button.x, button.y, button.xLength, button.yLength, button.color);
 }
 
-void getTouchInput(){
+Point getTouchInput(){
   TSPoint point = ts.getPoint();
   pinMode(XM, OUTPUT);
   pinMode(YP, OUTPUT);
@@ -124,9 +134,12 @@ void getTouchInput(){
   point.x = tft.width()-map(point.x, TS_MINX, TS_MAXX, tft.width(), 0);
  // point.y = (tft.height()-map(point.y, TS_MINY, TS_MAXY, tft.height(), 0));
   point.y = map(point.y, TS_MINY, TS_MAXY, tft.height(), 0);
-  if(((point.x-batteryToggle.x)<batteryToggle.xLength && (point.x-batteryToggle.x)>0) && (point.y - batteryToggle.y)<batteryToggle.yLength && (point.y - batteryToggle.y)>0){
-    Serial.println("hello");
-  }
+  return Point{point.x,point.y};
+}
+
+bool checkTouchAgainstButton(Point point, XYButton button){
+  return (((point.x-button.x)<button.xLength && (point.x-button.x)>0) 
+  && (point.y - button.y)<button.yLength && (point.y - button.y)>0);
 }
 
 void setup() {  
@@ -209,9 +222,7 @@ void setup() {
     }
     tft.begin(identifier);
     tft.fillScreen(BLACK);
-    //drawButton(nextButton);
-    drawButton(previousButton);
-    drawButton(batteryToggle);
+
 
     return;
 }
