@@ -102,13 +102,12 @@ void drawButton(XYButton button, int color){
 void getTouchInput(){
   TSPoint point = ts.getPoint();
   // scale from 0->1023 to tft.width
-  point.x = map(point.x, TS_MINX, TS_MAXX, tft.width(), 0);
-  //p.x = tft.width()-map(p.x, TS_MINX, TS_MAXX, tft.width(), 0);
-  point.y = (tft.height()-map(point.y, TS_MINY, TS_MAXY, tft.height(), 0));
+  //point.x = map(point.x, TS_MINX, TS_MAXX, tft.width(), 0);
+  point.x = tft.width()-map(point.x, TS_MINX, TS_MAXX, tft.width(), 0);
+ // point.y = (tft.height()-map(point.y, TS_MINY, TS_MAXY, tft.height(), 0));
+  point.y = map(point.y, TS_MINY, TS_MAXY, tft.height(), 0);
   if(((point.x-batteryToggle.x)<batteryToggle.xLength && (point.x-batteryToggle.x)>0) && (point.y - batteryToggle.y)<batteryToggle.yLength && (point.y - batteryToggle.y)>0){
     Serial.println("hello");
-      Serial.println(point.x);
-    Serial.println(point.y);
   }else{
   }
 }
