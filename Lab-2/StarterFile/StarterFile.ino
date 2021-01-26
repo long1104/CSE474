@@ -91,15 +91,20 @@ void loop() {
     * Author(s): 
     *****************/
     PrintedData printedTemp = {0,0,GREEN,0,&temperature,"Temperature: ", "C"};
+    
     XYButton previous = {0,280,80, 40, BLUE};
     XYButton next = {160, 280, 80, 40, GREEN};
     drawButton(previous);
     drawButton(next);
     while(1){
-       getTouchInput();
+       Point point = getTouchInput();
+       if(isButton(point, previous)){
+          Serial.println("previous");
+       }else if(isButton(point, next)){
+          Serial.println("next");
+       }
        printedTemp.oldData=drawData(printedTemp);
        temperature++;
-       delay(1000);
     }
 }
 
@@ -137,7 +142,7 @@ Point getTouchInput(){
   return Point{point.x,point.y};
 }
 
-bool checkTouchAgainstButton(Point point, XYButton button){
+bool isButton(Point point, XYButton button){
   return (((point.x-button.x)<button.xLength && (point.x-button.x)>0) 
   && (point.y - button.y)<button.yLength && (point.y - button.y)>0);
 }
