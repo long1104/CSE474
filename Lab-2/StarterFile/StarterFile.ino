@@ -92,8 +92,9 @@ void loop() {
     getTouchInput();
     tft.setTextSize(2);
     tft.setCursor(x.x,x.y);
-    tft.setTextColor(BLACK);
+    tft.setTextColor(GREEN);
     tft.print(x.label);
+    tft.setTextColor(BLACK);
     tft.print(x.data);
     tft.print(x.units);
     tft.setCursor(x.x,x.y);
