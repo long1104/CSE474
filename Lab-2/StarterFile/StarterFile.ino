@@ -43,11 +43,10 @@
 Elegoo_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);
 
+    XYButton previous = {0,280,80, 40, BLUE};
+    XYButton next = {160, 280, 80, 40, GREEN};
 int BACKGROUND_COLOR = BLACK;
 
-//XYButton nextButton = {0,0,10,10, BLACK};
-XYButton previousButton = {40,40, 20,20, RED};
-XYButton batteryToggle = {120,120, 40,40, BLUE};
 
 //XYButton buttons[] = {nextButton, previousButton, batteryToggle};
 
@@ -90,24 +89,38 @@ void loop() {
     *                       that create a user interface to a battery management system
     * Author(s): 
     *****************/
-    PrintedData printedTemp = {0,0,GREEN,0,&temperature,"Temperature: ", "C"};
     
-    XYButton previous = {0,280,80, 40, BLUE};
-    XYButton next = {160, 280, 80, 40, GREEN};
+    PrintedData printedTemp = {0,0,GREEN,0,&temperature,"Temperature: ", "C"};
+
+    XYButton batteryToggle = {0,0,240,160, RED};
+    Screen BatteryMonitor = {{batteryToggle},{}};
+    Screen *screens[] = {, "Measurement", "Alarm"};
+    int currentScreen=0;
     drawButton(previous);
     drawButton(next);
     while(1){
        Point point = getTouchInput();
        if(isButton(point, previous)){
-          Serial.println("previous");
+          currentScreen=(currentScreen+2)%3;
+          Serial.println(screens[currentScreen]);
        }else if(isButton(point, next)){
-          Serial.println("next");
+          currentScreen=(currentScreen+1)%3;
+          Serial.println(screens[currentScreen]);
        }
        printedTemp.oldData=drawData(printedTemp);
        temperature++;
     }
 }
 
+void drawScreen(Screen screen){
+  tft.fillScreen(BACKGROUND_COLOR);
+  drawButton(previous);
+  drawButton(next);
+
+  for every printed data/label : draw it 
+  
+  
+}
 
 float drawData(PrintedData printable){
     tft.setTextSize(2);
