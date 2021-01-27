@@ -10,6 +10,7 @@
 #include "Alarm.h"
 #include "Contactor.h"
 #include "Soc.h"
+#include "TouchScreenTask.h"
 
 // The control pins for the LCD can be assigned to any digital or
 // analog pins...but we'll use the analog pins as this allows us to
@@ -43,8 +44,12 @@
 Elegoo_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);
 
-    XYButton previous = {0,280,80, 40, BLUE};
-    XYButton next = {160, 280, 80, 40, GREEN};
+char* prevLabel = "Prev";
+char* nextLabel = "Next";
+char* onOffLabel = "OFF";
+XYButton previous = {0,280,80, 40, BLUE, &prevLabel};
+XYButton next = {160, 280, 80, 40, GREEN, &nextLabel};
+XYButton batteryToggle = {0,0,240,160, RED, &onOffLabel};
 int BACKGROUND_COLOR = BLACK;
 
 
@@ -92,73 +97,34 @@ void loop() {
     
     PrintedData printedTemp = {0,0,GREEN,0,&temperature,"Temperature: ", "C"};
 
-    XYButton batteryToggle = {0,0,240,160, RED};
-    Screen BatteryMonitor = {{batteryToggle},{}};
-    Screen *screens[] = {, "Measurement", "Alarm"};
+    
+    Screen BatteryMonitor = {&batteryToggle,{}};
+    Screen AlarmMonitor = {NULL,{}};
+    Screen MeasurementMonitor = {NULL,{}};
+    Screen screens[] = {MeasurementMonitor, BatteryMonitor, AlarmMonitor};
     int currentScreen=0;
     drawButton(previous);
     drawButton(next);
     while(1){
        Point point = getTouchInput();
+       bool newScreen = false;
        if(isButton(point, previous)){
           currentScreen=(currentScreen+2)%3;
-          Serial.println(screens[currentScreen]);
+          newScreen = true;
+          //Serial.println(screens[currentScreen]);
        }else if(isButton(point, next)){
           currentScreen=(currentScreen+1)%3;
-          Serial.println(screens[currentScreen]);
+          //Serial.println(screens[currentScreen]);
+          newScreen = true;
        }
-       printedTemp.oldData=drawData(printedTemp);
-       temperature++;
+       
+       drawScreen(screens[currentScreen], newScreen);
+//       printedTemp.oldData=drawData(printedTemp);
+//       temperature++;
     }
 }
 
-void drawScreen(Screen screen){
-  tft.fillScreen(BACKGROUND_COLOR);
-  drawButton(previous);
-  drawButton(next);
 
-  for every printed data/label : draw it 
-  
-  
-}
-
-float drawData(PrintedData printable){
-    tft.setTextSize(2);
-    tft.setCursor(printable.x,printable.y);
-    tft.setTextColor(printable.color);
-    tft.print(printable.label);
-    tft.setTextColor(BACKGROUND_COLOR);
-    tft.print(printable.oldData);
-    tft.print(printable.units);
-    tft.setCursor(printable.x,printable.y);
-    tft.setTextColor(printable.color);
-    printable.oldData = *printable.dataIn;
-    tft.print(printable.label);
-    tft.print(printable.oldData);
-    tft.print(printable.units);
-    return printable.oldData;
-}
-
-void drawButton(XYButton button){
-  tft.fillRect(button.x, button.y, button.xLength, button.yLength, button.color);
-}
-
-Point getTouchInput(){
-  TSPoint point = ts.getPoint();
-  pinMode(XM, OUTPUT);
-  pinMode(YP, OUTPUT);
-  // scale from 0->1023 to tft.width
-  //point.x = map(point.x, TS_MINX, TS_MAXX, tft.width(), 0);
-  point.x = tft.width()-map(point.x, TS_MINX, TS_MAXX, tft.width(), 0);
- // point.y = (tft.height()-map(point.y, TS_MINY, TS_MAXY, tft.height(), 0));
-  point.y = map(point.y, TS_MINY, TS_MAXY, tft.height(), 0);
-  return Point{point.x,point.y};
-}
-
-bool isButton(Point point, XYButton button){
-  return (((point.x-button.x)<button.xLength && (point.x-button.x)>0) 
-  && (point.y - button.y)<button.yLength && (point.y - button.y)>0);
-}
 
 void setup() {  
   /****************
