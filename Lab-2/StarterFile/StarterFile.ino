@@ -135,8 +135,8 @@ void loop() {
     int currentScreen=0;
     drawButton(previous);
     drawButton(next);
+    unsigned long startTimer=0;
     while(1){
-         int startTimer = millis();
 //       Point point = getTouchInput();
 //       bool newScreen = false;
 //       if(isButton(point, previous)){
@@ -148,7 +148,7 @@ void loop() {
 //          //Serial.println(screens[currentScreen]);
 //          newScreen = true;
 //       }
-        
+        startTimer=millis();
         touchScreenTCB.task(touchScreenTCB.taskDataPtr);
         measurementTCB.task(measurementTCB.taskDataPtr);
         Serial.print("temperature: ");Serial.println(temperature);
@@ -163,7 +163,7 @@ void loop() {
 //        testFunction(&printedTemp);
 //        Serial.println(printedTemp.oldData);
         clockCount++;
-        if(1000-(millis()-startTimer) > 0){
+        if(millis()-startTimer > 0 && millis()-startTimer < 1000){
             Serial.println(1000-(millis()-startTimer));
             delay(1000-(millis()-startTimer));
         }

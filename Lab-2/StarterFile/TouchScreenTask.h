@@ -18,8 +18,8 @@ typedef struct PrintedDataStruct{
   int x,y,color;
   float oldData;
   float* dataIn;
-  char* label;
   char* units;
+  char* label;
 }PrintedData;
 
 typedef struct ScreenStruct {
