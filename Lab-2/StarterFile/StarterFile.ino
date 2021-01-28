@@ -4,6 +4,7 @@
 #include <Elegoo_GFX.h>    // Core graphics library
 #include <Elegoo_TFTLCD.h> // Hardware-specific library
 #include <TouchScreen.h>
+#include <string.h>
 #include "StarterFile.h"
 #include "Measurement.h"
 #include "TaskControlBlock.h"
@@ -41,6 +42,9 @@
 #define YELLOW  0xFFE0
 #define WHITE   0xFFFF
 
+#define MINPRESSURE 10
+#define MAXPRESSURE 1000
+
 Elegoo_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);
 
@@ -49,7 +53,7 @@ char* nextLabel = "Next";
 char* onOffLabel = "OFF";
 XYButton previous = {0,280,80, 40, BLUE, &prevLabel};
 XYButton next = {160, 280, 80, 40, GREEN, &nextLabel};
-XYButton batteryToggle = {0,0,240,160, RED, &onOffLabel};
+XYButton batteryButton = {0,0,240,160, RED, &onOffLabel};
 int BACKGROUND_COLOR = BLACK;
 
 
@@ -60,7 +64,22 @@ TCB measurementTCB;         // Declare measurement TCB
 TCB alarmTCB;               // Declare alarm TCB
 TCB contactorTCB;           // Declare contactor TCB
 TCB socTCB;                 // Declare soc TCB
+TCB touchScreenTCB;
 
+Screen batteryMonitor;
+Screen alarmMonitor;
+Screen measurementMonitor;
+
+// Data to print
+PrintedData socDataPrint;
+PrintedData temperatureData;
+PrintedData hvCurrentData;
+PrintedData hvVoltageData;
+PrintedData hvilData;
+PrintedData hivaData;           // High Voltage Alarm
+PrintedData overCurrentData;
+PrintedData hvorData;           // High Voltage Out of Range
+PrintedData batteryData;  
 
 
 // Measurement Data
@@ -79,11 +98,16 @@ char* hviaVal     = alarm_states[0];
 char* overCurrent  = alarm_states[0];
 char* hvorVal     = alarm_states[0];
 
-bool batteryOnOff = false;
+int batteryOnOff = 0;
 
 // SOC data
 socData soc;
 float socVal = 0;
+
+// Touch Screen Task data
+TouchScreenData tscreenData;
+int currentScreen = 0;
+
 int i=0;
 void loop() {
   /****************
@@ -96,35 +120,44 @@ void loop() {
     *****************/
     
     PrintedData printedTemp = {0,0,GREEN,0,&temperature,"Temperature: ", "C"};
+    PrintedData printedTemp2 = {0,20,GREEN,0,&temperature,"Current: ", "C"};
 
     
-    Screen BatteryMonitor = {&batteryToggle,{}};
-    Screen AlarmMonitor = {NULL,{}};
-    Screen MeasurementMonitor = {NULL,{}};
-    Screen screens[] = {MeasurementMonitor, BatteryMonitor, AlarmMonitor};
+    
+    //Screen screens[] = {MeasurementMonitor, BatteryMonitor, AlarmMonitor};
     int currentScreen=0;
     drawButton(previous);
     drawButton(next);
     while(1){
-       Point point = getTouchInput();
-       bool newScreen = false;
-       if(isButton(point, previous)){
-          currentScreen=(currentScreen+2)%3;
-          newScreen = true;
-          //Serial.println(screens[currentScreen]);
-       }else if(isButton(point, next)){
-          currentScreen=(currentScreen+1)%3;
-          //Serial.println(screens[currentScreen]);
-          newScreen = true;
-       }
-       
-       drawScreen(screens[currentScreen], newScreen);
-//       printedTemp.oldData=drawData(printedTemp);
+//       Point point = getTouchInput();
+//       bool newScreen = false;
+//       if(isButton(point, previous)){
+//          currentScreen=(currentScreen+2)%3;
+//          newScreen = true;
+//          //Serial.println(screens[currentScreen]);
+//       }else if(isButton(point, next)){
+//          currentScreen=(currentScreen+1)%3;
+//          //Serial.println(screens[currentScreen]);
+//          newScreen = true;
+//       }
+//       
+//       drawScreen(screens[currentScreen], newScreen);
+       touchScreenTCB.task(touchScreenTCB.taskDataPtr);
+       //printedTemp.oldData=drawData(printedTemp);
+//       drawData(&printedTemp);
+//       if ((int)temperature % 2 == 0) {
+//          drawData(&printedTemp2);
+//       }
 //       temperature++;
+//        testFunction(&printedTemp);
+//        Serial.println(printedTemp.oldData);
+        delay(10);
     }
 }
 
-
+void testFunction(PrintedData* printData) {
+    printData->oldData += 1;
+}
 
 void setup() {  
   /****************
@@ -134,7 +167,23 @@ void setup() {
     * Function description: sets up the scheduler.
     * Author(s): 
     *****************/
-
+    socDataPrint = {0,0,GREEN,0,&temperature,"SOC value: ", "C"};;
+    temperatureData = {0,20,GREEN,0,&temperature,"Temperature: ", "C"};;
+    hvCurrentData = {0,40,GREEN,0,&temperature,"HV Current: ", "C"};;
+    hvVoltageData = {0,60,GREEN,0,&temperature,"HV Voltage: ", "C"};;
+    hvilData = {0,80,GREEN,0,&temperature,"hvil: ", "C"};;
+    hivaData = {0,0,GREEN,0,&temperature,"hivl: ", "C"};;           // High Voltage Alarm
+    overCurrentData = {0,20,GREEN,0,&temperature,"Over Current: ", "C"};;
+    hvorData = {0,40,GREEN,0,&temperature,"HV out of range: ", "C"};
+    batteryData = {160, 80, WHITE, (float)0, (float*)&batteryOnOff, "OFF", ""};
+    batteryMonitor = {&batteryButton,{&batteryData}};
+    alarmMonitor = {NULL,{&hivaData, &overCurrentData, &hvorData}};
+    measurementMonitor = {NULL, {&socDataPrint, &temperatureData, &hvCurrentData, &hvVoltageData, &hvilData}};
+    tscreenData = {&currentScreen, {measurementMonitor, alarmMonitor, batteryMonitor}};
+    touchScreenTCB.task = &touchScreenTask;
+    touchScreenTCB.taskDataPtr = (void*) &tscreenData;
+    touchScreenTCB.next = NULL;
+    touchScreenTCB.prev = NULL;
     
     // Initialize Measurement & Sensors
     measure                     = {&HVIL, &hvilPin, &temperature, &hvCurrent, &hvVoltage};
@@ -147,6 +196,8 @@ void setup() {
     // ..... Initialize other tasks and task data ..... 
     // Initialize Display
     // Initialize Touch Input
+    
+    
     // Initialize Contactor
     contactorTCB.task          = &contactorTask;
     contactorTCB.taskDataPtr   = (void*) &batteryOnOff;
@@ -168,6 +219,8 @@ void setup() {
     socTCB.taskDataPtr         = (void*) &soc;
     socTCB.next                = NULL;
     socTCB.prev                = NULL;
+
+    
 
     // Initialize serial communication
     Serial.begin(9600);

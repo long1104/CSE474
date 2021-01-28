@@ -24,12 +24,17 @@ typedef struct PrintedDataStruct{
 
 typedef struct ScreenStruct {
   XYButton *button;
-  PrintedData data[];
+  PrintedData *data[];
 }Screen;
 
 typedef struct PointStruct{
   int x,y;
 }Point;
+
+typedef struct TouchScreenTaskData {
+  int* current_screen;
+  Screen screens[];
+} TouchScreenData;
 
 void drawButton(XYButton button);
 
