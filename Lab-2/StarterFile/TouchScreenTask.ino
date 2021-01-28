@@ -101,7 +101,7 @@ void drawScreen(Screen screen, bool newScreen){
     drawButton(previous);
     drawButton(next);
 
-     for(int i=0;i<screen.dataLen;i++){
+    for(int i=0;i<screen.dataLen;i++){
         drawLabel(screen.data[i]);
     }
 
