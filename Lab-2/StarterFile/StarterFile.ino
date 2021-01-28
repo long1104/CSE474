@@ -151,7 +151,7 @@ void loop() {
 //       temperature++;
 //        testFunction(&printedTemp);
 //        Serial.println(printedTemp.oldData);
-        delay(10);
+        delay(1000);
     }
 }
 
@@ -176,9 +176,9 @@ void setup() {
     overCurrentData = {0,20,GREEN,0,&temperature,"Over Current: ", "C"};;
     hvorData = {0,40,GREEN,0,&temperature,"HV out of range: ", "C"};
     batteryData = {160, 80, WHITE, (float)0, (float*)&batteryOnOff, "OFF", ""};
-    batteryMonitor = {&batteryButton,{&batteryData}};
-    alarmMonitor = {NULL,{&hivaData, &overCurrentData, &hvorData}};
-    measurementMonitor = {NULL, {&socDataPrint, &temperatureData, &hvCurrentData, &hvVoltageData, &hvilData}};
+    batteryMonitor = {&batteryButton,0,{&batteryData}};
+    alarmMonitor = {NULL,3,{&hivaData, &overCurrentData, &hvorData}};
+    measurementMonitor = {NULL, 5,{&socDataPrint, &temperatureData, &hvCurrentData, &hvVoltageData, &hvilData}};
     tscreenData = {&currentScreen, {measurementMonitor, alarmMonitor, batteryMonitor}};
     touchScreenTCB.task = &touchScreenTask;
     touchScreenTCB.taskDataPtr = (void*) &tscreenData;

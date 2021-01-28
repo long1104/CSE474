@@ -52,6 +52,10 @@ void displayTask(int* currScreen, Screen screenList[], bool isScroll) {
     
     //Serial.print(*currScreen);
     drawScreen((screenList[*currScreen]), isScroll);
+    for(int i=0;i<screenList[*currScreen].dataLen;i++){
+        drawData(screenList[*currScreen].data[i]);
+    }
+    
 }
 
 bool inputTask(int* currScreen, Screen screenList[]) {
