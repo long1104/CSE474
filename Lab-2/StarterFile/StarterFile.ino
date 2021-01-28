@@ -163,7 +163,11 @@ void loop() {
 //        testFunction(&printedTemp);
 //        Serial.println(printedTemp.oldData);
         clockCount++;
-        delay(1000-(millis()-startTimer));
+        if(1000-(millis()-startTimer) > 0){
+            Serial.println(1000-(millis()-startTimer));
+            delay(1000-(millis()-startTimer));
+        }
+
     }
 }
 
