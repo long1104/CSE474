@@ -188,14 +188,14 @@ void setup() {
     HVIL = false;
 
 
-    socDataPrint = {0,0,GREEN,0,&socVal,"SOC value: ", "C"};
-    temperatureData = {0,20,GREEN,0,&temperature,"Temperature: ", "C"};
-    hvCurrentData = {0,40,GREEN,0,&hvCurrent,"HV Current: ", "C"};
-    hvVoltageData = {0,60,GREEN,0,&hvVoltage,"HV Voltage: ", "C"};
-    hvilData = {0,80,GREEN,0,&temperature,"hvil: ", "C"};
-    hivaData = {0,0,GREEN,0,&temperature,"hivl: ", "C"};        // High Voltage Alarm
-    overCurrentData = {0,20,GREEN,0,&temperature,"Over Current: ", "C"};
-    hvorData = {0,40,GREEN,0,&temperature,"HV out of range: ", "C"};
+    socDataPrint = {0,0,GREEN,-1,&socVal,"SOC value: ", "C"};
+    temperatureData = {0,20,GREEN,-1,&temperature,"Temperature: ", "C"};
+    hvCurrentData = {0,40,GREEN,-1,&hvCurrent,"HV Current: ", "C"};
+    hvVoltageData = {0,60,GREEN,-1,&hvVoltage,"HV Voltage: ", "C"};
+    hvilData = {0,80,GREEN,-1,&temperature,"hvil: ", "C"};
+    hivaData = {0,0,GREEN,-1,&temperature,"hivl: ", "C"};        // High Voltage Alarm
+    overCurrentData = {0,20,GREEN,-1,&temperature,"Over Current: ", "C"};
+    hvorData = {0,40,GREEN,-1,&temperature,"HV out of range: ", "C"};
     batteryData = {160, 80, WHITE, (float)0, (float*)&batteryOnOff, "OFF", ""};
     PrintedData *batteryPrints[] = {&batteryData};
     PrintedData *alarmPrints[] = {&hivaData, &overCurrentData, &hvorData};
