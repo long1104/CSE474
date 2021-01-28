@@ -34,12 +34,13 @@
 #define TS_MAXY 920
 
 #define BLACK   0x0000
-#define BLUE    0x001F
+#define PURPLE    0x001F
 #define RED     0xF800
 #define GREEN   0x07E0
 #define CYAN    0x07FF
 #define MAGENTA 0xF81F
 #define YELLOW  0xFFE0
+#define PURPLE 0x780F
 #define WHITE   0xFFFF
 
 #define MIN_PRESSURE 0
@@ -51,10 +52,10 @@ TouchScreen ts = TouchScreen(XP, YP, XM, YM, 374);
 char* prevLabel = "Prev";
 char* nextLabel = "Next";
 char* onOffLabel = "OFF";
-XYButton previous = {0,280,80, 40, BLUE, &prevLabel};
-XYButton next = {160, 280, 80, 40, GREEN, &nextLabel};
-XYButton batteryButton = {0,0,240,160, RED, &onOffLabel};
-int BACKGROUND_COLOR = BLACK;
+XYButton previous = {0,280,80, 40, PURPLE, &prevLabel};
+XYButton next = {160, 280, 80, 40, PURPLE, &nextLabel};
+XYButton batteryButton = {0,0,240,160, PURPLE, &onOffLabel};
+int BACKGROUND_COLOR = WHITE;
 
 
 //XYButton buttons[] = {nextButton, previousButton, batteryToggle};
@@ -104,7 +105,7 @@ char* hvorVal     = alarm_states[0];
 int batteryOnOff = 0;
 
 // SOC data
-socData soc;
+SocData soc;
 float socVal = 0;
 
 // Touch Screen Task data
@@ -126,41 +127,14 @@ void loop() {
     *                       that create a user interface to a battery management system
     * Author(s): 
     *****************/
-    
-    PrintedData printedTemp = {0,0,GREEN,0,&temperature,"Temperature: ", "C"};
-    PrintedData printedTemp2 = {0,20,GREEN,0,&temperature,"Current: ", "C"};
-
-    
-    
-    //Screen screens[] = {MeasurementMonitor, BatteryMonitor, AlarmMonitor};
-    int currentScreen=0;
     unsigned long startTimer=0;
     while(1){
-//       Point point = getTouchInput();
-//       bool newScreen = false;
-//       if(isButton(point, previous)){
-//          currentScreen=(currentScreen+2)%3;
-//          newScreen = true;
-//          //Serial.println(screens[currentScreen]);
-//       }else if(isButton(point, next)){
-//          currentScreen=(currentScreen+1)%3;
-//          //Serial.println(screens[currentScreen]);
-//          newScreen = true;
-//       }
+
         startTimer=millis();
-        touchScreenTCB.task(touchScreenTCB.taskDataPtr);
+        socTCB.task(socTCB.taskDataPtr);
         measurementTCB.task(measurementTCB.taskDataPtr);
-//        Serial.print("temperature: ");Serial.println(temperature);
-//        Serial.print("current: "); Serial.println(hvCurrent);
-//        Serial.print("voltage: "); Serial.println(hvVoltage);
-//        Serial.print("HVIL: "); Serial.println(HVIL);
-//       drawData(&printedTemp);
-//       if ((int)temperature % 2 == 0) {
-//          drawData(&printedTemp2);
-//       }
-//       temperature++;
-//        testFunction(&printedTemp);
-//        Serial.println(printedTemp.oldData);
+        touchScreenTCB.task(touchScreenTCB.taskDataPtr);
+
         clockCount++;
         if(millis()-startTimer > 0 && millis()-startTimer < 1000){
             Serial.println(1000-(millis()-startTimer));
@@ -168,10 +142,6 @@ void loop() {
         }
 
     }
-}
-
-void testFunction(PrintedData* printData) {
-    printData->oldData += 1;
 }
 
 void setup() {  
@@ -188,15 +158,15 @@ void setup() {
     HVIL = false;
 
 
-    socDataPrint = {0,0,GREEN,-1,&socVal,"SOC value: ", "C"};
-    temperatureData = {0,20,GREEN,-1,&temperature,"Temperature: ", "C"};
-    hvCurrentData = {0,40,GREEN,-1,&hvCurrent,"HV Current: ", "C"};
-    hvVoltageData = {0,60,GREEN,-1,&hvVoltage,"HV Voltage: ", "C"};
-    hvilData = {0,80,GREEN,-1,&temperature,"hvil: ", "C"};
-    hivaData = {0,0,GREEN,-1,&temperature,"hivl: ", "C"};        // High Voltage Alarm
-    overCurrentData = {0,20,GREEN,-1,&temperature,"Over Current: ", "C"};
-    hvorData = {0,40,GREEN,-1,&temperature,"HV Alarm: ", "C"};
-    batteryData = {160, 80, WHITE, (float)0, (float*)&batteryOnOff, "OFF", ""};
+    socDataPrint = {0,0,PURPLE,-1,&socVal,"SOC value: ", "C"};
+    temperatureData = {0,20,PURPLE,-1,&temperature,"Temperature: ", "C"};
+    hvCurrentData = {0,40,PURPLE,-1,&hvCurrent,"HV Current: ", "C"};
+    hvVoltageData = {0,60,PURPLE,-1,&hvVoltage,"HV Voltage: ", "C"};
+    hvilData = {0,80,PURPLE,-1,&temperature,"hvil: ", "C"};
+    hivaData = {0,0,PURPLE,-1,&temperature,"hivl: ", "C"};        // High Voltage Alarm
+    overCurrentData = {0,20,PURPLE,-1,&temperature,"Over Current: ", "C"};
+    hvorData = {0,40,PURPLE,-1,&temperature,"HV Alarm: ", "C"};
+    batteryData = {160, 80, PURPLE, (float)0, (float*)&batteryOnOff, "OFF", ""};
     PrintedData *batteryPrints[] = {&batteryData};
     PrintedData *alarmPrints[] = {&hivaData, &overCurrentData, &hvorData};
     PrintedData *measurementPrints[] = {&socDataPrint, &temperatureData, &hvCurrentData, &hvVoltageData, &hvilData};
@@ -282,8 +252,6 @@ void setup() {
       identifier=0x9328;
     }
     tft.begin(identifier);
-    tft.fillScreen(BLACK);
-
 
     return;
 }

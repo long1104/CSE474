@@ -2,14 +2,27 @@
 #include <stdbool.h>
 #include "TouchScreenTask.h"
 
-const int TEXT_SIZE = 2;
+const int TEXT_SIZE = 1;
+const int BUTTON_TEXT_SIZE=2;
 const int TOUCH_TIMEOUT = 10;
+const int pixelsPerChar_X = 6;
+const int pixelsPerChar_Y = 8;
+const int xPadding = 10;
+const int yPadding = 10;
+
+
+void setCursor(int x, int y){
+  tft.setCursor(x+xPadding, y+yPadding);
+}
 
 void drawButton(XYButton button){
   tft.fillRect(button.x, button.y, button.xLength, button.yLength, button.color);
   tft.setTextColor(WHITE);
-  tft.setTextSize(2);
-  tft.setCursor(button.x + (button.xLength / 3), button.y + (button.yLength / 3));
+  tft.setTextSize(BUTTON_TEXT_SIZE);
+  String label = String(*(button.buttonLabel));
+  int halfLabelX = pixelsPerChar_X*label.length()*BUTTON_TEXT_SIZE/2;
+  int halfLabelY = pixelsPerChar_Y*BUTTON_TEXT_SIZE/2;
+  tft.setCursor(button.x +button.xLength/2-halfLabelX, button.y+button.yLength/2-halfLabelY);
   tft.print(*(button.buttonLabel));
 }
 
@@ -36,7 +49,7 @@ bool isButton(Point point, XYButton button){
 
 void drawLabel(PrintedData* printable){
   String label = String(printable->label);
-  tft.setCursor(printable->x, printable->y);
+  setCursor(printable->x, printable->y);
   tft.setTextColor(printable->color);
   tft.setTextSize(TEXT_SIZE);
   tft.print(label);
@@ -48,14 +61,14 @@ void drawData(PrintedData* printable){
     float temp = *(printable->dataIn);
     if(temp!=printable->oldData){
           tft.setTextSize(TEXT_SIZE);
-          tft.setCursor(printable->x+pixelShift, printable->y);
+          setCursor(printable->x+pixelShift, printable->y);
           String dataString = String(printable->oldData);
           dataString.concat(printable->units);
           tft.setTextColor(BACKGROUND_COLOR);
           tft.print(dataString);
 
           printable->oldData=temp;          
-          tft.setCursor(printable->x+pixelShift, printable->y);
+          setCursor(printable->x+pixelShift, printable->y);
           dataString = String(printable->oldData);
           dataString.concat(printable->units);
           tft.setTextColor(printable->color);
