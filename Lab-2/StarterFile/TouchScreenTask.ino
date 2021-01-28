@@ -63,6 +63,7 @@ void drawData(PrintedData* printable){
 
 void displayTask(int* currScreen, Screen screenList[], bool isScroll) {
     drawScreen((screenList[*currScreen]), isScroll);
+    Serial.print("change screen: ");Serial.println(isScroll);
     for(int i=0;i<screenList[*currScreen].dataLen;i+=1){
         drawData((PrintedData *)screenList[*currScreen].data[i]);
     }
@@ -79,6 +80,7 @@ bool inputTask(int* currScreen, Screen screenList[]) {
         *currScreen=(*currScreen+1)%3;
         newScreen = true;
     }
+    Serial.print("Current screen: ");Serial.println(*currScreen);
     if (isButton(point, *(screenList[2].button)) && *currScreen == 2) {
         *(screenList[2].data[0]->dataIn) = ((int)*(screenList[2].data[0]->dataIn) + 1) % 2;
         if (*(screenList[2].data[0]->dataIn) == 1) {
@@ -101,6 +103,10 @@ void drawScreen(Screen screen, bool newScreen){
 
      for(int i=0;i<screen.dataLen;i++){
         drawLabel(screen.data[i]);
+    }
+
+    if (screen.button != NULL) {
+      drawButton(*(screen.button));
     }
   }
 }
