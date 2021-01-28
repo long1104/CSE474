@@ -42,8 +42,8 @@
 #define YELLOW  0xFFE0
 #define WHITE   0xFFFF
 
-#define MINPRESSURE 0
-#define MAXPRESSURE 1000
+#define MIN_PRESSURE 0
+#define MAX_PRESSURE 1000
 
 Elegoo_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, 374);

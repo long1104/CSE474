@@ -3,6 +3,7 @@
 #include "TouchScreenTask.h"
 
 const int TEXT_SIZE = 2;
+const int TOUCH_TIMEOUT = 10;
 
 void drawButton(XYButton button){
   tft.fillRect(button.x, button.y, button.xLength, button.yLength, button.color);
@@ -14,6 +15,10 @@ void drawButton(XYButton button){
 
 Point getTouchInput(){
     TSPoint point = ts.getPoint();
+    unsigned long timeout = millis();
+    while(point.z<=MIN_PRESSURE && millis()-timeout <TOUCH_TIMEOUT){
+           point = ts.getPoint();
+    }
     pinMode(XM, OUTPUT);
     pinMode(YP, OUTPUT);
     // scale from 0->1023 to tft.width
