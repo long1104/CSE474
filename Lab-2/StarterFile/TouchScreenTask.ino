@@ -2,6 +2,8 @@
 #include <stdbool.h>
 #include "TouchScreenTask.h"
 
+const int TEXT_SIZE = 2;
+
 void drawButton(XYButton button){
   tft.fillRect(button.x, button.y, button.xLength, button.yLength, button.color);
   tft.setTextColor(WHITE);
@@ -30,30 +32,38 @@ bool isButton(Point point, XYButton button){
   && (point.y - button.y)<button.yLength && (point.y - button.y)>0);
 }
 
+void drawLabel(PrintedData* printable){
+  String label = String(printable->label);
+  tft.setCursor(printable->x, printable->y);
+  tft.setTextColor(printable->color);
+  tft.setTextSize(TEXT_SIZE);
+  tft.print(label);
+}
+
 void drawData(PrintedData* printable){
-    tft.setTextSize(2);
-    tft.setCursor(printable->x,printable->y);
-    tft.setTextColor(printable->color);
-    tft.print(printable->label);
-    tft.setTextColor(BACKGROUND_COLOR);
-    String dataString = String(printable->oldData);
-    dataString.concat(printable->units);
-    tft.print(dataString);
-    tft.setCursor(printable->x,printable->y);
-    tft.setTextColor(printable->color);
-    printable->oldData = *(printable->dataIn);
     String newData = String(printable->label);
-    newData.concat(printable->oldData);
-    newData.concat(printable->units);
-    tft.println(newData);
+    int pixelShift = TEXT_SIZE * newData.length() * 6; // 6pixels for each character (x value)
+    float temp = *(printable->dataIn);
+    if(temp!=printable->oldData){
+          tft.setTextSize(TEXT_SIZE);
+          tft.setCursor(printable->x+pixelShift, printable->y);
+          String dataString = String(printable->oldData);
+          dataString.concat(printable->units);
+          tft.setTextColor(BACKGROUND_COLOR);
+          tft.print(dataString);
+
+          printable->oldData=temp;          
+          tft.setCursor(printable->x+pixelShift, printable->y);
+          dataString = String(printable->oldData);
+          dataString.concat(printable->units);
+          tft.setTextColor(printable->color);
+          tft.println(dataString);
+    }
 }
 
 void displayTask(int* currScreen, Screen screenList[], bool isScroll) {
-    
-    //Serial.print(*currScreen);
     drawScreen((screenList[*currScreen]), isScroll);
     for(int i=0;i<screenList[*currScreen].dataLen;i+=1){
-//        Serial.print("touch screen task: "); Serial.println(*(screenList[*currScreen].data[i]->dataIn));
         drawData((PrintedData *)screenList[*currScreen].data[i]);
     }
     
@@ -88,14 +98,15 @@ void drawScreen(Screen screen, bool newScreen){
     tft.fillScreen(BACKGROUND_COLOR);
     drawButton(previous);
     drawButton(next);
-    if (screen.button != NULL) {
-      drawButton(*(screen.button));
+
+     for(int i=0;i<screen.dataLen;i++){
+        drawLabel(screen.data[i]);
     }
   }
 }
 
 void touchScreenTask(void* tscreenData) {
    TouchScreenData* datas = (TouchScreenData*) tscreenData;
-   bool isScroll = inputTask(datas->current_screen, datas->screens);
-   displayTask(datas->current_screen, datas->screens, isScroll);
+   displayTask(datas->current_screen, datas->screens, *(datas->changeScreen));
+   *(datas->changeScreen) = inputTask(datas->current_screen, datas->screens);
 }

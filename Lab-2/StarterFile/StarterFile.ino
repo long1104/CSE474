@@ -67,6 +67,7 @@ TCB socTCB;                 // Declare soc TCB
 TCB touchScreenTCB;
 
 int clockCount = 0;
+bool changeScreen = true;
 
 Screen batteryMonitor;
 Screen alarmMonitor;
@@ -133,8 +134,6 @@ void loop() {
     
     //Screen screens[] = {MeasurementMonitor, BatteryMonitor, AlarmMonitor};
     int currentScreen=0;
-    drawButton(previous);
-    drawButton(next);
     unsigned long startTimer=0;
     while(1){
 //       Point point = getTouchInput();
@@ -163,7 +162,7 @@ void loop() {
 //        testFunction(&printedTemp);
 //        Serial.println(printedTemp.oldData);
         clockCount++;
-        if(millis()-startTimer > 0 && millis()-startTimer < 1000){
+        while(millis()-startTimer > 0 && millis()-startTimer < 1000){
             Serial.println(1000-(millis()-startTimer));
             delay(1000-(millis()-startTimer));
         }
@@ -204,12 +203,11 @@ void setup() {
     batteryMonitor = Screen{&batteryButton,0,batteryPrints};
     alarmMonitor = Screen{NULL,3,alarmPrints};
     measurementMonitor = Screen{NULL,5,measurementPrints};
-    tscreenData = {&currentScreen, {measurementMonitor, alarmMonitor, batteryMonitor}};
+    tscreenData = {&currentScreen,&changeScreen ,{measurementMonitor, alarmMonitor, batteryMonitor}};
     touchScreenTCB.task = &touchScreenTask;
     touchScreenTCB.taskDataPtr = (void*) &tscreenData;
     touchScreenTCB.next = NULL;
     touchScreenTCB.prev = NULL;
-
     
     // Initialize Measurement & Sensors
     measure                     = {&HVIL, &hvilPin, &temperature, &hvCurrent, &hvVoltage};

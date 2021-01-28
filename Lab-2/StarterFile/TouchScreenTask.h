@@ -18,8 +18,8 @@ typedef struct PrintedDataStruct{
   int x,y,color;
   float oldData;
   float* dataIn;
- char* label;
- char* units;
+  char* label;
+  char* units;
 }PrintedData;
 
 typedef struct ScreenStruct {
@@ -34,6 +34,7 @@ typedef struct PointStruct{
 
 typedef struct TouchScreenTaskData {
   int* current_screen;
+  bool *changeScreen;
   Screen screens[];
 } TouchScreenData;
 
