@@ -110,6 +110,11 @@ float socVal = 0;
 TouchScreenData tscreenData;
 int currentScreen = 0;
 
+int getClockCount(){
+  return clockCount;
+}
+
+
 int i=0;
 void loop() {
   /****************
@@ -131,6 +136,7 @@ void loop() {
     drawButton(previous);
     drawButton(next);
     while(1){
+         int startTimer = millis();
 //       Point point = getTouchInput();
 //       bool newScreen = false;
 //       if(isButton(point, previous)){
@@ -142,11 +148,14 @@ void loop() {
 //          //Serial.println(screens[currentScreen]);
 //          newScreen = true;
 //       }
-        Serial.print("TEMP :");
-      //  Serial.println(temperatureData.oldData);
-//       drawScreen(screens[currentScreen], newScreen);
-        touchScreenTCB.task(touchScreenTCB.taskDataPtr);
-        //printedTemp.oldData=drawData(printedTemp);
+
+        //touchScreenTCB.task(touchScreenTCB.taskDataPtr);
+        measurementTCB.task(measurementTCB.taskDataPtr);
+        Serial.print("temperature: ");Serial.println(temperature);
+        Serial.print("current: "); Serial.println(hvCurrent);
+        Serial.print("voltage: "); Serial.println(hvVoltage);
+        Serial.print("HVIL: "); Serial.println(HVIL);
+        Serial.println();
 //       drawData(&printedTemp);
 //       if ((int)temperature % 2 == 0) {
 //          drawData(&printedTemp2);
@@ -155,7 +164,7 @@ void loop() {
 //        testFunction(&printedTemp);
 //        Serial.println(printedTemp.oldData);
         clockCount++;
-        delay(1000);
+        delay(1000-(millis()-startTimer));
     }
 }
 
