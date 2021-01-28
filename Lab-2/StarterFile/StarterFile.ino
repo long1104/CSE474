@@ -162,7 +162,7 @@ void loop() {
 //        testFunction(&printedTemp);
 //        Serial.println(printedTemp.oldData);
         clockCount++;
-        while(millis()-startTimer > 0 && millis()-startTimer < 1000){
+        if(millis()-startTimer > 0 && millis()-startTimer < 1000){
             Serial.println(1000-(millis()-startTimer));
             delay(1000-(millis()-startTimer));
         }
@@ -195,7 +195,7 @@ void setup() {
     hvilData = {0,80,GREEN,-1,&temperature,"hvil: ", "C"};
     hivaData = {0,0,GREEN,-1,&temperature,"hivl: ", "C"};        // High Voltage Alarm
     overCurrentData = {0,20,GREEN,-1,&temperature,"Over Current: ", "C"};
-    hvorData = {0,40,GREEN,-1,&temperature,"HV out of range: ", "C"};
+    hvorData = {0,40,GREEN,-1,&temperature,"HV Alarm: ", "C"};
     batteryData = {160, 80, WHITE, (float)0, (float*)&batteryOnOff, "OFF", ""};
     PrintedData *batteryPrints[] = {&batteryData};
     PrintedData *alarmPrints[] = {&hivaData, &overCurrentData, &hvorData};
