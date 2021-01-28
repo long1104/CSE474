@@ -53,10 +53,7 @@ void displayTask(int* currScreen, Screen screenList[], bool isScroll) {
     //Serial.print(*currScreen);
     drawScreen((screenList[*currScreen]), isScroll);
     for(int i=0;i<screenList[*currScreen].dataLen;i+=1){
-        Serial.println("HELLO");
-        Serial.println(i);
-        Serial.println(*(screenList[*currScreen].data[i]->dataIn));
-      //  drawData(screenList[*currScreen].data[i]);
+        Serial.print("touch screen task: "); Serial.println(*(screenList[*currScreen].data[i]->dataIn));
     }
     
 }

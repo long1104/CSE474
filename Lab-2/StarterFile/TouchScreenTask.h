@@ -25,7 +25,7 @@ typedef struct PrintedDataStruct{
 typedef struct ScreenStruct {
   XYButton *button;
   int dataLen;
-  PrintedData *data[];
+  PrintedData **data;
 }Screen;
 
 typedef struct PointStruct{

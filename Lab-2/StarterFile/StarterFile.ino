@@ -148,14 +148,13 @@ void loop() {
 //          //Serial.println(screens[currentScreen]);
 //          newScreen = true;
 //       }
-
-        //touchScreenTCB.task(touchScreenTCB.taskDataPtr);
+        
+        touchScreenTCB.task(touchScreenTCB.taskDataPtr);
         measurementTCB.task(measurementTCB.taskDataPtr);
         Serial.print("temperature: ");Serial.println(temperature);
         Serial.print("current: "); Serial.println(hvCurrent);
         Serial.print("voltage: "); Serial.println(hvVoltage);
         Serial.print("HVIL: "); Serial.println(HVIL);
-        Serial.println();
 //       drawData(&printedTemp);
 //       if ((int)temperature % 2 == 0) {
 //          drawData(&printedTemp2);
@@ -195,9 +194,12 @@ void setup() {
     overCurrentData = {0,20,GREEN,0,&temperature,"Over Current: ", "C"};
     hvorData = {0,40,GREEN,0,&temperature,"HV out of range: ", "C"};
     batteryData = {160, 80, WHITE, (float)0, (float*)&batteryOnOff, "OFF", ""};
-    batteryMonitor = {&batteryButton,0,{&batteryData}};
-    alarmMonitor = {NULL,3,{&hivaData, &overCurrentData, &hvorData}};
-    measurementMonitor = {NULL, 5,{&socDataPrint, &temperatureData, &hvCurrentData, &hvVoltageData, &hvilData}};
+    PrintedData *batteryPrints[] = {&batteryData};
+    PrintedData *alarmPrints[] = {&hivaData, &overCurrentData, &hvorData};
+    PrintedData *measurementPrints[] = {&socDataPrint, &temperatureData, &hvCurrentData, &hvVoltageData, &hvilData};
+    batteryMonitor = Screen{&batteryButton,0,batteryPrints};
+    alarmMonitor = Screen{NULL,3,alarmPrints};
+    measurementMonitor = Screen{NULL,5,measurementPrints};
     tscreenData = {&currentScreen, {measurementMonitor, alarmMonitor, batteryMonitor}};
     touchScreenTCB.task = &touchScreenTask;
     touchScreenTCB.taskDataPtr = (void*) &tscreenData;
