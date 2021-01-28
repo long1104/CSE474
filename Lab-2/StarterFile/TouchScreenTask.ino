@@ -26,10 +26,7 @@ Point getTouchInput(){
       point.x = tft.width()-map(point.x, TS_MINX, TS_MAXX, tft.width(), 0);
       // point.y = (tft.height()-map(point.y, TS_MINY, TS_MAXY, tft.height(), 0));
       point.y = map(point.y, TS_MINY, TS_MAXY, tft.height(), 0);
-      Serial.print("X: ");Serial.println(point.x);
-      Serial.print("Y: ");Serial.println(point.y);
-      Serial.print("Z: ");Serial.println(point.z);
-      return Point{point.x,point.y};
+    return Point{point.x,point.y};
 }
 
 bool isButton(Point point, XYButton button){
