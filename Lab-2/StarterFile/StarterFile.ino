@@ -46,7 +46,7 @@
 #define MAXPRESSURE 1000
 
 Elegoo_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
-TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);
+TouchScreen ts = TouchScreen(XP, YP, XM, YM, 374);
 
 char* prevLabel = "Prev";
 char* nextLabel = "Next";

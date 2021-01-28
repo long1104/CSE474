@@ -18,13 +18,13 @@ Point getTouchInput(){
     pinMode(YP, OUTPUT);
     // scale from 0->1023 to tft.width
     //point.x = map(point.x, TS_MINX, TS_MAXX, tft.width(), 0);
-    if (point.z > MINPRESSURE && point.z < MAXPRESSURE) {
       point.x = tft.width()-map(point.x, TS_MINX, TS_MAXX, tft.width(), 0);
       // point.y = (tft.height()-map(point.y, TS_MINY, TS_MAXY, tft.height(), 0));
       point.y = map(point.y, TS_MINY, TS_MAXY, tft.height(), 0);
+      Serial.print("X: ");Serial.println(point.x);
+      Serial.print("Y: ");Serial.println(point.y);
+      Serial.print("Z: ");Serial.println(point.z);
       return Point{point.x,point.y};
-    }
-    return Point{-1, -1};;
 }
 
 bool isButton(Point point, XYButton button){
@@ -80,7 +80,6 @@ bool inputTask(int* currScreen, Screen screenList[]) {
         *currScreen=(*currScreen+1)%3;
         newScreen = true;
     }
-    Serial.print("Current screen: ");Serial.println(*currScreen);
     if (isButton(point, *(screenList[2].button)) && *currScreen == 2) {
         *(screenList[2].data[0]->dataIn) = ((int)*(screenList[2].data[0]->dataIn) + 1) % 2;
         if (*(screenList[2].data[0]->dataIn) == 1) {
