@@ -14,6 +14,10 @@ extern "C" {
 #include <Arduino.h>
 
 
+float temperatureValues[] = {};
+float currentValues[] = {};
+float voltageValues[] = {};
+
 typedef struct measurementTaskData {
     bool* hvilStatus;
     const byte* hvilPin;

@@ -11,6 +11,7 @@ void updateHVIL(bool* hvilReading, const byte* pin) {
     * Function description: 
     * Author(s): 
     *****************/
+    *hvilReading = digitalRead(*pin);
     return;
 }
 

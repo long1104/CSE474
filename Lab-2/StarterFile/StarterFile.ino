@@ -66,6 +66,8 @@ TCB contactorTCB;           // Declare contactor TCB
 TCB socTCB;                 // Declare soc TCB
 TCB touchScreenTCB;
 
+int clockCount = 0;
+
 Screen batteryMonitor;
 Screen alarmMonitor;
 Screen measurementMonitor;
@@ -84,11 +86,11 @@ PrintedData batteryData;
 
 // Measurement Data
 measurementData measure;    // Declare measurement data structure - defined in Measurement.h
-float hvCurrent     = 0;
-float hvVoltage     = 0;
-float temperature   = 0;
-bool HVIL           = 0;
-const byte hvilPin  = 22;
+float hvCurrent;
+float hvVoltage;
+float temperature;
+bool HVIL;
+const byte hvilPin = 22;
 
 // Alarm Data
 char* alarm_states[] = {"NOT ACTIVE", "ACTIVE, NOT ACKNOWLEDGED", "ACTIVE, ACKNOWLEDGED"};
@@ -140,10 +142,11 @@ void loop() {
 //          //Serial.println(screens[currentScreen]);
 //          newScreen = true;
 //       }
-//       
+        Serial.print("TEMP :");
+      //  Serial.println(temperatureData.oldData);
 //       drawScreen(screens[currentScreen], newScreen);
-       touchScreenTCB.task(touchScreenTCB.taskDataPtr);
-       //printedTemp.oldData=drawData(printedTemp);
+        touchScreenTCB.task(touchScreenTCB.taskDataPtr);
+        //printedTemp.oldData=drawData(printedTemp);
 //       drawData(&printedTemp);
 //       if ((int)temperature % 2 == 0) {
 //          drawData(&printedTemp2);
@@ -151,6 +154,7 @@ void loop() {
 //       temperature++;
 //        testFunction(&printedTemp);
 //        Serial.println(printedTemp.oldData);
+        clockCount++;
         delay(1000);
     }
 }
@@ -167,13 +171,19 @@ void setup() {
     * Function description: sets up the scheduler.
     * Author(s): 
     *****************/
-    socDataPrint = {0,0,GREEN,0,&temperature,"SOC value: ", "C"};;
-    temperatureData = {0,20,GREEN,0,&temperature,"Temperature: ", "C"};;
-    hvCurrentData = {0,40,GREEN,0,&temperature,"HV Current: ", "C"};;
-    hvVoltageData = {0,60,GREEN,0,&temperature,"HV Voltage: ", "C"};;
-    hvilData = {0,80,GREEN,0,&temperature,"hvil: ", "C"};;
-    hivaData = {0,0,GREEN,0,&temperature,"hivl: ", "C"};;           // High Voltage Alarm
-    overCurrentData = {0,20,GREEN,0,&temperature,"Over Current: ", "C"};;
+    hvCurrent = 0;
+    hvVoltage = 0;
+    temperature = 0;
+    HVIL = false;
+
+
+    socDataPrint = {0,0,GREEN,0,&socVal,"SOC value: ", "C"};
+    temperatureData = {0,20,GREEN,0,&temperature,"Temperature: ", "C"};
+    hvCurrentData = {0,40,GREEN,0,&hvCurrent,"HV Current: ", "C"};
+    hvVoltageData = {0,60,GREEN,0,&hvVoltage,"HV Voltage: ", "C"};
+    hvilData = {0,80,GREEN,0,&temperature,"hvil: ", "C"};
+    hivaData = {0,0,GREEN,0,&temperature,"hivl: ", "C"};        // High Voltage Alarm
+    overCurrentData = {0,20,GREEN,0,&temperature,"Over Current: ", "C"};
     hvorData = {0,40,GREEN,0,&temperature,"HV out of range: ", "C"};
     batteryData = {160, 80, WHITE, (float)0, (float*)&batteryOnOff, "OFF", ""};
     batteryMonitor = {&batteryButton,0,{&batteryData}};
@@ -184,6 +194,7 @@ void setup() {
     touchScreenTCB.taskDataPtr = (void*) &tscreenData;
     touchScreenTCB.next = NULL;
     touchScreenTCB.prev = NULL;
+
     
     // Initialize Measurement & Sensors
     measure                     = {&HVIL, &hvilPin, &temperature, &hvCurrent, &hvVoltage};
