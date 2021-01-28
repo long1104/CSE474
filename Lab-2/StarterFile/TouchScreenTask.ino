@@ -41,7 +41,7 @@ void drawData(PrintedData* printable){
     tft.print(dataString);
     tft.setCursor(printable->x,printable->y);
     tft.setTextColor(printable->color);
-   // printable->oldData = *(printable->dataIn);
+    printable->oldData = *(printable->dataIn);
     String newData = String(printable->label);
     newData.concat(printable->oldData);
     newData.concat(printable->units);
@@ -53,7 +53,8 @@ void displayTask(int* currScreen, Screen screenList[], bool isScroll) {
     //Serial.print(*currScreen);
     drawScreen((screenList[*currScreen]), isScroll);
     for(int i=0;i<screenList[*currScreen].dataLen;i+=1){
-        Serial.print(*(screenList[*currScreen].data[i]->label)); Serial.print(": ");Serial.println(*(screenList[*currScreen].data[i]->dataIn));
+//        Serial.print("touch screen task: "); Serial.println(*(screenList[*currScreen].data[i]->dataIn));
+        drawData((PrintedData *)screenList[*currScreen].data[i]);
     }
     
 }
@@ -76,6 +77,7 @@ bool inputTask(int* currScreen, Screen screenList[]) {
           *(screenList[2]).button->buttonLabel = "OFF";
         }
         Serial.println(*(screenList[2]).button->buttonLabel);
+        Serial.println("Hello");
         newScreen = true;
     }
     return newScreen;

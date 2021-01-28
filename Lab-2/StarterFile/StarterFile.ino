@@ -151,10 +151,10 @@ void loop() {
         startTimer=millis();
         touchScreenTCB.task(touchScreenTCB.taskDataPtr);
         measurementTCB.task(measurementTCB.taskDataPtr);
-        Serial.print("temperature: ");Serial.println(temperature);
-        Serial.print("current: "); Serial.println(hvCurrent);
-        Serial.print("voltage: "); Serial.println(hvVoltage);
-        Serial.print("HVIL: "); Serial.println(HVIL);
+//        Serial.print("temperature: ");Serial.println(temperature);
+//        Serial.print("current: "); Serial.println(hvCurrent);
+//        Serial.print("voltage: "); Serial.println(hvVoltage);
+//        Serial.print("HVIL: "); Serial.println(HVIL);
 //       drawData(&printedTemp);
 //       if ((int)temperature % 2 == 0) {
 //          drawData(&printedTemp2);
