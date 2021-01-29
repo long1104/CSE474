@@ -14,13 +14,13 @@ extern "C" {
 #include <Arduino.h>
 
 
-typedef struct measurementTaskData {
-    bool* hvilStatus;
+typedef struct MeasurementTaskData {
+    float* hvilStatus;
     const byte* hvilPin;
     float* temperature;
   	float* hvCurrent;
 	  float* hvVoltage;
-} measurementData;
+} MeasurementData;
 
 
 void measurementTask (void*);

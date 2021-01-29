@@ -55,32 +55,46 @@ void drawLabel(PrintedData* printable){
   tft.print(label);
 }
 
-void drawData(PrintedData* printable){
+void drawData(PrintedData* printable, bool newScreen){
     String newData = String(printable->label);
     int pixelShift = TEXT_SIZE * newData.length() * 6; // 6pixels for each character (x value)
     float temp = *(printable->dataIn);
-    if(temp!=printable->oldData){
+    if(temp!=printable->oldData || newScreen){
           tft.setTextSize(TEXT_SIZE);
           setCursor(printable->x+pixelShift, printable->y);
-          String dataString = String(printable->oldData);
+          String dataString = printDataToString(printable->oldData, printable->type);
           dataString.concat(printable->units);
           tft.setTextColor(BACKGROUND_COLOR);
           tft.print(dataString);
 
           printable->oldData=temp;          
           setCursor(printable->x+pixelShift, printable->y);
-          dataString = String(printable->oldData);
+          dataString = printDataToString(printable->oldData, printable->type);
           dataString.concat(printable->units);
           tft.setTextColor(printable->color);
           tft.println(dataString);
     }
 }
 
-void displayTask(int* currScreen, Screen screenList[], bool isScroll) {
-    drawScreen((screenList[*currScreen]), isScroll);
-    Serial.print("change screen: ");Serial.println(isScroll);
+
+String printDataToString(float val, PRINT_TYPE type){
+  String ret;
+  switch(type){
+    case ALARM: ret = alarm_arr[(int)val];
+        break;
+    case NUMBER: ret = String(val);
+        break;
+    case BOOL: ret = (int)val ? "CLOSED" : "OPEN";
+        break;
+    default: ret = String(val);
+  }
+  return ret;
+}
+
+void displayTask(int* currScreen, Screen screenList[], bool newScreen) {
+    drawScreen((screenList[*currScreen]), newScreen);
     for(int i=0;i<screenList[*currScreen].dataLen;i+=1){
-        drawData((PrintedData *)screenList[*currScreen].data[i]);
+        drawData((PrintedData *)screenList[*currScreen].data[i], newScreen);
     }
     
 }

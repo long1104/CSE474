@@ -9,7 +9,8 @@ extern "C" {
 #include <stdbool.h>
 #include <Arduino.h>
 
-typedef struct socTaskData {
+
+typedef struct SocTaskData {
     float* stateOfCharge;
 } SocData;
 

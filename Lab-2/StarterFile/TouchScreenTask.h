@@ -14,9 +14,15 @@ typedef struct XYButtonStruct {
   char** buttonLabel;
 } XYButton;
 
+
+typedef enum {
+  ALARM, NUMBER, BOOL
+}PRINT_TYPE;
+
 typedef struct PrintedDataStruct{
   int x,y,color;
   float oldData;
+  PRINT_TYPE type;
   float* dataIn;
   char* label;
   char* units;

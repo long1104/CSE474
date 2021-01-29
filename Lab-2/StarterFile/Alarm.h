@@ -5,16 +5,19 @@ extern "C" {
 #ifndef ALARM_H_
 #define ALARM_H_
 
+
 #include <stdlib.h>
 #include <stdbool.h>
 #include <Arduino.h>
 
+extern char *alarm_arr[];
 
-typedef struct alarmTaskData {
-    char** hvia_val;
-    char** overCurrent;
-    char** hvor_val;
-} alarmData;
+
+typedef struct AlarmTaskData {
+    float* hvia_val;
+    float* overCurrent;
+    float* hvor_val;
+} AlarmData;
 
 
 void alarmTask (void*);

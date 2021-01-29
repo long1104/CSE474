@@ -6,7 +6,7 @@ float temperatureValues[] = {-10, 5, 25};
 float currentValues[] = {-20, 0, 20};
 float voltageValues[] = {10, 150, 45};
 
-void updateHVIL(bool* hvilReading, const byte* pin) {
+void updateHVIL(float* hvilReading, const byte* pin) {
     /****************
     * Function name: 
     * Function inputs: 
@@ -14,7 +14,7 @@ void updateHVIL(bool* hvilReading, const byte* pin) {
     * Function description: 
     * Author(s): 
     *****************/
-    *hvilReading = digitalRead(*pin);
+    *hvilReading = (float)(int)digitalRead(*pin);
     return;
 }
 
@@ -62,7 +62,7 @@ void measurementTask(void* mData) {
     * Function description: 
     * Author(s): 
     *****************/
-  	measurementData* data = (measurementData*) mData;
+  	MeasurementData* data = (MeasurementData*) mData;
     
   	// Update all sensors
   	updateHVIL(data->hvilStatus, data->hvilPin);

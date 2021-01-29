@@ -87,20 +87,18 @@ PrintedData batteryData;
 
 
 // Measurement Data
-measurementData measure;    // Declare measurement data structure - defined in Measurement.h
+MeasurementData measure;    // Declare measurement data structure - defined in Measurement.h
 float hvCurrent;
 float hvVoltage;
 float temperature;
-bool HVIL;
+float HVIL;
 const byte hvilPin = 22;
 
-// Alarm Data
-char* alarm_states[] = {"NOT ACTIVE", "ACTIVE, NOT ACKNOWLEDGED", "ACTIVE, ACKNOWLEDGED"};
-// .... other shared global data ....
-alarmData alarm;
-char* hviaVal     = alarm_states[0];
-char* overCurrent  = alarm_states[0];
-char* hvorVal     = alarm_states[0];
+
+AlarmData alarm;
+float hviaVal     = 0;
+float overCurrent  = 0;
+float hvorVal     = 0;
 
 int batteryOnOff = 0;
 
@@ -132,9 +130,9 @@ void loop() {
 
         startTimer=millis();
         socTCB.task(socTCB.taskDataPtr);
+        alarmTCB.task(alarmTCB.taskDataPtr);
         measurementTCB.task(measurementTCB.taskDataPtr);
         touchScreenTCB.task(touchScreenTCB.taskDataPtr);
-
         clockCount++;
         if(millis()-startTimer > 0 && millis()-startTimer < 1000){
             Serial.println(1000-(millis()-startTimer));
@@ -156,17 +154,18 @@ void setup() {
     hvVoltage = 0;
     temperature = 0;
     HVIL = false;
+    pinMode(hvilPin, INPUT);
 
-
-    socDataPrint = {0,0,PURPLE,-1,&socVal,"SOC value: ", "C"};
-    temperatureData = {0,20,PURPLE,-1,&temperature,"Temperature: ", "C"};
-    hvCurrentData = {0,40,PURPLE,-1,&hvCurrent,"HV Current: ", "C"};
-    hvVoltageData = {0,60,PURPLE,-1,&hvVoltage,"HV Voltage: ", "C"};
-    hvilData = {0,80,PURPLE,-1,&temperature,"hvil: ", "C"};
-    hivaData = {0,0,PURPLE,-1,&temperature,"hivl: ", "C"};        // High Voltage Alarm
-    overCurrentData = {0,20,PURPLE,-1,&temperature,"Over Current: ", "C"};
-    hvorData = {0,40,PURPLE,-1,&temperature,"HV Alarm: ", "C"};
-    batteryData = {160, 80, PURPLE, (float)0, (float*)&batteryOnOff, "OFF", ""};
+    // alarm values, contactor, diagrams, commenting, formatting 
+    socDataPrint = {0,0,PURPLE,-1,NUMBER,&socVal,"SOC value: ", ""};
+    temperatureData = {0,20,PURPLE,-1,NUMBER,&temperature,"Temperature: ", "C"};
+    hvCurrentData = {0,40,PURPLE,-1,NUMBER,&hvCurrent,"HV Current: ", "A"};
+    hvVoltageData = {0,60,PURPLE,-1,NUMBER,&hvVoltage,"HV Voltage: ", "V"};
+    hvilData = {0,80,PURPLE,-1,BOOL,&HVIL,"hvil: ", ""};
+    hivaData = {0,0,PURPLE,-1,ALARM,&hviaVal,"hivl: ", ""};        // High Voltage Alarm
+    overCurrentData = {0,20,PURPLE,-1,ALARM,&overCurrent,"Over Current: ", ""};
+    hvorData = {0,40,PURPLE,-1,ALARM,&hvorVal,"HV Alarm: ", ""};
+    batteryData = {160, 80, PURPLE, (float)0, BOOL,(float*)&batteryOnOff, "OFF", ""};
     PrintedData *batteryPrints[] = {&batteryData};
     PrintedData *alarmPrints[] = {&hivaData, &overCurrentData, &hvorData};
     PrintedData *measurementPrints[] = {&socDataPrint, &temperatureData, &hvCurrentData, &hvVoltageData, &hvilData};
