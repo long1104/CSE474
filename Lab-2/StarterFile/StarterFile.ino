@@ -51,7 +51,7 @@ TouchScreen ts = TouchScreen(XP, YP, XM, YM, 374);
 
 char* prevLabel = "Prev";
 char* nextLabel = "Next";
-char* onOffLabel = "OFF";
+char* onOffLabel = "BATTERY TOGGLE";
 XYButton previous = {0,280,80, 40, PURPLE, &prevLabel};
 XYButton next = {160, 280, 80, 40, PURPLE, &nextLabel};
 XYButton batteryButton = {0,0,240,160, PURPLE, &onOffLabel};
@@ -160,7 +160,7 @@ void setup() {
     HVIL = false;
     pinMode(hvilPin, INPUT);
     pinMode(contactorPin, OUTPUT);
-
+    
     // alarm values, contactor, diagrams, commenting, formatting 
     socDataPrint = {0,0,PURPLE,-1,NUMBER,&socVal,"SOC value: ", ""};
     temperatureData = {0,20,PURPLE,-1,NUMBER,&temperature,"Temperature: ", "C"};

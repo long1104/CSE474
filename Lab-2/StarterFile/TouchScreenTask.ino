@@ -111,15 +111,6 @@ bool inputTask(int* currScreen, Screen screenList[]) {
     }
     if (isButton(point, *(screenList[2].button)) && *currScreen == 2) {
         *(screenList[2].data[0]->dataIn) = ((int)*(screenList[2].data[0]->dataIn) + 1) % 2;
-        if (*(screenList[2].data[0]->dataIn) == 1) {
-          *(screenList[2]).button->buttonLabel = "ON";
-          
-        } else {
-          *(screenList[2]).button->buttonLabel = "OFF";
-        }
-        Serial.println(*(screenList[2]).button->buttonLabel);
-        Serial.println("Hello");
-        newScreen = true;
     }
     return newScreen;
 }
