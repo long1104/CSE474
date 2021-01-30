@@ -136,8 +136,8 @@ void loop() {
         socTCB.task(socTCB.taskDataPtr);
         alarmTCB.task(alarmTCB.taskDataPtr);
         measurementTCB.task(measurementTCB.taskDataPtr);
-        contactorTCB.task(contactorTCB.taskDataPtr);
         touchScreenTCB.task(touchScreenTCB.taskDataPtr);
+        contactorTCB.task(contactorTCB.taskDataPtr);
         clockCount++;
         if(millis()-startTimer > 0 && millis()-startTimer < 1000){
             delay(1000-(millis()-startTimer));
@@ -170,7 +170,7 @@ void setup() {
     hivaData = {0,0,PURPLE,-1,ALARM,&hviaVal,"hivl: ", ""};        // High Voltage Alarm
     overCurrentData = {0,20,PURPLE,-1,ALARM,&overCurrent,"Over Current: ", ""};
     hvorData = {0,40,PURPLE,-1,ALARM,&hvorVal,"HV Alarm: ", ""};
-    batteryData = {0, 160, PURPLE, (float)0, BOOL,&batteryOnOff, "Battery Connection: ", ""};
+    batteryData = {0, 160, PURPLE, 0, BOOL,&batteryOnOff, "Battery Connection: ", ""};
     
     PrintedData *batteryPrints[] = {&batteryData};
     PrintedData *alarmPrints[] = {&hivaData, &overCurrentData, &hvorData};
