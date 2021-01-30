@@ -84,6 +84,7 @@ PrintedData hivaData;           // High Voltage Alarm
 PrintedData overCurrentData;
 PrintedData hvorData;           // High Voltage Out of Range
 PrintedData batteryData;  
+PrintedData batteryState;
 
 
 // Measurement Data
@@ -133,15 +134,12 @@ void loop() {
     while(1){
         startTimer=millis();
         socTCB.task(socTCB.taskDataPtr);
-        Serial.print("before alarm: ");Serial.println(*(contactor.contactorStatus));
         alarmTCB.task(alarmTCB.taskDataPtr);
-        Serial.print("after alarm: ");Serial.println(*(contactor.contactorStatus));
         measurementTCB.task(measurementTCB.taskDataPtr);
-        touchScreenTCB.task(touchScreenTCB.taskDataPtr);
         contactorTCB.task(contactorTCB.taskDataPtr);
+        touchScreenTCB.task(touchScreenTCB.taskDataPtr);
         clockCount++;
         if(millis()-startTimer > 0 && millis()-startTimer < 1000){
-            Serial.println(1000-(millis()-startTimer));
             delay(1000-(millis()-startTimer));
         }
 
@@ -172,11 +170,12 @@ void setup() {
     hivaData = {0,0,PURPLE,-1,ALARM,&hviaVal,"hivl: ", ""};        // High Voltage Alarm
     overCurrentData = {0,20,PURPLE,-1,ALARM,&overCurrent,"Over Current: ", ""};
     hvorData = {0,40,PURPLE,-1,ALARM,&hvorVal,"HV Alarm: ", ""};
-    batteryData = {160, 80, PURPLE, (float)0, BOOL,&batteryOnOff, "OFF", ""};
+    batteryData = {0, 160, PURPLE, (float)0, BOOL,&batteryOnOff, "Battery Connection: ", ""};
+    
     PrintedData *batteryPrints[] = {&batteryData};
     PrintedData *alarmPrints[] = {&hivaData, &overCurrentData, &hvorData};
     PrintedData *measurementPrints[] = {&socDataPrint, &temperatureData, &hvCurrentData, &hvVoltageData, &hvilData};
-    batteryMonitor = Screen{&batteryButton,0,batteryPrints};
+    batteryMonitor = Screen{&batteryButton,1,batteryPrints};
     alarmMonitor = Screen{NULL,3,alarmPrints};
     measurementMonitor = Screen{NULL,5,measurementPrints};
 
