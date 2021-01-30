@@ -93,7 +93,7 @@ String printDataToString(float val, PRINT_TYPE type){
 
 void displayTask(int* currScreen, Screen screenList[], bool newScreen) {
     drawScreen((screenList[*currScreen]), newScreen);
-    for(int i=0;i<screenList[*currScreen].dataLen;i+=1){
+    for(int i=0;i<screenList[*currScreen].dataLen;i++){
         drawData((PrintedData *)screenList[*currScreen].data[i], newScreen);
     }
     
@@ -113,6 +113,7 @@ bool inputTask(int* currScreen, Screen screenList[]) {
         *(screenList[2].data[0]->dataIn) = ((int)*(screenList[2].data[0]->dataIn) + 1) % 2;
         if (*(screenList[2].data[0]->dataIn) == 1) {
           *(screenList[2]).button->buttonLabel = "ON";
+          
         } else {
           *(screenList[2]).button->buttonLabel = "OFF";
         }

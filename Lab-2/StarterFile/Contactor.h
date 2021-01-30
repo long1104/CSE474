@@ -13,6 +13,12 @@ extern "C" {
 void contactorTask (void*);
 
 
+typedef struct ContactorTaskData{
+    const byte* contactorPin;
+    float* contactorStatus;
+} ContactorData;
+
+
 #endif
 
 #ifdef __cplusplus 

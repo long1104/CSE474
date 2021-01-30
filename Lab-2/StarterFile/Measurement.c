@@ -14,7 +14,7 @@ void updateHVIL(float* hvilReading, const byte* pin) {
     * Function description: 
     * Author(s): 
     *****************/
-    *hvilReading = (float)(int)digitalRead(*pin);
+    *hvilReading = !(float)(int)digitalRead(*pin);
     return;
 }
 

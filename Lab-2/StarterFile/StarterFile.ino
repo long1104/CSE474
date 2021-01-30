@@ -94,13 +94,17 @@ float temperature;
 float HVIL;
 const byte hvilPin = 22;
 
+//ContactorData
+ContactorData contactor;
+const byte contactorPin = 24;
+
 
 AlarmData alarm;
 float hviaVal     = 0;
 float overCurrent  = 0;
 float hvorVal     = 0;
 
-int batteryOnOff = 0;
+float batteryOnOff = 0;
 
 // SOC data
 SocData soc;
@@ -127,12 +131,14 @@ void loop() {
     *****************/
     unsigned long startTimer=0;
     while(1){
-
         startTimer=millis();
         socTCB.task(socTCB.taskDataPtr);
+        Serial.print("before alarm: ");Serial.println(*(contactor.contactorStatus));
         alarmTCB.task(alarmTCB.taskDataPtr);
+        Serial.print("after alarm: ");Serial.println(*(contactor.contactorStatus));
         measurementTCB.task(measurementTCB.taskDataPtr);
         touchScreenTCB.task(touchScreenTCB.taskDataPtr);
+        contactorTCB.task(contactorTCB.taskDataPtr);
         clockCount++;
         if(millis()-startTimer > 0 && millis()-startTimer < 1000){
             Serial.println(1000-(millis()-startTimer));
@@ -155,6 +161,7 @@ void setup() {
     temperature = 0;
     HVIL = false;
     pinMode(hvilPin, INPUT);
+    pinMode(contactorPin, OUTPUT);
 
     // alarm values, contactor, diagrams, commenting, formatting 
     socDataPrint = {0,0,PURPLE,-1,NUMBER,&socVal,"SOC value: ", ""};
@@ -165,13 +172,16 @@ void setup() {
     hivaData = {0,0,PURPLE,-1,ALARM,&hviaVal,"hivl: ", ""};        // High Voltage Alarm
     overCurrentData = {0,20,PURPLE,-1,ALARM,&overCurrent,"Over Current: ", ""};
     hvorData = {0,40,PURPLE,-1,ALARM,&hvorVal,"HV Alarm: ", ""};
-    batteryData = {160, 80, PURPLE, (float)0, BOOL,(float*)&batteryOnOff, "OFF", ""};
+    batteryData = {160, 80, PURPLE, (float)0, BOOL,&batteryOnOff, "OFF", ""};
     PrintedData *batteryPrints[] = {&batteryData};
     PrintedData *alarmPrints[] = {&hivaData, &overCurrentData, &hvorData};
     PrintedData *measurementPrints[] = {&socDataPrint, &temperatureData, &hvCurrentData, &hvVoltageData, &hvilData};
     batteryMonitor = Screen{&batteryButton,0,batteryPrints};
     alarmMonitor = Screen{NULL,3,alarmPrints};
     measurementMonitor = Screen{NULL,5,measurementPrints};
+
+
+    
     tscreenData = {&currentScreen,&changeScreen ,{measurementMonitor, alarmMonitor, batteryMonitor}};
     touchScreenTCB.task = &touchScreenTask;
     touchScreenTCB.taskDataPtr = (void*) &tscreenData;
@@ -192,8 +202,9 @@ void setup() {
     
     
     // Initialize Contactor
+    contactor = {&contactorPin,  &batteryOnOff};
     contactorTCB.task          = &contactorTask;
-    contactorTCB.taskDataPtr   = (void*) &batteryOnOff;
+    contactorTCB.taskDataPtr   = (void*) &contactor;
     contactorTCB.next          = NULL;
     contactorTCB.prev          = NULL;
 
