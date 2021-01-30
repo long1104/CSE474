@@ -135,4 +135,5 @@ void touchScreenTask(void* tscreenData) {
    TouchScreenData* datas = (TouchScreenData*) tscreenData;
    displayTask(datas->current_screen, datas->screens, *(datas->changeScreen));
    *(datas->changeScreen) = inputTask(datas->current_screen, datas->screens);
+   displayTask(datas->current_screen, datas->screens, false);
 }
