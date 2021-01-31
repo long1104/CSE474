@@ -46,6 +46,8 @@
 #define MIN_PRESSURE 0
 #define MAX_PRESSURE 1000
 
+#define NUM_OF_TASKS 5
+
 Elegoo_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, 374);
 
@@ -66,6 +68,9 @@ TCB alarmTCB;               // Declare alarm TCB
 TCB contactorTCB;           // Declare contactor TCB
 TCB socTCB;                 // Declare soc TCB
 TCB touchScreenTCB;
+
+TCB **tasks;
+
 
 int clockCount = 0;
 bool changeScreen = true;
@@ -120,6 +125,12 @@ int getClockCount(){
 }
 
 
+void Scheduler(){
+  for(int i=0;i<NUM_OF_TASKS;i++){
+    tasks[i]->task(tasks[i]->taskDataPtr);
+  }
+}
+
 int i=0;
 void loop() {
   /****************
@@ -133,11 +144,7 @@ void loop() {
     unsigned long startTimer=0;
     while(1){
         startTimer=millis();
-        socTCB.task(socTCB.taskDataPtr);
-        alarmTCB.task(alarmTCB.taskDataPtr);
-        measurementTCB.task(measurementTCB.taskDataPtr);
-        touchScreenTCB.task(touchScreenTCB.taskDataPtr);
-        contactorTCB.task(contactorTCB.taskDataPtr);
+        Scheduler();
         clockCount++;
         if(millis()-startTimer > 0 && millis()-startTimer < 1000){
             delay(1000-(millis()-startTimer));
@@ -145,6 +152,7 @@ void loop() {
 
     }
 }
+
 
 void setup() {  
   /****************
@@ -172,7 +180,7 @@ void setup() {
     hvorData = {0,40,PURPLE,-1,ALARM,&hvorVal,"HV Alarm: ", ""};
     batteryData = {0, 160, PURPLE, 0, BOOL,&batteryOnOff, "Battery Connection: ", ""};
     
-    PrintedData *batteryPrints[] = {&batteryData};
+    PrintedData *batteryPrints[]; batteryPrints = {&batteryData};
     PrintedData *alarmPrints[] = {&hivaData, &overCurrentData, &hvorData};
     PrintedData *measurementPrints[] = {&socDataPrint, &temperatureData, &hvCurrentData, &hvVoltageData, &hvilData};
     batteryMonitor = Screen{&batteryButton,1,batteryPrints};
@@ -224,7 +232,7 @@ void setup() {
     socTCB.prev                = NULL;
 
     
-
+    
     // Initialize serial communication
     Serial.begin(9600);
     Serial1.begin(9600);
