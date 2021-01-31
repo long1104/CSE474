@@ -69,7 +69,7 @@ TCB contactorTCB;           // Declare contactor TCB
 TCB socTCB;                 // Declare soc TCB
 TCB touchScreenTCB;
 
-TCB **tasks;
+TCB *tasks;
 
 
 int clockCount = 0;
@@ -127,7 +127,7 @@ int getClockCount(){
 
 void Scheduler(){
   for(int i=0;i<NUM_OF_TASKS;i++){
-    tasks[i]->task(tasks[i]->taskDataPtr);
+    tasks[i].task(tasks[i].taskDataPtr);
   }
 }
 
@@ -180,7 +180,7 @@ void setup() {
     hvorData = {0,40,PURPLE,-1,ALARM,&hvorVal,"HV Alarm: ", ""};
     batteryData = {0, 160, PURPLE, 0, BOOL,&batteryOnOff, "Battery Connection: ", ""};
     
-    PrintedData *batteryPrints[]; batteryPrints = {&batteryData};
+    PrintedData *batteryPrints[] = {&batteryData};
     PrintedData *alarmPrints[] = {&hivaData, &overCurrentData, &hvorData};
     PrintedData *measurementPrints[] = {&socDataPrint, &temperatureData, &hvCurrentData, &hvVoltageData, &hvilData};
     batteryMonitor = Screen{&batteryButton,1,batteryPrints};
@@ -231,7 +231,8 @@ void setup() {
     socTCB.next                = NULL;
     socTCB.prev                = NULL;
 
-    
+    TCB temp[] = {measurementTCB, alarmTCB, socTCB, touchScreenTCB, contactorTCB};
+    tasks = temp;
     
     // Initialize serial communication
     Serial.begin(9600);
