@@ -13,7 +13,7 @@ extern "C" {
 
 typedef struct MeasurementTaskData {
     float* hvilStatus;
-    const byte* hvilPin;
+    byte hvilPin;
     float* temperature;
     float* hvCurrent;
     float* hvVoltage;
@@ -22,10 +22,10 @@ typedef struct MeasurementTaskData {
 
 
 void measurementTask (void*);
-void updateHVIL(float* hvilReading, const byte* pin);
-void updateTemperature(float* temperatureReading, int* clockCountPtr) ;
-void updateHvCurrent(float* currentReading, int* clockCountPtr) ;
-void updateHvVoltage(float* voltageReading, int* clockCountPtr);
+void updateHVIL(float* hvilReadingPtr, byte pin);
+void updateTemperature(float* temperatureReadingPtr, int* clockCountPtr) ;
+void updateHvCurrent(float* currentReadingPtr, int* clockCountPtr) ;
+void updateHvVoltage(float* voltageReadingPtr, int* clockCountPtr);
 
 #endif
 

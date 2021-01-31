@@ -85,20 +85,27 @@ TouchScreenData tscreenData = {};
 int currentScreen = 0;
 
 
+
 void Scheduler() {
+   /****************
+        Function name:    Scheduler
+        Function inputs:  No parameters
+        Function outputs: No return
+        Function description: This is the round robin scheduler, it executes all tasks in a sequential order, 
+                              the tasks create a user intreface for a battery management system
+        Author(s):
+      *****************/
     for (int i = 0; i < NUM_OF_TASKS; i++) {
         tasksPtr[i].task(tasksPtr[i].taskDataPtr);
     }
 }
 
-int i = 0;
 void loop() {
     /****************
         Function name:    loop
-        Function inputs:  Sensor data, touch input
-        Function outputs: Display data and lights indicating alarm status, contactor status, sensor data, & state of charge
-        Function description: This is a round robin scheduler to run a series of tasks
-                              that create a user interface to a battery management system
+        Function inputs:  No parameters
+        Function outputs: No return
+        Function description: 
         Author(s):
       *****************/
     unsigned long startTimer = 0;
@@ -109,7 +116,6 @@ void loop() {
         if (millis() - startTimer > 0 && millis() - startTimer < 1000) {
             delay(1000 - (millis() - startTimer));
         }
-
     }
 }
 
@@ -119,7 +125,7 @@ void setup() {
         Function name: setup
         Function inputs: None
         Function outputs: None
-        Function description: sets up the scheduler.
+        Function description: initializes global variables, sets up and queues scheduler tasks, initialize display, set pinmodes for IO
         Author(s):
       *****************/
     hvCurrent = 0;
@@ -156,7 +162,7 @@ void setup() {
     touchScreenTCB.prev = NULL;
 
     // Initialize Measurement & Sensors
-    measure                     = {&HVIL, &hvilPin, &temperature, &hvCurrent, &hvVoltage, &clockCount};
+    measure                     = {&HVIL, hvilPin, &temperature, &hvCurrent, &hvVoltage, &clockCount};
     measurementTCB.task         = &measurementTask;
     measurementTCB.taskDataPtr  = (void*) &measure;
     measurementTCB.next         = NULL;
@@ -169,7 +175,7 @@ void setup() {
 
 
     // Initialize Contactor
-    contactor = {&contactorPin,  &batteryOnOff};
+    contactor = {contactorPin,  &batteryOnOff};
     contactorTCB.task          = &contactorTask;
     contactorTCB.taskDataPtr   = (void*) &contactor;
     contactorTCB.next          = NULL;

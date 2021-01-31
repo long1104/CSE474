@@ -13,72 +13,124 @@
 
 
 void setCursor(int x, int y) {
+    /****************
+    Function name: setCursor
+    Function inputs: x: x position of tft cursor, y: y position of tft cursor 
+    Function outputs: void return
+    Function description: updates the TFT cursor position WITH x and y padding 
+    Author(s):
+    ****************/
     tft.setCursor(x + PADDING_X, y + PADDING_Y);
+    return;
 }
 
 void drawButton(XYButton button) {
-    tft.fillRect(button.x, button.y, button.xLength, button.yLength, button.color);
+    /****************
+    Function name: drawButton
+    Function inputs: button: the XYButton to be drawn on the screen 
+    Function outputs: void return
+    Function description: draws the XYButton on the TFT screen
+    Author(s):
+    ****************/
+    tft.fillRect(button.x, button.y, button.xLength, button.yLength, button.color);  
     tft.setTextColor(WHITE);
     tft.setTextSize(BUTTON_TEXT_SIZE);
     String label = String(*(button.buttonLabelPtr));
     int halfLabelX = PIXELS_PER_CHAR_X * label.length() * BUTTON_TEXT_SIZE / 2;
     int halfLabelY = PIXELS_PER_CHAR_Y * BUTTON_TEXT_SIZE / 2;
-    tft.setCursor(button.x + button.xLength / 2 - halfLabelX, button.y + button.yLength / 2 - halfLabelY);
+    tft.setCursor(button.x + button.xLength / 2 - halfLabelX, 
+                  button.y + button.yLength / 2 - halfLabelY);                        //aligns the label to be middle of the button
     tft.print(*(button.buttonLabelPtr));
+    return;
 }
 
 Point getTouchInput() {
+    /****************
+    Function name: getTouchInput
+    Function inputs: no parameters
+    Function outputs: Point: touch input data
+    Function description: gathers input data from the touch screen 
+    Author(s):
+    ****************/
     TSPoint point = ts.getPoint();
-    unsigned long timeout = millis();
-    while (point.z <= MIN_PRESSURE && millis() - timeout < TOUCH_TIMEOUT) {
-        point = ts.getPoint();
+    unsigned long timeout = millis(); 
+    while (point.z <= MIN_PRESSURE && millis() - timeout < TOUCH_TIMEOUT) {             //check for valid user input for a time period
+        point = ts.getPoint();                                                          
     }
-    pinMode(XM, OUTPUT);
+    pinMode(XM, OUTPUT);                                                                //set pins back to output (touch uses them for input)
     pinMode(YP, OUTPUT);
     // scale from 0->1023 to tft.width
-    //point.x = map(point.x, TS_MINX, TS_MAXX, tft.width(), 0);
-    point.x = tft.width() - map(point.x, TS_MINX, TS_MAXX, tft.width(), 0);
-    // point.y = (tft.height()-map(point.y, TS_MINY, TS_MAXY, tft.height(), 0));
-    point.y = map(point.y, TS_MINY, TS_MAXY, tft.height(), 0);
+    point.x = tft.width() - map(point.x, TS_MINX, TS_MAXX, tft.width(), 0);             //from tft example, scales the x coordinate
+    point.y = map(point.y, TS_MINY, TS_MAXY, tft.height(), 0);                          //from tft example, scales y coordiante
     return Point{point.x, point.y};
 }
 
 bool isButton(Point point, XYButton button) {
-    return (((point.x - button.x) < button.xLength && (point.x - button.x) > 0)
+    /****************
+    Function name: isButton
+    Function inputs: point: touch screen data, button: XYButton to be tested
+    Function outputs: bool, button was touched -> true, button was not touched -> false
+    Function description: checks the touch input to see if it is on a button
+    Author(s):
+    ****************/
+    return (((point.x - button.x) < button.xLength && (point.x - button.x) > 0)         //checking if touch input is within the boundary of button
             && (point.y - button.y) < button.yLength && (point.y - button.y) > 0);
 }
 
-void drawLabel(PrintedData* printable) {
-    String label = String(printable->labelPtr);
-    setCursor(printable->x, printable->y);
-    tft.setTextColor(printable->color);
+void drawLabel(char* labelPtr, int x, int y, int color) {
+    /****************
+    Function name: drawlabel
+    Function inputs: label: pointer to label start, x: x coordinate, y: y coordinate, color: text color
+    Function outputs: void return
+    Function description: draws the label on the display
+    Author(s):
+    ****************/  
+    String labelS = String(labelPtr);
+    setCursor(x, y);
+    tft.setTextColor(color);
     tft.setTextSize(TEXT_SIZE);
-    tft.print(label);
+    tft.print(labelS);
+    return;
 }
 
-void drawData(PrintedData* printable, bool newScreen) {
-    String newData = String(printable->labelPtr);
-    int pixelShift = TEXT_SIZE * newData.length() * 6; // 6pixels for each character (x value)
-    float temp = *(printable->dataInPtr);
-    if (temp != printable->oldData || newScreen) {
+void drawData(PrintedData* printablePtr, bool newScreen) {
+    /****************
+    Function name: drawData
+    Function inputs: printablePtr: holds the data values, labels, units, and pointers, newScreen: has the screen just been changed?
+    Function outputs: void return
+    Function description: prints data onto the screen (only if old data != new data) 
+    Author(s):
+    ****************/
+    String newData = String(printablePtr->labelPtr);
+    int pixelShift = TEXT_SIZE * newData.length() * PIXELS_PER_CHAR_X;                    //shifting over in order to avoid redrawing label
+    float temp = *(printablePtr->dataInPtr);
+    if (temp != printablePtr->oldData || newScreen) {
         tft.setTextSize(TEXT_SIZE);
-        setCursor(printable->x + pixelShift, printable->y);
-        String dataString = printDataToString(printable->oldData, printable->type);
-        dataString.concat(printable->unitsPtr);
+        setCursor(printablePtr->x + pixelShift, printablePtr->y);
+        String dataString = printDataToString(printablePtr->oldData, printablePtr->type);
+        dataString.concat(printablePtr->unitsPtr);
         tft.setTextColor(BACKGROUND_COLOR);
-        tft.print(dataString);
+        tft.print(dataString);                                                            //print over previous data with background color
 
-        printable->oldData = temp;
-        setCursor(printable->x + pixelShift, printable->y);
-        dataString = printDataToString(printable->oldData, printable->type);
-        dataString.concat(printable->unitsPtr);
-        tft.setTextColor(printable->color);
-        tft.println(dataString);
+        printablePtr->oldData = temp;
+        setCursor(printablePtr->x + pixelShift, printablePtr->y);
+        dataString = printDataToString(printablePtr->oldData, printablePtr->type);
+        dataString.concat(printablePtr->unitsPtr);
+        tft.setTextColor(printablePtr->color);
+        tft.println(dataString);                                                          //prints new data where old data used to be (normal text color)
     }
+    return;
 }
 
 
 String printDataToString(float val, PRINT_TYPE type) {
+    /****************
+    Function name: printDataToString
+    Function inputs: val: value to be converted to string, type: enum that tells type of variable
+    Function outputs: String, the value of the parameter converted to it's string format
+    Function description: converts a value and its type into its string representation
+    Author(s):
+    ****************/
     String ret;
     switch (type) {
         case ALARM: ret = alarm_arr[(int)val];
@@ -92,51 +144,82 @@ String printDataToString(float val, PRINT_TYPE type) {
     return ret;
 }
 
-void displayTask(int* currScreen, Screen screenList[], bool newScreen) {
-    drawScreen((screenList[*currScreen]), newScreen);
-    for (int i = 0; i < screenList[*currScreen].dataLen; i++) {
-        drawData((PrintedData *)screenList[*currScreen].dataPtr[i], newScreen);
+void displayTask(int* currScreenPtr, Screen screenList[], bool newScreen) {
+    /****************
+    Function name: displayTask
+    Function inputs: currScreenPtr: points to value of current screen, screenList: list of all screens, newScreen: are we drawing a new screen? 
+    Function outputs: void return
+    Function description: draws all data structures that are inside of the screen, draws new screen if newScreen is true 
+    Author(s):
+    ****************/
+    drawScreen((screenList[*currScreenPtr]), newScreen);
+    for (int i = 0; i < screenList[*currScreenPtr].dataLen; i++) {
+        drawData((PrintedData *)screenList[*currScreenPtr].dataPtr[i], newScreen);
     }
-
+    return;
 }
 
-bool inputTask(int* currScreen, Screen screenList[]) {
+bool inputTask(int* currScreenPtr, Screen screenList[]) {
+    /****************
+    Function name: inputTask
+    Function inputs: currScreenPtr: points to value of current screen, screenList: list of Screens
+    Function outputs: bool, returns whether or not the display needs to be re-drawn
+    Function description: handles touch input from the user and whether any buttons are pressed, determines if a new screen needs to be drawn
+    Author(s):
+    ****************/
     Point point = getTouchInput();
     bool newScreen = false;
     if (isButton(point, previous)) {
-        *currScreen = (*currScreen + 2) % 3;
+        *currScreenPtr = (*currScreenPtr + 2) % 3;
         newScreen = true;
     } else if (isButton(point, next)) {
-        *currScreen = (*currScreen + 1) % 3;
+        *currScreenPtr = (*currScreenPtr + 1) % 3;
         newScreen = true;
     }
-    if (isButton(point, *(screenList[2].buttonPtr)) && *currScreen == 2) {
+    if (isButton(point, *(screenList[2].buttonPtr)) && *currScreenPtr == 2) {
         *(screenList[2].dataPtr[0]->dataInPtr) = ((int) * (screenList[2].dataPtr[0]->dataInPtr) + 1) % 2;
     }
     return newScreen;
 }
 
 void drawScreen(Screen screen, bool newScreen) {
+    /****************
+    Function name: updateHVORAlarm
+    Function inputs: hvorPtr: pointer to hvor alarm 
+    Function outputs: None
+    Function description: updates the hvor alarm status every three cycles
+    Author(s):
+    ****************/
     if (newScreen) {
         tft.fillScreen(BACKGROUND_COLOR);
         drawButton(previous);
         drawButton(next);
 
         for (int i = 0; i < screen.dataLen; i++) {
-            drawLabel(screen.dataPtr[i]);
+            drawLabel(screen.dataPtr[i]->labelPtr,screen.dataPtr[i]->x,
+            screen.dataPtr[i]->y,screen.dataPtr[i]->color);
         }
 
         if (screen.buttonPtr != NULL) {
             drawButton(*(screen.buttonPtr));
         }
     }
+    return;
 }
 
 void touchScreenTask(void* tscreenData) {
+    /****************
+    Function name: updateHVORAlarm
+    Function inputs: hvorPtr: pointer to hvor alarm 
+    Function outputs: None
+    Function description: updates the hvor alarm status every three cycles
+    Author(s):
+    ****************/
     TouchScreenData* datas = (TouchScreenData*) tscreenData;
     if(*(datas->clockCount)==0){
       displayTask(datas->currentScreenPtr, datas->screens, true);
     }
     *(datas->changeScreenPtr) = inputTask(datas->currentScreenPtr, datas->screens);
     displayTask(datas->currentScreenPtr, datas->screens, *(datas->changeScreenPtr));
+    return;
 }

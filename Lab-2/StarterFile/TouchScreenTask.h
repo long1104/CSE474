@@ -49,7 +49,7 @@ typedef struct TouchScreenTaskData {
 
 void drawButton(XYButton button);
 bool isButton(Point point, XYButton button);
-void drawLabel(PrintedData* printable);
+void drawLabel(char* label, int x, int y, int color);
 void drawData(PrintedData* printable, bool newScreen);
 String printDataToString(float val, PRINT_TYPE type);
 void displayTask(int* currScreen, Screen screenList[], bool newScreen);

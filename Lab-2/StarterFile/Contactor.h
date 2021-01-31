@@ -11,7 +11,7 @@ extern "C" {
 
 
 typedef struct ContactorTaskData {
-    const byte* contactorPin;
+    byte contactorPin;
     float* contactorStatus;
 } ContactorData;
 

@@ -3,25 +3,24 @@
 #include "Contactor.h"
 
 
-void updateContactor(float* contactorStatus, const byte* contactorPin) {
+void updateContactor(float* contactorStatusPtr, const byte contactorPin) {
     /****************
-        Function name:
-        Function inputs:
-        Function outputs:
-        Function description:
+        Function name: updateContactor
+        Function inputs: contactorStatusPtr: pointer to boolean status of contactor (held in float as 1.0 or 0.0)
+        Function outputs: void return
+        Function description: updates the output pin of the contactor
         Author(s):
     *****************/
-    digitalWrite(*contactorPin, (int)(*contactorStatus));
-    Serial.println(*contactorStatus);
+    digitalWrite(contactorPin, (int)(*contactorStatusPtr));
     return;
 }
 
 void contactorTask(void* cData) {
     /****************
-        Function name:
-        Function inputs:
-        Function outputs:
-        Function description:
+        Function name: contactorTask
+        Function inputs: cData: pointer to contactor task data
+        Function outputs: void return
+        Function description: updates the state of the contactor output
         Author(s):
     *****************/
     ContactorData* data = (ContactorData*) cData;
