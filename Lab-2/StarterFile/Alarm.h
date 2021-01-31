@@ -1,6 +1,6 @@
-#ifdef __cplusplus  
-extern "C" { 
-#endif 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #ifndef ALARM_H_
 #define ALARM_H_
@@ -10,21 +10,24 @@ extern "C" {
 #include <stdbool.h>
 #include <Arduino.h>
 
-extern char *alarm_arr[];
-
 
 typedef struct AlarmTaskData {
     float* hvia_val;
     float* overCurrent;
     float* hvor_val;
+    int* clockCountPtr;
 } AlarmData;
 
 
-void alarmTask (void*);
+extern char *alarm_arr[];
 
+void alarmTask (void*);
+void updateHVIAAlarm(float *hvia, int* clockCountPtr);
+void updateHVORAlarm(float *hvor, int* clockCountPtr);
+void updateCurrentAlarm(float *current, int* clockCountPtr);
 
 #endif
 
-#ifdef __cplusplus 
-} 
-#endif 
+#ifdef __cplusplus
+}
+#endif

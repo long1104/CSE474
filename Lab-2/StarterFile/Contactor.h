@@ -1,6 +1,6 @@
-#ifdef __cplusplus  
-extern "C" { 
-#endif 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #ifndef CONTACTOR_H_
 #define CONTACTOR_H_
@@ -10,17 +10,17 @@ extern "C" {
 #include <Arduino.h>
 
 
-void contactorTask (void*);
-
-
-typedef struct ContactorTaskData{
+typedef struct ContactorTaskData {
     const byte* contactorPin;
     float* contactorStatus;
 } ContactorData;
 
 
+void contactorTask (void*);
+void updateContactor(float* contactorStatus, const byte* contactorPin);
+
 #endif
 
-#ifdef __cplusplus 
-} 
-#endif 
+#ifdef __cplusplus
+}
+#endif
