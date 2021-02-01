@@ -9,9 +9,10 @@ void updateCurrentAlarm(float *currentPtr, int* clockCountPtr) {
     Function inputs: currentPtr: pointer to overCurrent alarm 
     Function outputs: None
     Function description: updates the overCurrent alarm status every 2 cycles
-    Author(s):
+    Authors:    Long Nguyen / Chase Arline
     ****************/
-    *currentPtr = ((*clockCountPtr) % 6) / 2;
+    *currentPtr = ((*clockCountPtr) % 6) / 2;\
+    return;
 }
 
 void updateHVORAlarm(float *hvorPtr, int* clockCountPtr) {
@@ -20,9 +21,10 @@ void updateHVORAlarm(float *hvorPtr, int* clockCountPtr) {
     Function inputs: hvorPtr: pointer to hvor alarm 
     Function outputs: None
     Function description: updates the hvor alarm status every three cycles
-    Author(s):
+    Authors:    Long Nguyen / Chase Arline
     ****************/
     *hvorPtr = ((*clockCountPtr) % 9) / 3;
+    return;
 }
 
 void updateHVIAAlarm(float *hviaPtr, int* clockCountPtr) {
@@ -31,9 +33,10 @@ void updateHVIAAlarm(float *hviaPtr, int* clockCountPtr) {
     Function inputs: hviaPtr: pointer to hvia alarm, clockCountPtr: pointer to clockCount
     Function outputs: None
     Function description: updates the hvia alarm status every cycle
-    Author(s):
+    Authors:    Long Nguyen / Chase Arline
     ****************/
     *hviaPtr = (*clockCountPtr) % 3; 
+    return;
 }
 
 void alarmTask(void* aDataPtr) {
@@ -42,7 +45,7 @@ void alarmTask(void* aDataPtr) {
         Function inputs: aDataPtr: pointer to alarm task data
         Function outputs: void return 
         Function description: updates the hvia (hvil alarm), hvor (high voltage out of range), and overcurrent alarm status
-        Author(s):
+        Authors:    Long Nguyen / Chase Arline
     *****************/
     AlarmData* data = (AlarmData*) aDataPtr;
     // Update all sensors

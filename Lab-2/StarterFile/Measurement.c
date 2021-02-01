@@ -12,7 +12,7 @@ void updateHVIL(float* hvilReadingPtr, byte pin) {
         Function inputs: hvilReadingPtr: pointer to status of HVIL, pin: hardware input pin of HVIL measurement
         Function outputs: void return
         Function description: updates the value of the HVIL through the measurement pin
-        Author(s):
+        Authors:    Long Nguyen / Chase Arline
     *****************/
     *hvilReadingPtr = !(float)(int)digitalRead(pin);                //read HVIL input
     return;
@@ -24,7 +24,7 @@ void updateTemperature(float* temperatureReadingPtr, int* clockCountPtr) {
         Function inputs:temperatureReadingPtr: pointer to status of temperature value, clockCountPtr: pointer to value of the cycle count
         Function outputs: void return
         Function description: updates the value of the temperature through the measured value
-        Author(s):
+        Authors:    Long Nguyen / Chase Arline
     *****************/
     *temperatureReadingPtr = temperatureValues[(*clockCountPtr) % 3];
     return;
@@ -36,7 +36,7 @@ void updateHvCurrent(float* currentReadingPtr, int* clockCountPtr) {
         Function inputs: currentReadingPtr: pointer to status of current value, clockCountPtr: pointer to the value of the cycle count
         Function outputs: void return
         Function description: updates the value of the current through the measured value
-        Author(s):
+        Authors:    Long Nguyen / Chase Arline
     *****************/
     *currentReadingPtr = currentValues[((*clockCountPtr) % 6) / 2];
     return;
@@ -48,7 +48,7 @@ void updateHvVoltage(float* voltageReadingPtr, int* clockCountPtr) {
         Function inputs: voltageReadingPtr: pointer to status of voltage value, clockCountPtr: pointer to the value of the cycle count
         Function outputs: void return
         Function description: updates the value of the voltage through the measured value
-        Author(s):
+        Authors:    Long Nguyen / Chase Arline
     *****************/
     *voltageReadingPtr = voltageValues[((*clockCountPtr) % 9) / 3];
     return;
@@ -60,7 +60,7 @@ void measurementTask(void* mDataPtr) {
         Function inputs: mDataPtr: pointer to measurement task data
         Function outputs: void return
         Function description: updates the HVIL input, temperature input, HV current input, HV voltage input with the measured values
-        Author(s):
+        Authors:    Long Nguyen / Chase Arline
     *****************/
     MeasurementData* data = (MeasurementData*) mDataPtr;
 

@@ -15,13 +15,15 @@
 #include "TouchScreenTask.h"
 
 
-Elegoo_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);
-TouchScreen ts = TouchScreen(XP, YP, XM, YM, 374);
+Elegoo_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);                       // Display initialization
+TouchScreen ts = TouchScreen(XP, YP, XM, YM, 374);                                  // TFT initialization
 
 
 char* prevLabelPtr = "Prev";
 char* nextLabelPtr = "Next";
 char* onOffLabelPtr = "BATTERY TOGGLE";
+
+//Initialization of buttons on the screens
 XYButton previous = {0, 280, 80, 40, PURPLE, &prevLabelPtr};
 XYButton next = {160, 280, 80, 40, PURPLE, &nextLabelPtr};
 XYButton batteryButton = {0, 0, 240, 160, PURPLE, &onOffLabelPtr};
@@ -57,7 +59,7 @@ PrintedData batteryData = {};                                                   
 PrintedData measurementLabel = {};                                                  // Label for measurement screen
 PrintedData alarmLabel = {};                                                        // Label for the alarm screen
 
-float zero = 0;                                                                      // Used for any non-changing printed data (labels)
+float zero = 0;                                                                     // Used for any non-changing printed data (labels)
 
 // Measurement Data
 MeasurementData measure;                                                            // Measurement Data structure, used in TCB
@@ -95,11 +97,12 @@ void Scheduler() {
         Function outputs: No return
         Function description: This is the round robin scheduler, it executes all tasks in a sequential order, 
                               the tasks create a user intreface for a battery management system
-        Author(s):
+        Authors:    Long Nguyen / Chase Arline
       *****************/
     for (int i = 0; i < NUM_OF_TASKS; i++) {
         tasksPtr[i].task(tasksPtr[i].taskDataPtr);
     }
+    return;
 }
 
 void loop() {
@@ -108,7 +111,7 @@ void loop() {
         Function inputs:  No parameters
         Function outputs: No return
         Function description: 
-        Author(s):
+        Authors:    Long Nguyen / Chase Arline
       *****************/
     unsigned long startTimer = 0;
     while (1) {
@@ -119,6 +122,7 @@ void loop() {
             delay(1000 - (millis() - startTimer));
         }
     }
+    return;
 }
 
 
@@ -128,7 +132,7 @@ void setup() {
         Function inputs: None
         Function outputs: None
         Function description: initializes global variables, sets up and queues scheduler tasks, initialize display, set pinmodes for IO
-        Author(s):
+        Authors:    Long Nguyen / Chase Arline
       *****************/
     hvCurrent = 0;  
     hvVoltage = 0;
@@ -147,7 +151,7 @@ void setup() {
     hvCurrentData = {0, 80, PURPLE, 1, -1, NUMBER, &hvCurrent, "HV Current: ", "A"};
     hvVoltageData = {0, 100, PURPLE, 1, -1, NUMBER, &hvVoltage, "HV Voltage: ", "V"};
     hvilData = {0, 120, PURPLE, 1, -1, BOOL, &HVIL, "hvil: ", ""};
-    measurementLabel = {0,0, PURPLE, 2, -1, LABEL, &zero, "Measurement", ""};
+    measurementLabel = {0,0, PURPLE, 2, -1, LABEL, &zero, "Measurements", ""};
     
     //Alarm printed data
     hivaData = {0, 40, PURPLE, 1, -1, ALARM, &hviaVal, "hivl: ", ""};  
@@ -159,8 +163,8 @@ void setup() {
     batteryData = {0, 160, PURPLE, 1, 0, BOOL, &batteryOnOff, "Battery Connection: ", ""};
 
    
-    PrintedData *batteryPrints[] = {&batteryData};                                                                      // holds battery data
-    PrintedData *alarmPrints[] = {&alarmLabel, &hivaData, &overCurrentData, &hvorData};                                              // holds alarm data
+    PrintedData *batteryPrints[] = {&batteryData};                                                                                         // holds battery data
+    PrintedData *alarmPrints[] = {&alarmLabel, &hivaData, &overCurrentData, &hvorData};                                                    // holds alarm data
     PrintedData *measurementPrints[] = {&measurementLabel, &socDataPrint, &temperatureData, &hvCurrentData, &hvVoltageData, &hvilData};    // holds measurement data
     
     //Initialize Screen structs for interface

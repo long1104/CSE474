@@ -9,7 +9,7 @@ void updateContactor(float* contactorStatusPtr, const byte contactorPin) {
         Function inputs: contactorStatusPtr: pointer to boolean status of contactor (held in float as 1.0 or 0.0)
         Function outputs: void return
         Function description: updates the output pin of the contactor
-        Author(s):
+        Authors:    Long Nguyen / Chase Arline
     *****************/
     digitalWrite(contactorPin, (int)(*contactorStatusPtr));           //set contactor output high/low
     return;
@@ -21,7 +21,7 @@ void contactorTask(void* cData) {
         Function inputs: cData: pointer to contactor task data
         Function outputs: void return
         Function description: updates the state of the contactor output
-        Author(s):
+        Authors:    Long Nguyen / Chase Arline
     *****************/
     ContactorData* data = (ContactorData*) cData;
 
