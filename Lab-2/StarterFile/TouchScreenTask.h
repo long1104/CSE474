@@ -9,19 +9,20 @@ extern "C" {
 #include <stdbool.h>
 #include <Arduino.h>
 
-
+//PRINT_TYPE represents the variable type for printing
 typedef enum {
-    ALARM, NUMBER, BOOL
+    ALARM, NUMBER, BOOL, LABEL
 } PRINT_TYPE;
 
+//XYButton represents a button on the TFT scren
 typedef struct XYButtonStruct {
     int x, y, xLength, yLength, color;
     char** buttonLabelPtr;
 } XYButton;
 
-
+//PrintedData represents data that can be printed/updated on the TFT screen
 typedef struct PrintedDataStruct {
-    int x, y, color;
+    int x, y, color, textSize;
     float oldData;
     PRINT_TYPE type;
     float* dataInPtr;
@@ -29,16 +30,19 @@ typedef struct PrintedDataStruct {
     char* unitsPtr;
 } PrintedData;
 
+//Screen represents a screen to be drawn on the display
 typedef struct ScreenStruct {
     XYButton *buttonPtr;
     int dataLen;
     PrintedData **dataPtr;
 } Screen;
 
+//Point represents XY coordinates
 typedef struct PointStruct {
     int x, y;
 } Point;
 
+//TouchScreenData is used for the TCB and holds data relevant to each cycle in the TCB
 typedef struct TouchScreenTaskData {
     int* clockCount;
     int* currentScreenPtr;

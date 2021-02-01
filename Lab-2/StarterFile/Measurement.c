@@ -14,7 +14,7 @@ void updateHVIL(float* hvilReadingPtr, byte pin) {
         Function description: updates the value of the HVIL through the measurement pin
         Author(s):
     *****************/
-    *hvilReadingPtr = !(float)(int)digitalRead(pin);
+    *hvilReadingPtr = !(float)(int)digitalRead(pin);                //read HVIL input
     return;
 }
 

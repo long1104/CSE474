@@ -9,7 +9,7 @@ extern "C" {
 #include <stdbool.h>
 #include <Arduino.h>
 
-
+//
 typedef struct SocTaskData {
     float* stateOfCharge;
     int* clockCountPtr;

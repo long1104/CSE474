@@ -10,7 +10,7 @@ extern "C" {
 #include <stdbool.h>
 #include <Arduino.h>
 
-
+//Used for updating the three alarms using a TCB
 typedef struct AlarmTaskData {
     float* hvia_val;
     float* overCurrent;

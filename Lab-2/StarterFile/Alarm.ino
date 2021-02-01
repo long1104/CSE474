@@ -33,7 +33,7 @@ void updateHVIAAlarm(float *hviaPtr, int* clockCountPtr) {
     Function description: updates the hvia alarm status every cycle
     Author(s):
     ****************/
-    *hviaPtr = (*clockCountPtr) % 3;
+    *hviaPtr = (*clockCountPtr) % 3; 
 }
 
 void alarmTask(void* aDataPtr) {

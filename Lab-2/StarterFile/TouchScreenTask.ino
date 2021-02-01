@@ -2,7 +2,6 @@
 #include <stdbool.h>
 #include "TouchScreenTask.h"
 
-#define TEXT_SIZE 1
 #define BUTTON_TEXT_SIZE 2
 #define TOUCH_TIMEOUT 20
 #define  PIXELS_PER_CHAR_X 6
@@ -77,7 +76,7 @@ bool isButton(Point point, XYButton button) {
             && (point.y - button.y) < button.yLength && (point.y - button.y) > 0);
 }
 
-void drawLabel(char* labelPtr, int x, int y, int color) {
+void drawLabel(PrintedData *printablePtr) {
     /****************
     Function name: drawlabel
     Function inputs: label: pointer to label start, x: x coordinate, y: y coordinate, color: text color
@@ -85,10 +84,10 @@ void drawLabel(char* labelPtr, int x, int y, int color) {
     Function description: draws the label on the display
     Author(s):
     ****************/  
-    String labelS = String(labelPtr);
-    setCursor(x, y);
-    tft.setTextColor(color);
-    tft.setTextSize(TEXT_SIZE);
+    String labelS = String(printablePtr->labelPtr);
+    setCursor(printablePtr->x, printablePtr->y);
+    tft.setTextColor(printablePtr->color);
+    tft.setTextSize(printablePtr->textSize);
     tft.print(labelS);
     return;
 }
@@ -102,10 +101,10 @@ void drawData(PrintedData* printablePtr, bool newScreen) {
     Author(s):
     ****************/
     String newData = String(printablePtr->labelPtr);
-    int pixelShift = TEXT_SIZE * newData.length() * PIXELS_PER_CHAR_X;                    //shifting over in order to avoid redrawing label
+    int pixelShift = printablePtr->textSize * newData.length() * PIXELS_PER_CHAR_X;                    //shifting over in order to avoid redrawing label
     float temp = *(printablePtr->dataInPtr);
     if (temp != printablePtr->oldData || newScreen) {
-        tft.setTextSize(TEXT_SIZE);
+        tft.setTextSize(printablePtr->textSize);
         setCursor(printablePtr->x + pixelShift, printablePtr->y);
         String dataString = printDataToString(printablePtr->oldData, printablePtr->type);
         dataString.concat(printablePtr->unitsPtr);
@@ -138,6 +137,8 @@ String printDataToString(float val, PRINT_TYPE type) {
         case NUMBER: ret = String(val);
             break;
         case BOOL: ret = (int)val ? "CLOSED" : "OPEN";
+            break;
+        case LABEL: ret = "";                         // label does not have any changing data
             break;
         default: ret = String(val);
     }
@@ -184,10 +185,10 @@ bool inputTask(int* currScreenPtr, Screen screenList[]) {
 
 void drawScreen(Screen screen, bool newScreen) {
     /****************
-    Function name: updateHVORAlarm
-    Function inputs: hvorPtr: pointer to hvor alarm 
-    Function outputs: None
-    Function description: updates the hvor alarm status every three cycles
+    Function name: drawScreen
+    Function inputs: screen: the screen to be drawn, newScreen: are we updating the screen? (function is called every task loop) 
+    Function outputs: void return
+    Function description: draws the screen if newScreen == true
     Author(s):
     ****************/
     if (newScreen) {
@@ -196,8 +197,7 @@ void drawScreen(Screen screen, bool newScreen) {
         drawButton(next);
 
         for (int i = 0; i < screen.dataLen; i++) {
-            drawLabel(screen.dataPtr[i]->labelPtr,screen.dataPtr[i]->x,
-            screen.dataPtr[i]->y,screen.dataPtr[i]->color);
+            drawLabel(screen.dataPtr[i]);
         }
 
         if (screen.buttonPtr != NULL) {
@@ -207,19 +207,19 @@ void drawScreen(Screen screen, bool newScreen) {
     return;
 }
 
-void touchScreenTask(void* tscreenData) {
+void touchScreenTask(void* tscreenDataPtr) {
     /****************
-    Function name: updateHVORAlarm
-    Function inputs: hvorPtr: pointer to hvor alarm 
+    Function name: touchScreenTask
+    Function inputs: 
     Function outputs: None
     Function description: updates the hvor alarm status every three cycles
     Author(s):
     ****************/
-    TouchScreenData* datas = (TouchScreenData*) tscreenData;
-    if(*(datas->clockCount)==0){
-      displayTask(datas->currentScreenPtr, datas->screens, true);
+    TouchScreenData* datasPtr = (TouchScreenData*) tscreenDataPtr;
+    if(*(datasPtr->clockCount)==0){
+      displayTask(datasPtr->currentScreenPtr, datasPtr->screens, true);
     }
-    *(datas->changeScreenPtr) = inputTask(datas->currentScreenPtr, datas->screens);
-    displayTask(datas->currentScreenPtr, datas->screens, *(datas->changeScreenPtr));
+    *(datasPtr->changeScreenPtr) = inputTask(datasPtr->currentScreenPtr, datasPtr->screens);
+    displayTask(datasPtr->currentScreenPtr, datasPtr->screens, *(datasPtr->changeScreenPtr));
     return;
 }

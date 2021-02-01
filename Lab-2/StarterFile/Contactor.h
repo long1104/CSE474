@@ -9,7 +9,7 @@ extern "C" {
 #include <stdbool.h>
 #include <Arduino.h>
 
-
+//Used for updating the contactor output through a TCB
 typedef struct ContactorTaskData {
     byte contactorPin;
     float* contactorStatus;

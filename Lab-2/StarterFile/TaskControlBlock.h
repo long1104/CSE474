@@ -7,7 +7,7 @@
 // TCB encapsulates task function and data
 typedef struct taskControlBlock {
     void (*task)(void*);
-    void* taskDataPtr;
+    void *taskDataPtr;
     struct taskControlBlock* next;
     struct taskControlBlock* prev;
 } TCB;

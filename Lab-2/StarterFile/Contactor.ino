@@ -11,7 +11,7 @@ void updateContactor(float* contactorStatusPtr, const byte contactorPin) {
         Function description: updates the output pin of the contactor
         Author(s):
     *****************/
-    digitalWrite(contactorPin, (int)(*contactorStatusPtr));
+    digitalWrite(contactorPin, (int)(*contactorStatusPtr));           //set contactor output high/low
     return;
 }
 
