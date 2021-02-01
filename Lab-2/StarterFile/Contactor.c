@@ -3,7 +3,8 @@
 #include "Contactor.h"
 
 
-void updateContactor(float* contactorStatusPtr, const byte contactorPin) {
+
+void updateContactor(float* contactorStatusPtr, byte contactorPin) {
     /****************
         Function name: updateContactor
         Function inputs: contactorStatusPtr: pointer to boolean status of contactor (held in float as 1.0 or 0.0)

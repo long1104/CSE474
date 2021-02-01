@@ -13,6 +13,22 @@ extern "C" {
 
 #define LCD_RESET A4
 
+//Coordinate references
+#define ORIGIN_Y 0
+#define ORIGIN_X 0
+//Text sizes
+#define MED_SCRIPT 2
+#define SMALL_SCRIPT 1
+
+//Default value for printed data
+#define DEFAULT_FLOAT -1
+#define DEFAULT_ALARM 0
+#define DEFAULT_BOOL 0
+
+#define ALARM_NUM_PRINTS 4
+#define BATTERY_NUM_PRINTS 1
+#define MEASURE_NUM_PRINTS 6
+
 #define YP A3  // must be an analog pin, use "An" notation!
 #define XM A2  // must be an analog pin, use "An" notation!
 #define YM 9   // can be a digital pin

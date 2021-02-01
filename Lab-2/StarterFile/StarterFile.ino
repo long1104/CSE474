@@ -63,10 +63,10 @@ float zero = 0;                                                                 
 
 // Measurement Data
 MeasurementData measure;                                                            // Measurement Data structure, used in TCB
-float hvCurrent;                                                                    // high voltage current value
-float hvVoltage;                                                                    // high voltage voltage value
-float temperature;                                                                  // temperature value
-float HVIL;                                                                         // high voltage interlock status
+float hvCurrent = 0;                                                                // high voltage current value
+float hvVoltage = 0;                                                                // high voltage voltage value
+float temperature = 0;                                                              // temperature value
+float HVIL = 0;                                                                     // high voltage interlock status
 const byte hvilPin = 22;                                                            // IO pin for hvil input
 
 //ContactorData
@@ -75,9 +75,9 @@ const byte contactorPin = 24;                                                   
 
 
 AlarmData alarm;                                                                    // Alarm data structure, used in TCB
-float hviaVal     = 0;                                                              // high voltage interlock alarm status
-float overCurrent  = 0;                                                             // over-current alarm status
-float hvorVal     = 0;                                                              // high voltage out of range alarm status
+float hviaVal = 0;                                                                  // high voltage interlock alarm status
+float overCurrent = 0;                                                              // over-current alarm status
+float hvorVal = 0;                                                                  // high voltage out of range alarm status
 
 float batteryOnOff = 0;                                                             // battery status (open/closed)
 
@@ -118,7 +118,7 @@ void loop() {
         startTimer = millis();
         Scheduler();
         clockCount++;                                                                               // times the scheduler has run
-        if (millis() - startTimer > 0 && millis() - startTimer < 1000) {                            //delay for rest of second 
+        if (millis() - startTimer > 0 && millis() - startTimer < 1000) {                            // delay for rest of second 
             delay(1000 - (millis() - startTimer));
         }
     }
@@ -134,33 +134,29 @@ void setup() {
         Function description: initializes global variables, sets up and queues scheduler tasks, initialize display, set pinmodes for IO
         Authors:    Long Nguyen / Chase Arline
       *****************/
-    hvCurrent = 0;  
-    hvVoltage = 0;
-    temperature = 0;
-    HVIL = false;
     pinMode(hvilPin, INPUT);                                                                        //hvil -> input pin
     pinMode(contactorPin, OUTPUT);                                                                  //contactor -> output pin
 
     // initialize all printed data values for the touch screen
 
     //State of charged printed data
-    socDataPrint = {0, 40, PURPLE, 1, -1, NUMBER, &socVal, "SOC value: ", ""};
+    socDataPrint = {ORIGIN_X, ORIGIN_Y+40, PURPLE, SMALL_SCRIPT, DEFAULT_FLOAT, NUMBER, &socVal, "SOC value: ", ""};
 
     //Measurement printed data
-    temperatureData = {0, 60, PURPLE, 1, -1, NUMBER, &temperature, "Temperature: ", "C"};
-    hvCurrentData = {0, 80, PURPLE, 1, -1, NUMBER, &hvCurrent, "HV Current: ", "A"};
-    hvVoltageData = {0, 100, PURPLE, 1, -1, NUMBER, &hvVoltage, "HV Voltage: ", "V"};
-    hvilData = {0, 120, PURPLE, 1, -1, BOOL, &HVIL, "hvil: ", ""};
-    measurementLabel = {0,0, PURPLE, 2, -1, LABEL, &zero, "Measurements", ""};
+    temperatureData = {ORIGIN_X, ORIGIN_Y+60, PURPLE, SMALL_SCRIPT, DEFAULT_FLOAT, NUMBER, &temperature, "Temperature: ", "C"};
+    hvCurrentData = {ORIGIN_X, ORIGIN_Y+80, PURPLE, SMALL_SCRIPT, DEFAULT_FLOAT, NUMBER, &hvCurrent, "HV Current: ", "A"};
+    hvVoltageData = {ORIGIN_X, ORIGIN_Y+100, PURPLE, SMALL_SCRIPT, DEFAULT_FLOAT, NUMBER, &hvVoltage, "HV Voltage: ", "V"};
+    hvilData = {ORIGIN_X, ORIGIN_Y+120, PURPLE, SMALL_SCRIPT, DEFAULT_BOOL, BOOL, &HVIL, "hvil: ", ""};
+    measurementLabel = {ORIGIN_X,ORIGIN_Y, PURPLE, MED_SCRIPT, DEFAULT_BOOL, LABEL, &zero, "Measurements", ""};
     
     //Alarm printed data
-    hivaData = {0, 40, PURPLE, 1, -1, ALARM, &hviaVal, "hivl: ", ""};  
-    overCurrentData = {0, 60, PURPLE, 1, -1, ALARM, &overCurrent, "Over Current: ", ""};
-    hvorData = {0, 80, PURPLE, 1, -1, ALARM, &hvorVal, "HV Alarm: ", ""};
-    alarmLabel = {0, 0, PURPLE, 2, -1, LABEL, &zero, "Alarms", ""};
+    hivaData = {ORIGIN_X, ORIGIN_Y+40, PURPLE, SMALL_SCRIPT, DEFAULT_ALARM, ALARM, &hviaVal, "hivl: ", ""};
+    overCurrentData = {ORIGIN_X, ORIGIN_Y+60, PURPLE, SMALL_SCRIPT, DEFAULT_ALARM, ALARM, &overCurrent, "Over Current: ", ""};
+    hvorData = {ORIGIN_X, ORIGIN_Y+80, PURPLE, SMALL_SCRIPT, DEFAULT_ALARM, ALARM, &hvorVal, "HV Alarm: ", ""};
+    alarmLabel = {ORIGIN_X, ORIGIN_Y, PURPLE, MED_SCRIPT, DEFAULT_BOOL, LABEL, &zero, "Alarms", ""};
 
     //Battery/Contactor printed data
-    batteryData = {0, 160, PURPLE, 1, 0, BOOL, &batteryOnOff, "Battery Connection: ", ""};
+    batteryData = {ORIGIN_X, ORIGIN_Y+160, PURPLE, SMALL_SCRIPT, DEFAULT_BOOL, BOOL, &batteryOnOff, "Battery Connection: ", ""};
 
    
     PrintedData *batteryPrints[] = {&batteryData};                                                                                         // holds battery data
@@ -168,9 +164,9 @@ void setup() {
     PrintedData *measurementPrints[] = {&measurementLabel, &socDataPrint, &temperatureData, &hvCurrentData, &hvVoltageData, &hvilData};    // holds measurement data
     
     //Initialize Screen structs for interface
-    batteryMonitor = Screen{&batteryButton, 1, batteryPrints};          
-    alarmMonitor = Screen{NULL, 4, alarmPrints};
-    measurementMonitor = Screen{NULL, 6, measurementPrints};
+    batteryMonitor = Screen{&batteryButton, BATTERY_NUM_PRINTS, batteryPrints};          
+    alarmMonitor = Screen{NULL, ALARM_NUM_PRINTS, alarmPrints};
+    measurementMonitor = Screen{NULL, MEASURE_NUM_PRINTS, measurementPrints};
 
 
     //Initialize touchscreen/display TCB

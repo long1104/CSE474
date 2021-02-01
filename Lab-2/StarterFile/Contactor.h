@@ -17,7 +17,7 @@ typedef struct ContactorTaskData {
 
 
 void contactorTask (void*);
-void updateContactor(float* contactorStatus, const byte* contactorPin);
+void updateContactor(float* contactorStatus, byte contactorPin);
 
 #endif
 
