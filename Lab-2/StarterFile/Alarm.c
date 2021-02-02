@@ -11,7 +11,7 @@ void updateCurrentAlarm(float *currentPtr, int* clockCountPtr) {
     Function description: updates the overCurrent alarm status every 2 cycles
     Authors:    Long Nguyen / Chase Arline
     ****************/
-    *currentPtr = ((*clockCountPtr) % 6) / 2;\
+    *currentPtr = ((*clockCountPtr) % 6) / 2;
     return;
 }
 
