@@ -168,13 +168,13 @@ void setup() {
     alarmMonitor = Screen{NULL, ALARM_NUM_PRINTS, alarmPrints};
     measurementMonitor = Screen{NULL, MEASURE_NUM_PRINTS, measurementPrints};
 
-
     //Initialize touchscreen/display TCB
     tscreenData = {&clockCount, &currentScreen, &changeScreen , {measurementMonitor, alarmMonitor, batteryMonitor}};
     touchScreenTCB.task = &touchScreenTask;
     touchScreenTCB.taskDataPtr = (void*) &tscreenData;
     touchScreenTCB.next = NULL;
     touchScreenTCB.prev = NULL;
+
 
     // Initialize Measurement TCB
     measure                     = {&HVIL, hvilPin, &temperature, &hvCurrent, &hvVoltage, &clockCount};

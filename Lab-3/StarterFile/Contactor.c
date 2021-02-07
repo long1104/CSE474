@@ -4,7 +4,7 @@
 
 
 
-void updateContactor(float* contactorStatusPtr, byte contactorPin) {
+void updateContactor(float* contactorStatusPtr, int *contactorPin) {
     /****************
         Function name: updateContactor
         Function inputs: contactorStatusPtr: pointer to boolean status of contactor (held in float as 1.0 or 0.0)
@@ -12,7 +12,7 @@ void updateContactor(float* contactorStatusPtr, byte contactorPin) {
         Function description: updates the output pin of the contactor
         Authors:    Long Nguyen / Chase Arline
     *****************/
-    digitalWrite(contactorPin, (int)(*contactorStatusPtr));           //set contactor output high/low
+    digitalWrite(*contactorPin, (int)(*contactorStatusPtr));           //set contactor output high/low
     return;
 }
 

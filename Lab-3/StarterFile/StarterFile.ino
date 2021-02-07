@@ -1,3 +1,5 @@
+#include <TimerOne.h>
+
 #include "StarterFile.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -55,6 +57,11 @@ PrintedData overCurrentData = {};                                               
 PrintedData hvorData = {};                                                          // High Voltage Out of Range Alarm
 PrintedData batteryData = {};                                                       // Battery On/Off data
 
+PrintedData *batteryPrints[] = {};                                                                                         // holds battery data
+PrintedData *alarmPrints[] = {};                                                    // holds alarm data
+PrintedData *measurementPrints[] = {} ;  // holds measurement data
+
+
 //Labels for screens (non changing data)
 PrintedData measurementLabel = {};                                                  // Label for measurement screen
 PrintedData alarmLabel = {};                                                        // Label for the alarm screen
@@ -67,11 +74,15 @@ float hvCurrent = 0;                                                            
 float hvVoltage = 0;                                                                // high voltage voltage value
 float temperature = 0;                                                              // temperature value
 float HVIL = 0;                                                                     // high voltage interlock status
-const byte hvilPin = 22;                                                            // IO pin for hvil input
+int hvilPin = 22;                                                            // IO pin for hvil input
+int temperaturePin = A13;
+int hvVoltagePin = A14;
+int hvCurrentPin = A15;
+
 
 //ContactorData
 ContactorData contactor = {};                                                       // contactor data structure, used in TCB
-const byte contactorPin = 24;                                                       // IO pin for contactor output
+int contactorPin = 24;                                                       // IO pin for contactor output
 
 
 AlarmData alarm;                                                                    // Alarm data structure, used in TCB
@@ -89,6 +100,11 @@ float socVal = 0;                                                               
 TouchScreenData tscreenData = {};                                                   // Touch screen data struct, used in TCB
 int currentScreen = 0;                                                              // indicates which screen is currently displayed
 
+volatile bool timerFlag = 0;
+
+void timerISR(){
+  timerFlag=1;
+}
 
 void Scheduler() {
    /****************
@@ -99,9 +115,6 @@ void Scheduler() {
                               the tasks create a user intreface for a battery management system
         Authors:    Long Nguyen / Chase Arline
       *****************/
-//    for (int i = 0; i < NUM_OF_TASKS; i++) {
-//        tasksPtr[i].task(tasksPtr[i].taskDataPtr);
-//    }
     TCB* current = tasksPtr;
     while (current != NULL) {
           current->task(current->taskDataPtr);
@@ -118,14 +131,12 @@ void loop() {
         Function description: 
         Authors:    Long Nguyen / Chase Arline
       *****************/
-    unsigned long startTimer = 0;
     while (1) {
-        startTimer = millis();
-        Scheduler();
-        clockCount++;                                                                               // times the scheduler has run
-        if (millis() - startTimer > 0 && millis() - startTimer < 1000) {                            // delay for rest of second 
-            delay(1000 - (millis() - startTimer));
-        }
+      if(timerFlag){
+          Scheduler();
+          clockCount++;                                                                               // times the scheduler has run
+          timerFlag=0;
+      }
     }
     return;
 }
@@ -141,7 +152,13 @@ void setup() {
       *****************/
     pinMode(hvilPin, INPUT);                                                                        //hvil -> input pin
     pinMode(contactorPin, OUTPUT);                                                                  //contactor -> output pin
-
+    pinMode(temperaturePin,INPUT_PULLUP);
+    pinMode(hvVoltagePin, INPUT_PULLUP);
+    pinMode(hvCurrentPin, INPUT_PULLUP); 
+    Timer1.initialize(100000);
+    Timer1.attachInterrupt(timerISR);
+    
+    
     // initialize all printed data values for the touch screen
 
     //State of charged printed data
@@ -163,16 +180,23 @@ void setup() {
     //Battery/Contactor printed data
     batteryData = {ORIGIN_X, ORIGIN_Y+160, PURPLE, SMALL_SCRIPT, DEFAULT_BOOL, BOOL, &batteryOnOff, "Battery Connection: ", ""};
 
-   
-    PrintedData *batteryPrints[] = {&batteryData};                                                                                         // holds battery data
+     
+    PrintedData *batteryPrints[] =  {&batteryData};                                                                                         // holds battery data
     PrintedData *alarmPrints[] = {&alarmLabel, &hivaData, &overCurrentData, &hvorData};                                                    // holds alarm data
     PrintedData *measurementPrints[] = {&measurementLabel, &socDataPrint, &temperatureData, &hvCurrentData, &hvVoltageData, &hvilData};    // holds measurement data
     
+
+    // Initialize Measurement TCB
+    measure                     = {&HVIL, &hvilPin, &temperature, &temperaturePin, &hvCurrent, &hvCurrentPin, &hvVoltage, &hvVoltagePin, &clockCount};
+    measurementTCB.task         = &measurementTask;
+    measurementTCB.taskDataPtr  = (void*) &measure;
+    measurementTCB.next         = &alarmTCB;
+    measurementTCB.prev         = NULL;
+
     //Initialize Screen structs for interface
     batteryMonitor = Screen{&batteryButton, BATTERY_NUM_PRINTS, batteryPrints};          
     alarmMonitor = Screen{NULL, ALARM_NUM_PRINTS, alarmPrints};
     measurementMonitor = Screen{NULL, MEASURE_NUM_PRINTS, measurementPrints};
-
 
     //Initialize touchscreen/display TCB
     tscreenData = {&clockCount, &currentScreen, &changeScreen , {measurementMonitor, alarmMonitor, batteryMonitor}};
@@ -181,16 +205,8 @@ void setup() {
     touchScreenTCB.next = &contactorTCB;
     touchScreenTCB.prev = &socTCB;
 
-    // Initialize Measurement TCB
-    measure                     = {&HVIL, hvilPin, &temperature, &hvCurrent, &hvVoltage, &clockCount};
-    measurementTCB.task         = &measurementTask;
-    measurementTCB.taskDataPtr  = (void*) &measure;
-    measurementTCB.next         = &alarmTCB;
-    measurementTCB.prev         = NULL;
-
-
     // Initialize Contactor TCB
-    contactor = {contactorPin,  &batteryOnOff};
+    contactor = {&contactorPin,  &batteryOnOff};
     contactorTCB.task          = &contactorTask;
     contactorTCB.taskDataPtr   = (void*) &contactor;
     contactorTCB.next          = NULL;
@@ -253,6 +269,6 @@ void setup() {
         identifier = 0x9328;
     }
     tft.begin(identifier);
-
+    Timer1.start();
     return;
 }

@@ -154,7 +154,7 @@ void displayTask(int* currScreenPtr, Screen screenList[], bool newScreen) {
     ****************/
     drawScreen((screenList[*currScreenPtr]), newScreen);
     for (int i = 0; i < screenList[*currScreenPtr].dataLen; i++) {
-        drawData((PrintedData *)screenList[*currScreenPtr].dataPtr[i], newScreen);
+        drawData(screenList[*currScreenPtr].dataPtr[i], newScreen);
     }
     return;
 }
