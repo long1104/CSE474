@@ -74,7 +74,7 @@ float hvCurrent = 0;                                                            
 float hvVoltage = 0;                                                                // high voltage voltage value
 float temperature = 0;                                                              // temperature value
 float HVIL = 0;                                                                     // high voltage interlock status
-int hvilPin = 22;                                                            // IO pin for hvil input
+int hvilPin = 21;                                                            // IO pin for hvil input
 int temperaturePin = A13;
 int hvVoltagePin = A14;
 int hvCurrentPin = A15;
@@ -107,7 +107,7 @@ void timerISR(){
 }
 
 void hvilISR(){
-  Serial.println("hvil interrupt");
+  Serial.println("hvil isr");
   batteryOnOff=0;
   hviaVal=1;
   updateContactor(&batteryOnOff, &contactorPin);
