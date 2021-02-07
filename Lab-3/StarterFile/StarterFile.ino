@@ -106,6 +106,13 @@ void timerISR(){
   timerFlag=1;
 }
 
+void hvilISR(){
+  Serial.println("hvil interrupt");
+  batteryOnOff=0;
+  hviaVal=1;
+  updateContactor(&batteryOnOff, &contactorPin);
+}
+
 void Scheduler() {
    /****************
         Function name:    Scheduler
@@ -157,7 +164,7 @@ void setup() {
     pinMode(hvCurrentPin, INPUT_PULLUP); 
     Timer1.initialize(100000);
     Timer1.attachInterrupt(timerISR);
-    attachInterrupt(digitalPinToInterrupt(hvilPin), updateContactor, RISING); 
+    attachInterrupt(digitalPinToInterrupt(hvilPin), hvilISR, RISING); 
     
     // initialize all printed data values for the touch screen
 

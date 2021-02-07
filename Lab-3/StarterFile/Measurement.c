@@ -6,6 +6,7 @@ float temperatureValues[] = { -10, 5, 25};
 float currentValues[] = { -20, 0, 20};
 float voltageValues[] = {10, 150, 45};
 
+
 void updateHVIL(float* hvilReadingPtr, int* pin) {
     /****************
         Function name: updateHVIL
