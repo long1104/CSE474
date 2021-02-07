@@ -157,7 +157,7 @@ void setup() {
     pinMode(hvCurrentPin, INPUT_PULLUP); 
     Timer1.initialize(100000);
     Timer1.attachInterrupt(timerISR);
-    
+    attachInterrupt(digitalPinToInterrupt(hvilPin), updateContactor, RISING); 
     
     // initialize all printed data values for the touch screen
 
