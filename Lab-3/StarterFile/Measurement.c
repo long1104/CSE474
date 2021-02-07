@@ -26,7 +26,7 @@ void updateTemperature(float* temperatureReadingPtr, int*pin, int* clockCountPtr
         Function description: updates the value of the temperature through the measured value
         Authors:    Long Nguyen / Chase Arline
     *****************/
-    *temperatureReadingPtr = (float)(analogRead(*pin)*55/1024)-10;
+    *temperatureReadingPtr = analogRead(*pin);//(float)(analogRead(*pin)*55/1024)-10;
     return;
 }
 
@@ -38,7 +38,7 @@ void updateHvCurrent(float* currentReadingPtr, int *pin, int* clockCountPtr) {
         Function description: updates the value of the current through the measured value
         Authors:    Long Nguyen / Chase Arline
     *****************/
-    *currentReadingPtr = ((float)analogRead(*pin)*50/1024)-25;
+    *currentReadingPtr = analogRead(*pin);//((float)analogRead(*pin)*50/1024)-25;
     return;
 }
 
@@ -50,7 +50,7 @@ void updateHvVoltage(float* voltageReadingPtr, int*pin, int* clockCountPtr) {
         Function description: updates the value of the voltage through the measured value
         Authors:    Long Nguyen / Chase Arline
     *****************/
-    *voltageReadingPtr = (float)analogRead(*pin)*450/1024;
+    *voltageReadingPtr = analogRead(*pin);//(float)analogRead(*pin)*450/1024;
     return;
 }
 
