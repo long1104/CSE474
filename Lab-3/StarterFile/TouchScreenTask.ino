@@ -159,7 +159,7 @@ void displayTask(int* currScreenPtr, Screen screenList[], bool newScreen) {
     return;
 }
 
-bool inputTask(int* currScreenPtr, Screen screenList[], Alarm alarms) {
+bool inputTask(int* currScreenPtr, Screen screenList[]) {
     /****************
     Function name: inputTask
     Function inputs: currScreenPtr: points to value of current screen, screenList: list of Screens
