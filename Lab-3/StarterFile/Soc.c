@@ -5,7 +5,7 @@ float socValues[] = {0, 50, 10};
 
 
 
-void updateStateOfCharge(float* stateOfChargeReadingPtr, int* clockCountPtr) {
+void updateStateOfCharge(float* stateOfChargeReadingPtr) {
     /****************
         Function name: updateStateOfCharge
         Function inputs: stateOfChargeReadingPtr: pointer to the status of the state of charge value, clockCountPtr: pointer to the value of cycle count
@@ -13,7 +13,7 @@ void updateStateOfCharge(float* stateOfChargeReadingPtr, int* clockCountPtr) {
         Function description: updates the value of the state of charge data through the measured value
         Authors:    Long Nguyen / Chase Arline
     *****************/
-    *stateOfChargeReadingPtr = socValues[(*clockCountPtr) % 3];
+    *stateOfChargeReadingPtr = 0;
     return;
 }
 
@@ -27,6 +27,6 @@ void socTask(void* sDataPtr) {
         Authors:    Long Nguyen / Chase Arline
     *****************/
     SocData* data = (SocData*) sDataPtr;
-    updateStateOfCharge(data->stateOfCharge, data->clockCountPtr);
+    updateStateOfCharge(data->stateOfCharge);
     return;
 }

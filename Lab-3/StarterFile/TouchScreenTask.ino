@@ -271,7 +271,8 @@ void touchScreenTask(void* tscreenDataPtr) {
     ****************/
     TouchScreenData* datasPtr = (TouchScreenData*) tscreenDataPtr;
     if (*(datasPtr->clockCount) == 0) {
-        displayTask(datasPtr->currentScreenPtr, datasPtr->screens, true, datasPtr->alarms);                         // if its the first time running the task, draw the whole screen
+        displayTask(datasPtr->currentScreenPtr, datasPtr->screens, true, datasPtr->alarms);  // if its the first time running the task, draw the whole screen
+        *(datasPtr->clockCount)++;
     }
     *(datasPtr->changeScreenPtr) = inputTask(datasPtr->currentScreenPtr, datasPtr->screens, datasPtr->alarms);    // get input from the touchscreen
     displayTask(datasPtr->currentScreenPtr, datasPtr->screens, *(datasPtr->changeScreenPtr), datasPtr->alarms);   // display data/labels/buttons

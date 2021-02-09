@@ -21,7 +21,7 @@ void updateHVIL(float* hvilReadingPtr, int* pin) {
     return;
 }
 
-void updateTemperature(float* temperatureReadingPtr, int*pin, int* clockCountPtr) {
+void updateTemperature(float* temperatureReadingPtr, int*pin) {
     /****************
         Function name:updateTemperature
         Function inputs:temperatureReadingPtr: pointer to status of temperature value, clockCountPtr: pointer to value of the cycle count
@@ -33,7 +33,7 @@ void updateTemperature(float* temperatureReadingPtr, int*pin, int* clockCountPtr
     return;
 }
 
-void updateHvCurrent(float* currentReadingPtr, int *pin, int* clockCountPtr) {
+void updateHvCurrent(float* currentReadingPtr, int *pin) {
     /****************
         Function name: updateHvCurrent
         Function inputs: currentReadingPtr: pointer to status of current value, clockCountPtr: pointer to the value of the cycle count
@@ -45,7 +45,7 @@ void updateHvCurrent(float* currentReadingPtr, int *pin, int* clockCountPtr) {
     return;
 }
 
-void updateHvVoltage(float* voltageReadingPtr, int*pin, int* clockCountPtr) {
+void updateHvVoltage(float* voltageReadingPtr, int*pin) {
     /****************
         Function name: updateHvVoltage
         Function inputs: voltageReadingPtr: pointer to status of voltage value, clockCountPtr: pointer to the value of the cycle count
@@ -69,9 +69,9 @@ void measurementTask(void* mDataPtr) {
 
     // Update all sensors
     updateHVIL(data->hvilStatus, data->hvilPin);
-    updateTemperature(data->temperature, data->temperaturePin, data->clockCountPtr);
-    updateHvCurrent(data->hvCurrent, data->hvCurrentPin, data->clockCountPtr);
-    updateHvVoltage(data->hvVoltage, data->hvVoltagePin, data->clockCountPtr);
+    updateTemperature(data->temperature, data->temperaturePin);
+    updateHvCurrent(data->hvCurrent, data->hvCurrentPin);
+    updateHvVoltage(data->hvVoltage, data->hvVoltagePin);
 
     return;
 }

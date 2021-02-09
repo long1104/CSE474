@@ -12,11 +12,10 @@ extern "C" {
 //
 typedef struct SocTaskData {
     float* stateOfCharge;
-    int* clockCountPtr;
 } SocData;
 
 void socTask (void*);
-void updateStateOfCharge(float* stateOfChargeReading, int* clockCountPtr);
+void updateStateOfCharge(float* stateOfChargeReading);
 
 #endif
 

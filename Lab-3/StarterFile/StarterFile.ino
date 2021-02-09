@@ -41,7 +41,6 @@ TCB socTCB = {};                                                                
 TCB touchScreenTCB = {};
 TCB *tasksPtr = NULL;
 
-int clockCount = 0;
 bool changeScreen = true;
 
 Screen batteryMonitor = {};
@@ -73,7 +72,7 @@ Alarm hvorAlarm = {};
 Alarm hviaAlarm = {};
 
 float zero = 0;                                                                     // Used for any non-changing printed data (labels)
-
+int clockCount=0;
 // Measurement Data
 MeasurementData measure;                                                            // Measurement Data structure, used in TCB
 float hvCurrent = 0;                                                                // high voltage current value
@@ -152,8 +151,7 @@ void loop() {
       *****************/
     while (1) {
       if(timerFlag){
-          Scheduler();
-          clockCount++;                                                                               // times the scheduler has run
+          Scheduler();                                                                           // times the scheduler has run
           timerFlag=0;
           Serial.println(hvCurrent);
       }
@@ -210,7 +208,7 @@ void setup() {
     hvorAlarm = {&hvorVal, &hvVoltage, &hvorAck};
 
     // Initialize Measurement TCB
-    measure                     = {&HVIL, &hvilPin, &temperature, &temperaturePin, &hvCurrent, &hvCurrentPin, &hvVoltage, &hvVoltagePin, &clockCount};
+    measure                     = {&HVIL, &hvilPin, &temperature, &temperaturePin, &hvCurrent, &hvCurrentPin, &hvVoltage, &hvVoltagePin};
     measurementTCB.task         = &measurementTask;
     measurementTCB.taskDataPtr  = (void*) &measure;
     measurementTCB.next         = &alarmTCB;
@@ -244,7 +242,7 @@ void setup() {
 
 
     // Initialize SOC TCB
-    soc                        = {&socVal, &clockCount};
+    soc                        = {&socVal};
     socTCB.task                = &socTask;
     socTCB.taskDataPtr         = (void*) &soc;
     socTCB.next                = &touchScreenTCB;
