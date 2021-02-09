@@ -205,20 +205,20 @@ void setup() {
     hviaAlarm = {&hviaVal, &HVIL, &hviaAck};
     hvorAlarm = {&hvorVal, &hvVoltage, &hvorAck};
 
+    //Initialize Screen structs for interface
+    batteryMonitor = Screen{&batteryButton, BATTERY_NUM_PRINTS, batteryPrints};          
+    alarmMonitor = Screen{&alarmButton, ALARM_NUM_PRINTS, alarmPrints};
+    measurementMonitor = Screen{NULL, MEASURE_NUM_PRINTS, measurementPrints};
+
     // Initialize Measurement TCB
     measure                     = {&HVIL, &hvilPin, &temperature, &temperaturePin, &hvCurrent, &hvCurrentPin, &hvVoltage, &hvVoltagePin};
     measurementTCB.task         = &measurementTask;
     measurementTCB.taskDataPtr  = (void*) &measure;
     measurementTCB.next         = &alarmTCB;
     measurementTCB.prev         = NULL;
-
-    //Initialize Screen structs for interface
-    batteryMonitor = Screen{&batteryButton, BATTERY_NUM_PRINTS, batteryPrints};          
-    alarmMonitor = Screen{&alarmButton, ALARM_NUM_PRINTS, alarmPrints};
-    measurementMonitor = Screen{NULL, MEASURE_NUM_PRINTS, measurementPrints};
-
+    
     //Initialize touchscreen/display TCB
-    tscreenData = {&clockCount, &currentScreen, &changeScreen , {measurementMonitor, alarmMonitor, batteryMonitor}, {overCurrentAlarm, hviaAlarm, hvorAlarm}};
+    tscreenData = {&clockCount, &currentScreen, &changeScreen ,  {overCurrentAlarm, hviaAlarm, hvorAlarm}, {measurementMonitor, alarmMonitor, batteryMonitor}};
     touchScreenTCB.task = &touchScreenTask;
     touchScreenTCB.taskDataPtr = (void*) &tscreenData;
     touchScreenTCB.next = &contactorTCB;
@@ -230,6 +230,8 @@ void setup() {
     contactorTCB.taskDataPtr   = (void*) &contactor;
     contactorTCB.next          = NULL;
     contactorTCB.prev          = &touchScreenTCB;
+
+
 
     // Initialize Alarm TCB
     alarm                      = {&overCurrentAlarm, &hvorAlarm, &hviaAlarm};

@@ -23,14 +23,14 @@ void setCursor(int x, int y) {
     return;
 }
 
-void deleteButton(XYButton button){
-   /****************
-        Function name: drawButton
-        Function inputs: button: the XYButton to be drawn on the screen
-        Function outputs: void return
-        Function description: draws the XYButton on the TFT screen
-        Authors:    Long Nguyen / Chase Arline
-    ****************/
+void deleteButton(XYButton button) {
+    /****************
+         Function name: drawButton
+         Function inputs: button: the XYButton to be drawn on the screen
+         Function outputs: void return
+         Function description: draws the XYButton on the TFT screen
+         Authors:    Long Nguyen / Chase Arline
+     ****************/
     tft.fillRect(button.x, button.y, button.xLength, button.yLength, BACKGROUND_COLOR);
     tft.setTextColor(BACKGROUND_COLOR);
     tft.setTextSize(BUTTON_TEXT_SIZE);
@@ -42,7 +42,7 @@ void deleteButton(XYButton button){
     tft.print(*(button.buttonLabelPtr));
     return;
 }
- 
+
 void drawButton(XYButton button) {
     /****************
         Function name: drawButton
@@ -199,7 +199,7 @@ bool inputTask(int* currScreenPtr, Screen screenList[], Alarm alarms[]) {
         Authors:    Long Nguyen / Chase Arline
     ****************/
     bool emergency = emergencyCheck(alarms);
-//    bool emergency = false;
+    //    bool emergency = false;
     Point point = getTouchInput();
     bool newScreen = false;
     if (isButton(point, previous) && !emergency) {
@@ -235,7 +235,7 @@ void drawScreen(Screen screen, bool newScreen, Alarm alarms[], int* currScreenPt
         Authors:    Long Nguyen / Chase Arline
     ****************/
     if (newScreen) {
-        acknowledgeDrawn=false;
+        acknowledgeDrawn = false;
         tft.fillScreen(BACKGROUND_COLOR);
         drawButton(previous);
         drawButton(next);
@@ -245,16 +245,20 @@ void drawScreen(Screen screen, bool newScreen, Alarm alarms[], int* currScreenPt
         }
 
         if (screen.buttonPtr != NULL) {
-            if (*currScreenPtr != 1 || emergencyCheck(alarms)) {
+            if (*currScreenPtr != 1) {
+                drawButton(*(screen.buttonPtr));
+
+            } else if (emergencyCheck(alarms)) {
+                acknowledgeDrawn = true;
                 drawButton(*(screen.buttonPtr));
             }
         }
     } else if (*currScreenPtr == 1 && !emergencyCheck(alarms)) {
-        acknowledgeDrawn=false;
+        acknowledgeDrawn = false;
         Serial.println(emergencyCheck(alarms));
         deleteButton(*(screen.buttonPtr));
     } else if (*currScreenPtr == 1 && emergencyCheck(alarms) && !acknowledgeDrawn) {
-        acknowledgeDrawn=true;
+        acknowledgeDrawn = true;
         Serial.println(emergencyCheck(alarms));
         drawButton(*(screen.buttonPtr));
     }
