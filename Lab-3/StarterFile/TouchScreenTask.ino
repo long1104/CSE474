@@ -212,7 +212,7 @@ bool inputTask(int* currScreenPtr, Screen screenList[], Alarm alarms[]) {
         *currScreenPtr = 1;
         newScreen = true;
     }
-    if (isButton(point, *(screenList[2].buttonPtr)) && *currScreenPtr == 2) {
+    if (isButton(point, *(screenList[2].buttonPtr)) && *currScreenPtr == 2 && *(alarms[2].alarmVal)==0) {
         *(screenList[2].dataPtr[0]->dataInPtr) = ((int) * (screenList[2].dataPtr[0]->dataInPtr) + 1) % 2;
     }
 
@@ -247,7 +247,6 @@ void drawScreen(Screen screen, bool newScreen, Alarm alarms[], int* currScreenPt
         if (screen.buttonPtr != NULL) {
             if (*currScreenPtr != 1) {
                 drawButton(*(screen.buttonPtr));
-
             } else if (emergencyCheck(alarms)) {
                 acknowledgeDrawn = true;
                 drawButton(*(screen.buttonPtr));
