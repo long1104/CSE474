@@ -24,11 +24,13 @@ TouchScreen ts = TouchScreen(XP, YP, XM, YM, 374);                              
 char* prevLabelPtr = "Prev";
 char* nextLabelPtr = "Next";
 char* onOffLabelPtr = "BATTERY TOGGLE";
+char* ackLabel = "ACKNOWLEDGE ALARMS";
 
 //Initialization of buttons on the screens
 XYButton previous = {0, 280, 80, 40, PURPLE, &prevLabelPtr};
 XYButton next = {160, 280, 80, 40, PURPLE, &nextLabelPtr};
 XYButton batteryButton = {0, 0, 240, 160, PURPLE, &onOffLabelPtr};
+XYButton alarmButton = {0,160, 240, 60, PURPLE, &ackLabel};
 
 
 //Task Control Blocks
@@ -214,7 +216,7 @@ void setup() {
 
     //Initialize Screen structs for interface
     batteryMonitor = Screen{&batteryButton, BATTERY_NUM_PRINTS, batteryPrints};          
-    alarmMonitor = Screen{NULL, ALARM_NUM_PRINTS, alarmPrints};
+    alarmMonitor = Screen{&alarmButton, ALARM_NUM_PRINTS, alarmPrints};
     measurementMonitor = Screen{NULL, MEASURE_NUM_PRINTS, measurementPrints};
 
     //Initialize touchscreen/display TCB

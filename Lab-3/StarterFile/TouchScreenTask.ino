@@ -159,7 +159,7 @@ void displayTask(int* currScreenPtr, Screen screenList[], bool newScreen) {
     return;
 }
 
-bool inputTask(int* currScreenPtr, Screen screenList[]) {
+bool inputTask(int* currScreenPtr, Screen screenList[], Alarm alarms) {
     /****************
     Function name: inputTask
     Function inputs: currScreenPtr: points to value of current screen, screenList: list of Screens
@@ -167,6 +167,7 @@ bool inputTask(int* currScreenPtr, Screen screenList[]) {
     Function description: handles touch input from the user and whether any buttons are pressed, determines if a new screen needs to be drawn
     Authors:    Long Nguyen / Chase Arline
     ****************/
+    
     Point point = getTouchInput();
     bool newScreen = false;
     if (isButton(point, previous)) {
