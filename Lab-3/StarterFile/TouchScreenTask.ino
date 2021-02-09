@@ -212,7 +212,7 @@ bool inputTask(int* currScreenPtr, Screen screenList[], Alarm alarms[]) {
         *currScreenPtr = 1;
         newScreen = true;
     }
-    if (isButton(point, *(screenList[2].buttonPtr)) && *currScreenPtr == 2 && *(alarms[2].alarmVal)==0) {
+    if (isButton(point, *(screenList[2].buttonPtr)) && *currScreenPtr == 2 && *(alarms[1].alarmVal)==0) {
         *(screenList[2].dataPtr[0]->dataInPtr) = ((int) * (screenList[2].dataPtr[0]->dataInPtr) + 1) % 2;
     }
 
