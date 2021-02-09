@@ -118,7 +118,8 @@ void timerISR(){
 }
 
 void hvilISR(){
-  Serial.println("hvil isr");
+//  Serial.println("hvil isr");
+//  Serial.println(digitalRead(21));
   batteryOnOff=0;
   hviaVal=1;
   updateContactor(&batteryOnOff, &contactorPin);
@@ -154,6 +155,7 @@ void loop() {
           Scheduler();
           clockCount++;                                                                               // times the scheduler has run
           timerFlag=0;
+          Serial.println(hvCurrent);
       }
     }
     return;

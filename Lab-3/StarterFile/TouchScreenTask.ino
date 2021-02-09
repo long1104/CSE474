@@ -182,7 +182,7 @@ void displayTask(int* currScreenPtr, Screen screenList[], bool newScreen, Alarm 
 bool emergencyCheck(Alarm alarms[]) {
     bool emergency = false;
     for (int i = 0; i < 3; i++) {
-        if (*(alarms[i].alarmVal) == 1) {
+        if (*(alarms[i].alarmVal) == 1 && *(alarms[i].ack) == 0) {
             emergency = true;
             break;
         }
@@ -199,7 +199,7 @@ bool inputTask(int* currScreenPtr, Screen screenList[], Alarm alarms[]) {
         Authors:    Long Nguyen / Chase Arline
     ****************/
     bool emergency = emergencyCheck(alarms);
-
+//    bool emergency = false;
     Point point = getTouchInput();
     bool newScreen = false;
     if (isButton(point, previous) && !emergency) {
@@ -214,6 +214,14 @@ bool inputTask(int* currScreenPtr, Screen screenList[], Alarm alarms[]) {
     }
     if (isButton(point, *(screenList[2].buttonPtr)) && *currScreenPtr == 2) {
         *(screenList[2].dataPtr[0]->dataInPtr) = ((int) * (screenList[2].dataPtr[0]->dataInPtr) + 1) % 2;
+    }
+
+    if (isButton(point, *(screenList[1].buttonPtr)) && *currScreenPtr == 1) {
+        for (int i = 0; i < 3; i++) {
+            if (*(alarms[i].alarmVal) == 1) {
+                *(alarms[i].ack) = 1;
+            }
+        }
     }
     return newScreen;
 }
@@ -240,6 +248,12 @@ void drawScreen(Screen screen, bool newScreen, Alarm alarms[], int* currScreenPt
                 drawButton(*(screen.buttonPtr));
             }
         }
+    } else if (*currScreenPtr == 1 && !emergencyCheck(alarms)) {
+        Serial.println(emergencyCheck(alarms));
+        deleteButton(*(screen.buttonPtr));
+    } else if (*currScreenPtr == 1 && emergencyCheck(alarms)) {
+        Serial.println(emergencyCheck(alarms));
+        drawButton(*(screen.buttonPtr));
     }
     return;
 }

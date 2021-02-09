@@ -11,8 +11,12 @@ void updateCurrentAlarm(Alarm alarm) {
     Function description: updates the overCurrent alarm status every 2 cycles
     Authors:    Long Nguyen / Chase Arline
     ****************/
-    *(alarm.alarmVal) = (float)(*(alarm.measuredVal)>=20 || *(alarm.measuredVal) <= -5);
-    *(alarm.alarmVal) += (float)*(alarm.ack);
+    *(alarm.alarmVal) = (float)(*(alarm.measuredVal)>=20.0 || (int)*(alarm.measuredVal) <= -5.0);
+    if (*(alarm.alarmVal) != 0) {
+        *(alarm.alarmVal) += (float)*(alarm.ack);
+    } else {
+        *(alarm.ack) = 0;
+    }
     return;
 }
 
@@ -24,8 +28,12 @@ void updateHVORAlarm(Alarm alarm) {
     Function description: updates the hvor alarm status every three cycles
     Authors:    Long Nguyen / Chase Arline
     ****************/
-    *(alarm.alarmVal) = (float)(*(alarm.measuredVal)>=405 || *(alarm.measuredVal) <= 280);
-    *(alarm.alarmVal) += (float)*(alarm.ack);
+    *(alarm.alarmVal) = (float)((int)*(alarm.measuredVal)>=405.0 || (int)*(alarm.measuredVal) <= 280.0);
+    if (*(alarm.alarmVal) != 0) {
+        *(alarm.alarmVal) += (float)*(alarm.ack);
+    } else {
+        *(alarm.ack) = 0;
+    }
     return;
 }
 
@@ -38,7 +46,11 @@ void updateHVIAAlarm(Alarm alarm) {
     Authors:    Long Nguyen / Chase Arline
     ****************/
     *(alarm.alarmVal) = !*(alarm.measuredVal);
-    *(alarm.alarmVal) += (float)*(alarm.ack);
+    if (*(alarm.alarmVal) != 0) {
+        *(alarm.alarmVal) += (float)*(alarm.ack);
+    } else {
+        *(alarm.ack) = 0;
+    }
     return;
 }
 
