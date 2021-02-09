@@ -9,7 +9,7 @@
 #define PADDING_X 10
 #define PADDING_Y 10
 
-
+bool acknowledgeDrawn = false;
 
 void setCursor(int x, int y) {
     /****************
@@ -235,6 +235,7 @@ void drawScreen(Screen screen, bool newScreen, Alarm alarms[], int* currScreenPt
         Authors:    Long Nguyen / Chase Arline
     ****************/
     if (newScreen) {
+        acknowledgeDrawn=false;
         tft.fillScreen(BACKGROUND_COLOR);
         drawButton(previous);
         drawButton(next);
@@ -249,9 +250,11 @@ void drawScreen(Screen screen, bool newScreen, Alarm alarms[], int* currScreenPt
             }
         }
     } else if (*currScreenPtr == 1 && !emergencyCheck(alarms)) {
+        acknowledgeDrawn=false;
         Serial.println(emergencyCheck(alarms));
         deleteButton(*(screen.buttonPtr));
-    } else if (*currScreenPtr == 1 && emergencyCheck(alarms)) {
+    } else if (*currScreenPtr == 1 && emergencyCheck(alarms) && !acknowledgeDrawn) {
+        acknowledgeDrawn=true;
         Serial.println(emergencyCheck(alarms));
         drawButton(*(screen.buttonPtr));
     }
