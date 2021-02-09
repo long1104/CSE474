@@ -46,8 +46,9 @@ typedef struct PointStruct {
 typedef struct TouchScreenTaskData {
     int* clockCount;
     int* currentScreenPtr;
-    bool *changeScreenPtr;
-    Screen screens[];
+    bool *changeScreenPtr;   
+    Screen screens[3];
+    Alarm alarms[3];
 } TouchScreenData;
 
 

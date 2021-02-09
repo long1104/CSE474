@@ -3,7 +3,7 @@
 
 char *alarm_arr[] = {"NOT ACTIVE", "ACTIVE, NOT ACKNOWLEDGED", "ACTIVE, ACKNOWLEDGED"};
 
-void updateCurrentAlarm(float *currentPtr, int* clockCountPtr) {
+void updateCurrentAlarm(Alarm alarm) {
     /****************
     Function name: updateCurrentAlarm
     Function inputs: currentPtr: pointer to overCurrent alarm 
@@ -11,11 +11,12 @@ void updateCurrentAlarm(float *currentPtr, int* clockCountPtr) {
     Function description: updates the overCurrent alarm status every 2 cycles
     Authors:    Long Nguyen / Chase Arline
     ****************/
-    *currentPtr = ((*clockCountPtr) % 6) / 2;
+    *(alarm.alarmVal) = (float)(*(alarm.measuredVal)>=20 || *(alarm.measuredVal) <= -5);
+    *(alarm.alarmVal) += (float)*(alarm.ack);
     return;
 }
 
-void updateHVORAlarm(float *hvorPtr, int* clockCountPtr) {
+void updateHVORAlarm(Alarm alarm) {
     /****************
     Function name: updateHVORAlarm
     Function inputs: hvorPtr: pointer to hvor alarm 
@@ -23,11 +24,12 @@ void updateHVORAlarm(float *hvorPtr, int* clockCountPtr) {
     Function description: updates the hvor alarm status every three cycles
     Authors:    Long Nguyen / Chase Arline
     ****************/
-    *hvorPtr = ((*clockCountPtr) % 9) / 3;
+    *(alarm.alarmVal) = (float)(*(alarm.measuredVal)>=405 || *(alarm.measuredVal) <= 280);
+    *(alarm.alarmVal) += (float)*(alarm.ack);
     return;
 }
 
-void updateHVIAAlarm(float *hviaPtr, int* clockCountPtr) {
+void updateHVIAAlarm(Alarm alarm) {
     /****************
     Function name: updateHVIAAlarm
     Function inputs: hviaPtr: pointer to hvia alarm, clockCountPtr: pointer to clockCount
@@ -35,7 +37,8 @@ void updateHVIAAlarm(float *hviaPtr, int* clockCountPtr) {
     Function description: updates the hvia alarm status every cycle
     Authors:    Long Nguyen / Chase Arline
     ****************/
-    *hviaPtr = (*clockCountPtr) % 3; 
+    *(alarm.alarmVal) = !*(alarm.measuredVal);
+    *(alarm.alarmVal) += (float)*(alarm.ack);
     return;
 }
 
@@ -49,8 +52,8 @@ void alarmTask(void* aDataPtr) {
     *****************/
     AlarmData* data = (AlarmData*) aDataPtr;
     // Update all sensors
-    updateCurrentAlarm(data->overCurrent, data->clockCountPtr);
-    updateHVORAlarm(data->hvor_val, data->clockCountPtr);
-    updateHVIAAlarm(data->hvia_val, data->clockCountPtr);
+    updateCurrentAlarm(*(data->overCurrentAlarm));
+    updateHVORAlarm(*(data->hvorAlarm));
+    updateHVIAAlarm(*(data->hviaAlarm));
     return;
 }

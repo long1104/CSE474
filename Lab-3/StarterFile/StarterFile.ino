@@ -66,6 +66,10 @@ PrintedData *measurementPrints[] = {} ;  // holds measurement data
 PrintedData measurementLabel = {};                                                  // Label for measurement screen
 PrintedData alarmLabel = {};                                                        // Label for the alarm screen
 
+Alarm overCurrentAlarm = {};
+Alarm hvorAlarm = {};
+Alarm hviaAlarm = {};
+
 float zero = 0;                                                                     // Used for any non-changing printed data (labels)
 
 // Measurement Data
@@ -89,6 +93,11 @@ AlarmData alarm;                                                                
 float hviaVal = 0;                                                                  // high voltage interlock alarm status
 float overCurrent = 0;                                                              // over-current alarm status
 float hvorVal = 0;                                                                  // high voltage out of range alarm status
+
+bool hviaAck = false;
+bool hvorAck = false;
+bool overCurrentAck = false;
+
 
 float batteryOnOff = 0;                                                             // battery status (open/closed)
 
@@ -191,7 +200,10 @@ void setup() {
     PrintedData *batteryPrints[] =  {&batteryData};                                                                                         // holds battery data
     PrintedData *alarmPrints[] = {&alarmLabel, &hivaData, &overCurrentData, &hvorData};                                                    // holds alarm data
     PrintedData *measurementPrints[] = {&measurementLabel, &socDataPrint, &temperatureData, &hvCurrentData, &hvVoltageData, &hvilData};    // holds measurement data
-    
+
+    overCurrentAlarm = {&overCurrent, &hvCurrent, &overCurrentAck};
+    hviaAlarm = {&hviaVal, &HVIL, &hviaAck};
+    hvorAlarm = {&hvorVal, &hvVoltage, &hvorAck};
 
     // Initialize Measurement TCB
     measure                     = {&HVIL, &hvilPin, &temperature, &temperaturePin, &hvCurrent, &hvCurrentPin, &hvVoltage, &hvVoltagePin, &clockCount};
@@ -206,7 +218,7 @@ void setup() {
     measurementMonitor = Screen{NULL, MEASURE_NUM_PRINTS, measurementPrints};
 
     //Initialize touchscreen/display TCB
-    tscreenData = {&clockCount, &currentScreen, &changeScreen , {measurementMonitor, alarmMonitor, batteryMonitor}};
+    tscreenData = {&clockCount, &currentScreen, &changeScreen , {measurementMonitor, alarmMonitor, batteryMonitor}, {overCurrentAlarm, hviaAlarm, hvorAlarm}};
     touchScreenTCB.task = &touchScreenTask;
     touchScreenTCB.taskDataPtr = (void*) &tscreenData;
     touchScreenTCB.next = &contactorTCB;
@@ -219,9 +231,8 @@ void setup() {
     contactorTCB.next          = NULL;
     contactorTCB.prev          = &touchScreenTCB;
 
-
     // Initialize Alarm TCB
-    alarm                      = {&hviaVal, &overCurrent, &hvorVal, &clockCount};
+    alarm                      = {&overCurrentAlarm, &hvorAlarm, &hviaAlarm};
     alarmTCB.task              = &alarmTask;
     alarmTCB.taskDataPtr       = (void*) &alarm;
     alarmTCB.next              = &socTCB;

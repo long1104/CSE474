@@ -10,21 +10,26 @@ extern "C" {
 #include <stdbool.h>
 #include <Arduino.h>
 
+typedef struct AlarmStruct {
+  float* alarmVal;
+  float* measuredVal;
+  bool* ack;
+}Alarm;
+
 //Used for updating the three alarms using a TCB
 typedef struct AlarmTaskData {
-    float* hvia_val;
-    float* overCurrent;
-    float* hvor_val;
-    int* clockCountPtr;
+    Alarm *overCurrentAlarm;
+    Alarm *hvorAlarm;
+    Alarm *hviaAlarm;
 } AlarmData;
 
 
 extern char *alarm_arr[];
 
 void alarmTask (void*);
-void updateHVIAAlarm(float *hvia, int* clockCountPtr);
-void updateHVORAlarm(float *hvor, int* clockCountPtr);
-void updateCurrentAlarm(float *current, int* clockCountPtr);
+void updateHVIAAlarm(Alarm alarm);
+void updateHVORAlarm(Alarm alarm);
+void updateCurrentAlarm(Alarm alarm);
 
 #endif
 
