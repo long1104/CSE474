@@ -1,10 +1,5 @@
 #include "Soc.h"
 
-
-float socValues[] = {0, 50, 10};
-
-
-
 void updateStateOfCharge(float* stateOfChargeReadingPtr) {
     /****************
         Function name: updateStateOfCharge
