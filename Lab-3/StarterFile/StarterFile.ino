@@ -24,13 +24,13 @@ TouchScreen ts = TouchScreen(XP, YP, XM, YM, 374);                              
 char* prevLabelPtr = "Prev";
 char* nextLabelPtr = "Next";
 char* onOffLabelPtr = "BATTERY TOGGLE";
-char* ackLabel = "ACKNOWLEDGE ALARMS";
+char* ackLabel = "ACKNOWLEDGE";
 
 //Initialization of buttons on the screens
 XYButton previous = {0, 280, 80, 40, PURPLE, &prevLabelPtr};
 XYButton next = {160, 280, 80, 40, PURPLE, &nextLabelPtr};
 XYButton batteryButton = {0, 0, 240, 160, PURPLE, &onOffLabelPtr};
-XYButton alarmButton = {0,160, 240, 60, PURPLE, &ackLabel};
+XYButton alarmButton = {50,160,140, 20, PURPLE, &ackLabel};
 
 
 //Task Control Blocks
@@ -108,7 +108,8 @@ float socVal = 0;                                                               
 
 // Touch Screen Task data
 TouchScreenData tscreenData = {};                                                   // Touch screen data struct, used in TCB
-int currentScreen = 0;                                                              // indicates which screen is currently displayed
+int currentScreen = 0;
+int lastScreen = 0;                                                                 // indicates which screen is currently displayed
 
 volatile bool timerFlag = 0;
 
@@ -132,10 +133,12 @@ void Scheduler() {
         Authors:    Long Nguyen / Chase Arline
       *****************/
     TCB* current = tasksPtr;
+    unsigned long ms = millis();
     while (current != NULL) {
           current->task(current->taskDataPtr);
           current = current->next;
     }
+    Serial.print("scheduler: ");Serial.println(millis()-ms);
     return;
 }
 
@@ -151,7 +154,6 @@ void loop() {
       if(timerFlag){
           Scheduler();                                                                           // times the scheduler has run
           timerFlag=0;
-          Serial.println(hvCurrent);
       }
     }
     return;
@@ -218,7 +220,7 @@ void setup() {
     measurementTCB.prev         = NULL;
     
     //Initialize touchscreen/display TCB
-    tscreenData = {&clockCount, &currentScreen, &changeScreen ,  {overCurrentAlarm, hviaAlarm, hvorAlarm}, {measurementMonitor, alarmMonitor, batteryMonitor}};
+    tscreenData = {&clockCount, &currentScreen, &lastScreen, &changeScreen ,  {overCurrentAlarm, hviaAlarm, hvorAlarm}, {measurementMonitor, alarmMonitor, batteryMonitor}};
     touchScreenTCB.task = &touchScreenTask;
     touchScreenTCB.taskDataPtr = (void*) &tscreenData;
     touchScreenTCB.next = &contactorTCB;

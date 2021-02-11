@@ -3,7 +3,7 @@
 #include "TouchScreenTask.h"
 
 #define BUTTON_TEXT_SIZE 2
-#define TOUCH_TIMEOUT 20
+#define TOUCH_TIMEOUT 10
 #define  PIXELS_PER_CHAR_X 6
 #define PIXELS_PER_CHAR_Y 8
 #define PADDING_X 10
@@ -111,6 +111,13 @@ void drawLabel(PrintedData *printablePtr) {
     return;
 }
 
+void deletePrintedData(PrintedData *printablePtr){
+    String boxDim = String(printablePtr->labelPtr);
+    boxDim.concat(printDataToString(printablePtr->oldData, printablePtr->type));
+    boxDim.concat(printablePtr->unitsPtr);
+    tft.fillRect(printablePtr->x+PADDING_X, printablePtr->y+PADDING_Y, boxDim.length()*PIXELS_PER_CHAR_X*printablePtr->textSize, PIXELS_PER_CHAR_Y*printablePtr->textSize, BACKGROUND_COLOR);
+}
+
 void drawData(PrintedData* printablePtr, bool newScreen) {
     /****************
         Function name: drawData
@@ -119,23 +126,37 @@ void drawData(PrintedData* printablePtr, bool newScreen) {
         Function description: prints data onto the screen (only if old data != new data)
         Authors:    Long Nguyen / Chase Arline
     ****************/
-    String newData = String(printablePtr->labelPtr);
-    int pixelShift = printablePtr->textSize * newData.length() * PIXELS_PER_CHAR_X;                    //shifting over in order to avoid redrawing label (only draw the changed data)
+    String labelL = printablePtr->labelPtr;
+    int pixelShift = printablePtr->textSize * labelL.length() * PIXELS_PER_CHAR_X;                    //shifting over in order to avoid redrawing label (only draw the changed data)
     float temp = *(printablePtr->dataInPtr);
     if (temp != printablePtr->oldData || newScreen) {
-        tft.setTextSize(printablePtr->textSize);
-        setCursor(printablePtr->x + pixelShift, printablePtr->y);
+      
+        //tft.setTextSize(printablePtr->textSize);
+        //setCursor(printablePtr->x + pixelShift, printablePtr->y);
+        //String dataString = printDataToString(printablePtr->oldData, printablePtr->type);
+        //dataString.concat(printablePtr->unitsPtr);
+        //tft.setTextColor(BACKGROUND_COLOR);
+        //tft.print(dataString);                                                            //print over previous data with background color
+        String clearBox = printDataToString(printablePtr->oldData, printablePtr->type);
+        clearBox.concat(printablePtr->unitsPtr);
+        tft.fillRect(printablePtr->x+pixelShift+PADDING_X, printablePtr->y+PADDING_Y, clearBox.length()*PIXELS_PER_CHAR_X*printablePtr->textSize,PIXELS_PER_CHAR_Y, BACKGROUND_COLOR);
+        printablePtr->oldData = temp;
         String dataString = printDataToString(printablePtr->oldData, printablePtr->type);
         dataString.concat(printablePtr->unitsPtr);
-        tft.setTextColor(BACKGROUND_COLOR);
-        tft.print(dataString);                                                            //print over previous data with background color
-
-        printablePtr->oldData = temp;
         setCursor(printablePtr->x + pixelShift, printablePtr->y);
-        dataString = printDataToString(printablePtr->oldData, printablePtr->type);
+        tft.setTextColor(printablePtr->color);
+        tft.setTextSize(printablePtr->textSize);
+        tft.print(dataString);                                                          //prints new data where old data used to be (normal text color)       
+        /*
+        setCursor(printablePtr->x+pixelShift, printablePtr->y);
+        printablePtr->oldData=temp;
+        String dataString = printDataToString(printablePtr->oldData, printablePtr->type);
         dataString.concat(printablePtr->unitsPtr);
         tft.setTextColor(printablePtr->color);
-        tft.println(dataString);                                                          //prints new data where old data used to be (normal text color)
+        tft.setTextSize(printablePtr->textSize);
+        unsigned long start = millis();
+        tft.print(dataString);
+        Serial.print("draw data: "); Serial.println(millis()-start);*/
     }
     return;
 }
@@ -164,7 +185,7 @@ String printDataToString(float val, PRINT_TYPE type) {
     return ret;
 }
 
-void displayTask(int* currScreenPtr, Screen screenList[], bool newScreen, Alarm alarms[]) {
+void displayTask(int* currScreenPtr, Screen screenList[], bool newScreen, Alarm alarms[], int* lastScreenPtr) {
     /****************
         Function name: displayTask
         Function inputs: currScreenPtr: points to value of current screen, screenList: list of all screens, newScreen: are we drawing a new screen?
@@ -172,7 +193,7 @@ void displayTask(int* currScreenPtr, Screen screenList[], bool newScreen, Alarm 
         Function description: draws all data structures that are inside of the screen, draws new screen if newScreen is true
         Authors:    Long Nguyen / Chase Arline
     ****************/
-    drawScreen((screenList[*currScreenPtr]), newScreen, alarms, currScreenPtr);
+    drawScreen(screenList, newScreen, alarms, currScreenPtr, lastScreenPtr );
     for (int i = 0; i < screenList[*currScreenPtr].dataLen; i++) {
         drawData(screenList[*currScreenPtr].dataPtr[i], newScreen);
     }
@@ -190,7 +211,7 @@ bool emergencyCheck(Alarm alarms[]) {
     return emergency;
 }
 
-bool inputTask(int* currScreenPtr, Screen screenList[], Alarm alarms[]) {
+bool inputTask(int* currScreenPtr, Screen screenList[], Alarm alarms[], int* lastScreenPtr) {
     /****************
         Function name: inputTask
         Function inputs: currScreenPtr: points to value of current screen, screenList: list of Screens
@@ -203,12 +224,15 @@ bool inputTask(int* currScreenPtr, Screen screenList[], Alarm alarms[]) {
     Point point = getTouchInput();
     bool newScreen = false;
     if (isButton(point, previous) && !emergency) {
+        *lastScreenPtr = *currScreenPtr;
         *currScreenPtr = (*currScreenPtr + 2) % 3;
         newScreen = true;
     } else if (isButton(point, next) && !emergency) {
+        *lastScreenPtr = *currScreenPtr;
         *currScreenPtr = (*currScreenPtr + 1) % 3;
         newScreen = true;
     } else if (emergency && *currScreenPtr != 1) {
+        *lastScreenPtr = *currScreenPtr;
         *currScreenPtr = 1;
         newScreen = true;
     }
@@ -226,7 +250,7 @@ bool inputTask(int* currScreenPtr, Screen screenList[], Alarm alarms[]) {
     return newScreen;
 }
 
-void drawScreen(Screen screen, bool newScreen, Alarm alarms[], int* currScreenPtr) {
+void drawScreen(Screen screens[], bool newScreen, Alarm alarms[], int* currScreenPtr, int* lastScreenPtr) {
     /****************
         Function name: drawScreen
         Function inputs: screen: the screen to be drawn, newScreen: are we updating the screen? (function is called every task loop)
@@ -235,31 +259,34 @@ void drawScreen(Screen screen, bool newScreen, Alarm alarms[], int* currScreenPt
         Authors:    Long Nguyen / Chase Arline
     ****************/
     if (newScreen) {
-        acknowledgeDrawn = false;
-        tft.fillScreen(BACKGROUND_COLOR);
-        drawButton(previous);
-        drawButton(next);
 
-        for (int i = 0; i < screen.dataLen; i++) {
-            drawLabel(screen.dataPtr[i]);                               //for each printed data, print its label
+        for (int i = 0; i < screens[*lastScreenPtr].dataLen; i++) {
+            deletePrintedData(screens[*lastScreenPtr].dataPtr[i]); //for each printed data, print its label
         }
-
-        if (screen.buttonPtr != NULL) {
+        if(screens[*lastScreenPtr].buttonPtr != NULL){
+            deleteButton(*(screens[*lastScreenPtr].buttonPtr));
+        }
+        acknowledgeDrawn = false;
+        for (int i = 0; i < screens[*currScreenPtr].dataLen; i++) {
+            drawLabel(screens[*currScreenPtr].dataPtr[i]);                               //for each printed data, print its label
+        }
+        
+        if (screens[*currScreenPtr].buttonPtr != NULL) {
             if (*currScreenPtr != 1) {
-                drawButton(*(screen.buttonPtr));
+                drawButton(*(screens[*currScreenPtr].buttonPtr));
             } else if (emergencyCheck(alarms)) {
                 acknowledgeDrawn = true;
-                drawButton(*(screen.buttonPtr));
+                drawButton(*(screens[*currScreenPtr].buttonPtr));
             }
         }
-    } else if (*currScreenPtr == 1 && !emergencyCheck(alarms)) {
+    } else if (*currScreenPtr == 1 && !emergencyCheck(alarms) && acknowledgeDrawn) {
         acknowledgeDrawn = false;
         Serial.println(emergencyCheck(alarms));
-        deleteButton(*(screen.buttonPtr));
+        deleteButton(*(screens[*currScreenPtr].buttonPtr));
     } else if (*currScreenPtr == 1 && emergencyCheck(alarms) && !acknowledgeDrawn) {
         acknowledgeDrawn = true;
         Serial.println(emergencyCheck(alarms));
-        drawButton(*(screen.buttonPtr));
+        drawButton(*(screens[*currScreenPtr].buttonPtr));
     }
     return;
 }
@@ -274,10 +301,13 @@ void touchScreenTask(void* tscreenDataPtr) {
     ****************/
     TouchScreenData* datasPtr = (TouchScreenData*) tscreenDataPtr;
     if (*(datasPtr->clockCount) == 0) {
-        displayTask(datasPtr->currentScreenPtr, datasPtr->screens, true, datasPtr->alarms);  // if its the first time running the task, draw the whole screen
+        tft.fillScreen(BACKGROUND_COLOR);
+        drawButton(previous);
+        drawButton(next);
+        displayTask(datasPtr->currentScreenPtr, datasPtr->screens, true, datasPtr->alarms, datasPtr->lastScreenPtr);  // if its the first time running the task, draw the whole screen
         *(datasPtr->clockCount)++;
     }
-    *(datasPtr->changeScreenPtr) = inputTask(datasPtr->currentScreenPtr, datasPtr->screens, datasPtr->alarms);    // get input from the touchscreen
-    displayTask(datasPtr->currentScreenPtr, datasPtr->screens, *(datasPtr->changeScreenPtr), datasPtr->alarms);   // display data/labels/buttons
+    *(datasPtr->changeScreenPtr) = inputTask(datasPtr->currentScreenPtr, datasPtr->screens, datasPtr->alarms, datasPtr->lastScreenPtr);    // get input from the touchscreen
+    displayTask(datasPtr->currentScreenPtr, datasPtr->screens, *(datasPtr->changeScreenPtr), datasPtr->alarms, datasPtr->lastScreenPtr);   // display data/labels/buttons
     return;
 }

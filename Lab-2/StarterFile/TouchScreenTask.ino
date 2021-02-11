@@ -3,7 +3,7 @@
 #include "TouchScreenTask.h"
 
 #define BUTTON_TEXT_SIZE 2
-#define TOUCH_TIMEOUT 20
+#define TOUCH_TIMEOUT 10
 #define  PIXELS_PER_CHAR_X 6
 #define PIXELS_PER_CHAR_Y 8
 #define PADDING_X 10
@@ -102,6 +102,7 @@ void drawData(PrintedData* printablePtr, bool newScreen) {
     String newData = String(printablePtr->labelPtr);
     int pixelShift = printablePtr->textSize * newData.length() * PIXELS_PER_CHAR_X;                    //shifting over in order to avoid redrawing label (only draw the changed data)
     float temp = *(printablePtr->dataInPtr);
+    unsigned long start = millis();
     if (temp != printablePtr->oldData || newScreen) {
         tft.setTextSize(printablePtr->textSize);
         setCursor(printablePtr->x + pixelShift, printablePtr->y);
@@ -109,7 +110,7 @@ void drawData(PrintedData* printablePtr, bool newScreen) {
         dataString.concat(printablePtr->unitsPtr);
         tft.setTextColor(BACKGROUND_COLOR);
         tft.print(dataString);                                                            //print over previous data with background color
-
+        
         printablePtr->oldData = temp;
         setCursor(printablePtr->x + pixelShift, printablePtr->y);
         dataString = printDataToString(printablePtr->oldData, printablePtr->type);
@@ -117,6 +118,7 @@ void drawData(PrintedData* printablePtr, bool newScreen) {
         tft.setTextColor(printablePtr->color);
         tft.println(dataString);                                                          //prints new data where old data used to be (normal text color)
     }
+    Serial.print("draw data time: ");Serial.println(millis()-start);
     return;
 }
 
