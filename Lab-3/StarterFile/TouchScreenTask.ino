@@ -3,7 +3,7 @@
 #include "TouchScreenTask.h"
 
 #define BUTTON_TEXT_SIZE 2
-#define TOUCH_TIMEOUT 10
+#define TOUCH_TIMEOUT 5
 #define  PIXELS_PER_CHAR_X 6
 #define PIXELS_PER_CHAR_Y 8
 #define PADDING_X 10
@@ -130,16 +130,9 @@ void drawData(PrintedData* printablePtr, bool newScreen) {
     int pixelShift = printablePtr->textSize * labelL.length() * PIXELS_PER_CHAR_X;                    //shifting over in order to avoid redrawing label (only draw the changed data)
     float temp = *(printablePtr->dataInPtr);
     if (temp != printablePtr->oldData || newScreen) {
-      
-        //tft.setTextSize(printablePtr->textSize);
-        //setCursor(printablePtr->x + pixelShift, printablePtr->y);
-        //String dataString = printDataToString(printablePtr->oldData, printablePtr->type);
-        //dataString.concat(printablePtr->unitsPtr);
-        //tft.setTextColor(BACKGROUND_COLOR);
-        //tft.print(dataString);                                                            //print over previous data with background color
         String clearBox = printDataToString(printablePtr->oldData, printablePtr->type);
         clearBox.concat(printablePtr->unitsPtr);
-        tft.fillRect(printablePtr->x+pixelShift+PADDING_X, printablePtr->y+PADDING_Y, clearBox.length()*PIXELS_PER_CHAR_X*printablePtr->textSize,PIXELS_PER_CHAR_Y, BACKGROUND_COLOR);
+        tft.fillRect(printablePtr->x+pixelShift+PADDING_X, printablePtr->y+PADDING_Y, clearBox.length()*PIXELS_PER_CHAR_X*printablePtr->textSize,PIXELS_PER_CHAR_Y*printablePtr->textSize, BACKGROUND_COLOR);
         printablePtr->oldData = temp;
         String dataString = printDataToString(printablePtr->oldData, printablePtr->type);
         dataString.concat(printablePtr->unitsPtr);
@@ -147,16 +140,6 @@ void drawData(PrintedData* printablePtr, bool newScreen) {
         tft.setTextColor(printablePtr->color);
         tft.setTextSize(printablePtr->textSize);
         tft.print(dataString);                                                          //prints new data where old data used to be (normal text color)       
-        /*
-        setCursor(printablePtr->x+pixelShift, printablePtr->y);
-        printablePtr->oldData=temp;
-        String dataString = printDataToString(printablePtr->oldData, printablePtr->type);
-        dataString.concat(printablePtr->unitsPtr);
-        tft.setTextColor(printablePtr->color);
-        tft.setTextSize(printablePtr->textSize);
-        unsigned long start = millis();
-        tft.print(dataString);
-        Serial.print("draw data: "); Serial.println(millis()-start);*/
     }
     return;
 }
@@ -263,7 +246,7 @@ void drawScreen(Screen screens[], bool newScreen, Alarm alarms[], int* currScree
         for (int i = 0; i < screens[*lastScreenPtr].dataLen; i++) {
             deletePrintedData(screens[*lastScreenPtr].dataPtr[i]); //for each printed data, print its label
         }
-        if(screens[*lastScreenPtr].buttonPtr != NULL){
+        if(screens[*lastScreenPtr].buttonPtr != NULL &&*lastScreenPtr == 2){
             deleteButton(*(screens[*lastScreenPtr].buttonPtr));
         }
         acknowledgeDrawn = false;

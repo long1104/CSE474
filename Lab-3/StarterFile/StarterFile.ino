@@ -20,7 +20,6 @@
 Elegoo_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);                       // Display initialization
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, 374);                                  // TFT initialization
 
-
 char* prevLabelPtr = "Prev";
 char* nextLabelPtr = "Next";
 char* onOffLabelPtr = "BATTERY TOGGLE";
@@ -29,7 +28,7 @@ char* ackLabel = "ACKNOWLEDGE";
 //Initialization of buttons on the screens
 XYButton previous = {0, 280, 80, 40, PURPLE, &prevLabelPtr};
 XYButton next = {160, 280, 80, 40, PURPLE, &nextLabelPtr};
-XYButton batteryButton = {0, 0, 240, 160, PURPLE, &onOffLabelPtr};
+XYButton batteryButton = {0, 0, 240, 20, PURPLE, &onOffLabelPtr};
 XYButton alarmButton = {50,160,140, 20, PURPLE, &ackLabel};
 
 
@@ -196,7 +195,7 @@ void setup() {
     alarmLabel = {ORIGIN_X, ORIGIN_Y, PURPLE, MED_SCRIPT, DEFAULT_BOOL, LABEL, &zero, "Alarms", ""};
 
     //Battery/Contactor printed data
-    batteryData = {ORIGIN_X, ORIGIN_Y+160, PURPLE, SMALL_SCRIPT, DEFAULT_BOOL, BOOL, &batteryOnOff, "Battery Connection: ", ""};
+    batteryData = {ORIGIN_X, ORIGIN_Y+20, PURPLE, SMALL_SCRIPT, DEFAULT_BOOL, BOOL, &batteryOnOff, "Battery Connection: ", ""};
 
      
     PrintedData *batteryPrints[] =  {&batteryData};                                                                                         // holds battery data
