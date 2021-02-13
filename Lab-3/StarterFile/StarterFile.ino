@@ -29,7 +29,7 @@ char* ackLabel = "ACKNOWLEDGE";
 XYButton previous = {0, 280, 80, 40, PURPLE, &prevLabelPtr};
 XYButton next = {160, 280, 80, 40, PURPLE, &nextLabelPtr};
 XYButton batteryButton = {0, 0, 240, 20, PURPLE, &onOffLabelPtr};
-XYButton alarmButton = {50,160,140, 20, PURPLE, &ackLabel};
+XYButton alarmButton = {50, 160, 140, 20, PURPLE, &ackLabel};
 
 
 //Task Control Blocks
@@ -53,7 +53,7 @@ PrintedData hvCurrentData = {};                                                 
 PrintedData hvVoltageData = {};                                                     // High Voltage Voltage Data
 PrintedData hvilData = {};                                                          // High Voltage Interlock input  data
 PrintedData hivaData = {};                                                          // High Voltage Alarm
-PrintedData overCurrentData = {};                                                   // Over-Current Alarm 
+PrintedData overCurrentData = {};                                                   // Over-Current Alarm
 PrintedData hvorData = {};                                                          // High Voltage Out of Range Alarm
 PrintedData batteryData = {};                                                       // Battery On/Off data
 
@@ -71,7 +71,7 @@ Alarm hvorAlarm = {};
 Alarm hviaAlarm = {};
 
 float zero = 0;                                                                     // Used for any non-changing printed data (labels)
-int clockCount=0;
+int clockCount = 0;
 // Measurement Data
 MeasurementData measure;                                                            // Measurement Data structure, used in TCB
 float hvCurrent = 0;                                                                // high voltage current value
@@ -109,35 +109,36 @@ float socVal = 0;                                                               
 TouchScreenData tscreenData = {};                                                   // Touch screen data struct, used in TCB
 int currentScreen = 0;
 int lastScreen = 0;                                                                 // indicates which screen is currently displayed
+bool acknowledgeDrawn = false;
 
 volatile bool timerFlag = 0;
 
-void timerISR(){
-  timerFlag=1;
+void timerISR() {
+    timerFlag = 1;
 }
 
-void hvilISR(){
-  batteryOnOff=0;
-  hviaVal=1;
-  updateContactor(&batteryOnOff, &contactorPin);
+void hvilISR() {
+    batteryOnOff=0;
+    hviaVal=1;
+    digitalWrite(contactorPin, LOW);
 }
 
 void Scheduler() {
-   /****************
-        Function name:    Scheduler
-        Function inputs:  No parameters
-        Function outputs: No return
-        Function description: This is the round robin scheduler, it executes all tasks in a sequential order, 
-                              the tasks create a user intreface for a battery management system
-        Authors:    Long Nguyen / Chase Arline
-      *****************/
+    /****************
+         Function name:    Scheduler
+         Function inputs:  No parameters
+         Function outputs: No return
+         Function description: This is the round robin scheduler, it executes all tasks in a sequential order,
+                               the tasks create a user intreface for a battery management system
+         Authors:    Long Nguyen / Chase Arline
+       *****************/
     TCB* current = tasksPtr;
     unsigned long ms = millis();
     while (current != NULL) {
-          current->task(current->taskDataPtr);
-          current = current->next;
+        current->task(current->taskDataPtr);
+        current = current->next;
     }
-    Serial.print("scheduler: ");Serial.println(millis()-ms);
+    Serial.print("scheduler: "); Serial.println(millis() - ms);
     return;
 }
 
@@ -146,14 +147,15 @@ void loop() {
         Function name:    loop
         Function inputs:  No parameters
         Function outputs: No return
-        Function description: 
+        Function description:
         Authors:    Long Nguyen / Chase Arline
       *****************/
     while (1) {
-      if(timerFlag){
-          Scheduler();                                                                           // times the scheduler has run
-          timerFlag=0;
-      }
+        if (timerFlag) {
+            timerFlag = 0;
+            Scheduler();                                                                           // times the scheduler has run
+        }
+        
     }
     return;
 }
@@ -169,35 +171,35 @@ void setup() {
       *****************/
     pinMode(hvilPin, INPUT);                                                                        //hvil -> input pin
     pinMode(contactorPin, OUTPUT);                                                                  //contactor -> output pin
-    pinMode(temperaturePin,INPUT_PULLUP);
+    pinMode(temperaturePin, INPUT_PULLUP);
     pinMode(hvVoltagePin, INPUT_PULLUP);
-    pinMode(hvCurrentPin, INPUT_PULLUP); 
+    pinMode(hvCurrentPin, INPUT_PULLUP);
     Timer1.initialize(100000);
     Timer1.attachInterrupt(timerISR);
-    attachInterrupt(digitalPinToInterrupt(hvilPin), hvilISR, RISING); 
-    
+    attachInterrupt(digitalPinToInterrupt(hvilPin), hvilISR, RISING);
+
     // initialize all printed data values for the touch screen
 
     //State of charged printed data
-    socDataPrint = {ORIGIN_X, ORIGIN_Y+40, PURPLE, SMALL_SCRIPT, DEFAULT_FLOAT, NUMBER, &socVal, "SOC value: ", ""};
+    socDataPrint = {ORIGIN_X, ORIGIN_Y + 40, PURPLE, SMALL_SCRIPT, DEFAULT_FLOAT, NUMBER, &socVal, "SOC value: ", ""};
 
     //Measurement printed data
-    temperatureData = {ORIGIN_X, ORIGIN_Y+60, PURPLE, SMALL_SCRIPT, DEFAULT_FLOAT, NUMBER, &temperature, "Temperature: ", "C"};
-    hvCurrentData = {ORIGIN_X, ORIGIN_Y+80, PURPLE, SMALL_SCRIPT, DEFAULT_FLOAT, NUMBER, &hvCurrent, "HV Current: ", "A"};
-    hvVoltageData = {ORIGIN_X, ORIGIN_Y+100, PURPLE, SMALL_SCRIPT, DEFAULT_FLOAT, NUMBER, &hvVoltage, "HV Voltage: ", "V"};
-    hvilData = {ORIGIN_X, ORIGIN_Y+120, PURPLE, SMALL_SCRIPT, DEFAULT_BOOL, BOOL, &HVIL, "hvil: ", ""};
-    measurementLabel = {ORIGIN_X,ORIGIN_Y, PURPLE, MED_SCRIPT, DEFAULT_BOOL, LABEL, &zero, "Measurements", ""};
-    
+    temperatureData = {ORIGIN_X, ORIGIN_Y + 60, PURPLE, SMALL_SCRIPT, DEFAULT_FLOAT, NUMBER, &temperature, "Temperature: ", "C"};
+    hvCurrentData = {ORIGIN_X, ORIGIN_Y + 80, PURPLE, SMALL_SCRIPT, DEFAULT_FLOAT, NUMBER, &hvCurrent, "HV Current: ", "A"};
+    hvVoltageData = {ORIGIN_X, ORIGIN_Y + 100, PURPLE, SMALL_SCRIPT, DEFAULT_FLOAT, NUMBER, &hvVoltage, "HV Voltage: ", "V"};
+    hvilData = {ORIGIN_X, ORIGIN_Y + 120, PURPLE, SMALL_SCRIPT, DEFAULT_BOOL, BOOL, &HVIL, "hvil: ", ""};
+    measurementLabel = {ORIGIN_X, ORIGIN_Y, PURPLE, MED_SCRIPT, DEFAULT_BOOL, LABEL, &zero, "Measurements", ""};
+
     //Alarm printed data
-    hivaData = {ORIGIN_X, ORIGIN_Y+40, PURPLE, SMALL_SCRIPT, DEFAULT_ALARM, ALARM, &hviaVal, "hivl: ", ""};
-    overCurrentData = {ORIGIN_X, ORIGIN_Y+60, PURPLE, SMALL_SCRIPT, DEFAULT_ALARM, ALARM, &overCurrent, "Over Current: ", ""};
-    hvorData = {ORIGIN_X, ORIGIN_Y+80, PURPLE, SMALL_SCRIPT, DEFAULT_ALARM, ALARM, &hvorVal, "HV Alarm: ", ""};
+    hivaData = {ORIGIN_X, ORIGIN_Y + 40, PURPLE, SMALL_SCRIPT, DEFAULT_ALARM, ALARM, &hviaVal, "hivl: ", ""};
+    overCurrentData = {ORIGIN_X, ORIGIN_Y + 60, PURPLE, SMALL_SCRIPT, DEFAULT_ALARM, ALARM, &overCurrent, "Over Current: ", ""};
+    hvorData = {ORIGIN_X, ORIGIN_Y + 80, PURPLE, SMALL_SCRIPT, DEFAULT_ALARM, ALARM, &hvorVal, "HV Alarm: ", ""};
     alarmLabel = {ORIGIN_X, ORIGIN_Y, PURPLE, MED_SCRIPT, DEFAULT_BOOL, LABEL, &zero, "Alarms", ""};
 
     //Battery/Contactor printed data
-    batteryData = {ORIGIN_X, ORIGIN_Y+20, PURPLE, SMALL_SCRIPT, DEFAULT_BOOL, BOOL, &batteryOnOff, "Battery Connection: ", ""};
+    batteryData = {ORIGIN_X, ORIGIN_Y + 20, PURPLE, SMALL_SCRIPT, DEFAULT_BOOL, BOOL, &batteryOnOff, "Battery Connection: ", ""};
 
-     
+
     PrintedData *batteryPrints[] =  {&batteryData};                                                                                         // holds battery data
     PrintedData *alarmPrints[] = {&alarmLabel, &hivaData, &overCurrentData, &hvorData};                                                    // holds alarm data
     PrintedData *measurementPrints[] = {&measurementLabel, &socDataPrint, &temperatureData, &hvCurrentData, &hvVoltageData, &hvilData};    // holds measurement data
@@ -207,7 +209,7 @@ void setup() {
     hvorAlarm = {&hvorVal, &hvVoltage, &hvorAck};
 
     //Initialize Screen structs for interface
-    batteryMonitor = Screen{&batteryButton, BATTERY_NUM_PRINTS, batteryPrints};          
+    batteryMonitor = Screen{&batteryButton, BATTERY_NUM_PRINTS, batteryPrints};
     alarmMonitor = Screen{&alarmButton, ALARM_NUM_PRINTS, alarmPrints};
     measurementMonitor = Screen{NULL, MEASURE_NUM_PRINTS, measurementPrints};
 
@@ -217,9 +219,9 @@ void setup() {
     measurementTCB.taskDataPtr  = (void*) &measure;
     measurementTCB.next         = &alarmTCB;
     measurementTCB.prev         = NULL;
-    
+
     //Initialize touchscreen/display TCB
-    tscreenData = {&clockCount, &currentScreen, &lastScreen, &changeScreen ,  {overCurrentAlarm, hviaAlarm, hvorAlarm}, {measurementMonitor, alarmMonitor, batteryMonitor}};
+    tscreenData = {&acknowledgeDrawn, &clockCount, &currentScreen, &lastScreen, &changeScreen ,  {overCurrentAlarm, hviaAlarm, hvorAlarm}, {measurementMonitor, alarmMonitor, batteryMonitor}};
     touchScreenTCB.task = &touchScreenTask;
     touchScreenTCB.taskDataPtr = (void*) &tscreenData;
     touchScreenTCB.next = &contactorTCB;
@@ -249,10 +251,7 @@ void setup() {
     socTCB.next                = &touchScreenTCB;
     socTCB.prev                = &alarmTCB;
 
-    //Array of tasks used in scheduler 
-    //TCB temp[] = {measurementTCB, alarmTCB, socTCB, touchScreenTCB, contactorTCB};
-    //tasksPtr = temp;
-    tasksPtr = &measurementTCB;                                                                 
+    tasksPtr = &measurementTCB;
 
     // Initialize serial communication
     Serial.begin(9600);

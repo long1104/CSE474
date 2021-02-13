@@ -9,8 +9,6 @@
 #define PADDING_X 10
 #define PADDING_Y 10
 
-bool acknowledgeDrawn = false;
-
 void setCursor(int x, int y) {
     /****************
         Function name: setCursor
@@ -168,7 +166,7 @@ String printDataToString(float val, PRINT_TYPE type) {
     return ret;
 }
 
-void displayTask(int* currScreenPtr, Screen screenList[], bool newScreen, Alarm alarms[], int* lastScreenPtr) {
+void displayTask(int* currScreenPtr, Screen screenList[], bool newScreen, Alarm alarms[], int* lastScreenPtr, bool* acknowledgeDrawn) {
     /****************
         Function name: displayTask
         Function inputs: currScreenPtr: points to value of current screen, screenList: list of all screens, newScreen: are we drawing a new screen?
@@ -176,7 +174,7 @@ void displayTask(int* currScreenPtr, Screen screenList[], bool newScreen, Alarm 
         Function description: draws all data structures that are inside of the screen, draws new screen if newScreen is true
         Authors:    Long Nguyen / Chase Arline
     ****************/
-    drawScreen(screenList, newScreen, alarms, currScreenPtr, lastScreenPtr );
+    drawScreen(screenList, newScreen, alarms, currScreenPtr, lastScreenPtr, acknowledgeDrawn);
     for (int i = 0; i < screenList[*currScreenPtr].dataLen; i++) {
         drawData(screenList[*currScreenPtr].dataPtr[i], newScreen);
     }
@@ -233,7 +231,7 @@ bool inputTask(int* currScreenPtr, Screen screenList[], Alarm alarms[], int* las
     return newScreen;
 }
 
-void drawScreen(Screen screens[], bool newScreen, Alarm alarms[], int* currScreenPtr, int* lastScreenPtr) {
+void drawScreen(Screen screens[], bool newScreen, Alarm alarms[], int* currScreenPtr, int* lastScreenPtr, bool* acknowledgeDrawn) {
     /****************
         Function name: drawScreen
         Function inputs: screen: the screen to be drawn, newScreen: are we updating the screen? (function is called every task loop)
@@ -249,7 +247,7 @@ void drawScreen(Screen screens[], bool newScreen, Alarm alarms[], int* currScree
         if(screens[*lastScreenPtr].buttonPtr != NULL &&*lastScreenPtr == 2){
             deleteButton(*(screens[*lastScreenPtr].buttonPtr));
         }
-        acknowledgeDrawn = false;
+        *acknowledgeDrawn = false;
         for (int i = 0; i < screens[*currScreenPtr].dataLen; i++) {
             drawLabel(screens[*currScreenPtr].dataPtr[i]);                               //for each printed data, print its label
         }
@@ -258,16 +256,16 @@ void drawScreen(Screen screens[], bool newScreen, Alarm alarms[], int* currScree
             if (*currScreenPtr != 1) {
                 drawButton(*(screens[*currScreenPtr].buttonPtr));
             } else if (emergencyCheck(alarms)) {
-                acknowledgeDrawn = true;
+                *acknowledgeDrawn = true;
                 drawButton(*(screens[*currScreenPtr].buttonPtr));
             }
         }
-    } else if (*currScreenPtr == 1 && !emergencyCheck(alarms) && acknowledgeDrawn) {
-        acknowledgeDrawn = false;
+    } else if (*currScreenPtr == 1 && !emergencyCheck(alarms) && *acknowledgeDrawn) {
+        *acknowledgeDrawn = false;
         Serial.println(emergencyCheck(alarms));
         deleteButton(*(screens[*currScreenPtr].buttonPtr));
-    } else if (*currScreenPtr == 1 && emergencyCheck(alarms) && !acknowledgeDrawn) {
-        acknowledgeDrawn = true;
+    } else if (*currScreenPtr == 1 && emergencyCheck(alarms) && !*acknowledgeDrawn) {
+        *acknowledgeDrawn = true;
         Serial.println(emergencyCheck(alarms));
         drawButton(*(screens[*currScreenPtr].buttonPtr));
     }
@@ -287,10 +285,10 @@ void touchScreenTask(void* tscreenDataPtr) {
         tft.fillScreen(BACKGROUND_COLOR);
         drawButton(previous);
         drawButton(next);
-        displayTask(datasPtr->currentScreenPtr, datasPtr->screens, true, datasPtr->alarms, datasPtr->lastScreenPtr);  // if its the first time running the task, draw the whole screen
+        displayTask(datasPtr->currentScreenPtr, datasPtr->screens, true, datasPtr->alarms, datasPtr->lastScreenPtr, datasPtr->acknowledgeDrawn);  // if its the first time running the task, draw the whole screen
         *(datasPtr->clockCount)++;
     }
     *(datasPtr->changeScreenPtr) = inputTask(datasPtr->currentScreenPtr, datasPtr->screens, datasPtr->alarms, datasPtr->lastScreenPtr);    // get input from the touchscreen
-    displayTask(datasPtr->currentScreenPtr, datasPtr->screens, *(datasPtr->changeScreenPtr), datasPtr->alarms, datasPtr->lastScreenPtr);   // display data/labels/buttons
+    displayTask(datasPtr->currentScreenPtr, datasPtr->screens, *(datasPtr->changeScreenPtr), datasPtr->alarms, datasPtr->lastScreenPtr, datasPtr->acknowledgeDrawn);   // display data/labels/buttons
     return;
 }
