@@ -40,13 +40,13 @@ extern "C" {
 #define TS_MAXY 920
 
 #define BLACK   0x0000
-#define PURPLE    0x001F
+#define BLUE    0x001F
 #define RED     0xF800
 #define GREEN   0x07E0
 #define CYAN    0x07FF
 #define MAGENTA 0xF81F
 #define YELLOW  0xFFE0
-#define PURPLE 0x780F
+#define PURPLE  0x780F
 #define WHITE   0xFFFF
 #define BACKGROUND_COLOR 0xFFFF
 

@@ -15,7 +15,7 @@
 #include "Contactor.h"
 #include "Soc.h"
 #include "TouchScreenTask.h"
-
+#include "Scheduler.h"
 
 Elegoo_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);                       // Display initialization
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, 374);                                  // TFT initialization
@@ -30,7 +30,7 @@ char* ackLabel = "ACKNOWLEDGE";
 XYButton previous = {0, 280, 80, 40, PURPLE, &prevLabelPtr};
 XYButton next = {160, 280, 80, 40, PURPLE, &nextLabelPtr};
 XYButton batteryOn = {0, 0, 110, 80, PURPLE, &onLabelPtr};
-XYButton batteryOff = {130,0,110,80,PURPLE, &offLabelPtr};
+XYButton batteryOff = {130, 0, 110, 80, PURPLE, &offLabelPtr};
 XYButton alarmButton = {40, 140, 160, 40, PURPLE, &ackLabel};
 
 //Task Control Blocks
@@ -39,7 +39,6 @@ TCB alarmTCB = {};                                                              
 TCB contactorTCB = {};                                                              // Declare contactor TCB
 TCB socTCB = {};                                                                    // Declare soc TCB
 TCB touchScreenTCB = {};
-TCB *tasksPtr = NULL;
 
 bool changeScreen = true;
 
@@ -53,14 +52,10 @@ PrintedData temperatureData = {};                                               
 PrintedData hvCurrentData = {};                                                     // High Voltage Current Data
 PrintedData hvVoltageData = {};                                                     // High Voltage Voltage Data
 PrintedData hvilData = {};                                                          // High Voltage Interlock input  data
-PrintedData hivaData = {};                                                          // High Voltage Alarm
+PrintedData hviaData = {};                                                          // High Voltage Alarm
 PrintedData overCurrentData = {};                                                   // Over-Current Alarm
 PrintedData hvorData = {};                                                          // High Voltage Out of Range Alarm
 PrintedData batteryData = {};                                                       // Battery On/Off data
-
-PrintedData *batteryPrints[] = {};                                                                                         // holds battery data
-PrintedData *alarmPrints[] = {};                                                    // holds alarm data
-PrintedData *measurementPrints[] = {} ;  // holds measurement data
 
 
 //Labels for screens (non changing data)
@@ -80,7 +75,7 @@ float hvVoltage = 0;                                                            
 float temperature = 0;                                                              // temperature value
 float HVIL = 0;                                                                     // high voltage interlock status
 int hvilPin = 21;                                                                   // IO pin for hvil input
-int temperaturePin = A13; 
+int temperaturePin = A13;
 int hvVoltagePin = A14;
 int hvCurrentPin = A15;
 
@@ -88,7 +83,6 @@ int hvCurrentPin = A15;
 //ContactorData
 ContactorData contactor = {};                                                       // contactor data structure, used in TCB
 int contactorPin = 24;                                                              // IO pin for contactor output
-
 
 AlarmData alarm;                                                                    // Alarm data structure, used in TCB
 volatile float hviaVal = 0;                                                                  // high voltage interlock alarm status
@@ -112,36 +106,19 @@ int currentScreen = 0;
 int lastScreen = 0;                                                                 // indicates which screen is currently displayed
 bool acknowledgeDrawn = false;
 
-volatile bool timerFlag = 0;
+volatile int timerFlag = 0;
 
 void timerISR() {
-    timerFlag = 1;
+    timerFlag = 1;                      //set time base flag
 }
+
 
 void hvilISR() {
-    batteryOnOff=0;
-    hviaVal=1;
-    digitalWrite(contactorPin, LOW);
+    batteryOnOff = 0;                   //volatile write to contactor status
+    hviaVal = 1;                        //volatile write to hvil alarm status
+    digitalWrite(contactorPin, LOW);    //set contactor pin low (turn contactor off)
 }
 
-void Scheduler() {
-    /****************
-         Function name:    Scheduler
-         Function inputs:  No parameters
-         Function outputs: No return
-         Function description: This is the round robin scheduler, it executes all tasks in a sequential order,
-                               the tasks create a user intreface for a battery management system
-         Authors:    Long Nguyen / Chase Arline
-       *****************/
-    TCB* current = tasksPtr;
-    unsigned long ms = millis();
-    while (current != NULL) {
-        current->task(current->taskDataPtr);
-        current = current->next;
-    }
-    Serial.print("scheduler: "); Serial.println(millis() - ms);
-    return;
-}
 
 void loop() {
     /****************
@@ -151,12 +128,15 @@ void loop() {
         Function description:
         Authors:    Long Nguyen / Chase Arline
       *****************/
+    unsigned long ms = millis();
     while (1) {
         if (timerFlag) {
+        Serial.println(millis()-ms);
+        ms=millis();
+            Scheduler(); 
             timerFlag = 0;
-            Scheduler();                                                                           // times the scheduler has run
         }
-        
+
     }
     return;
 }
@@ -175,8 +155,10 @@ void setup() {
     pinMode(temperaturePin, INPUT_PULLUP);
     pinMode(hvVoltagePin, INPUT_PULLUP);
     pinMode(hvCurrentPin, INPUT_PULLUP);
+    //setup time base interrupt to be 100ms
     Timer1.initialize(100000);
     Timer1.attachInterrupt(timerISR);
+    //setup hvil interrupt routine on the rising edge of hvil pin
     attachInterrupt(digitalPinToInterrupt(hvilPin), hvilISR, RISING);
 
     // initialize all printed data values for the touch screen
@@ -192,22 +174,23 @@ void setup() {
     measurementLabel = {ORIGIN_X, ORIGIN_Y, PURPLE, MED_SCRIPT, DEFAULT_BOOL, LABEL, &zero, "Measurements", ""};
 
     //Alarm printed data
-    hivaData = {ORIGIN_X, ORIGIN_Y + 40, PURPLE, SMALL_SCRIPT, DEFAULT_ALARM, ALARM, &hviaVal, "hivl: ", ""};
+    hviaData = {ORIGIN_X, ORIGIN_Y + 40, PURPLE, SMALL_SCRIPT, DEFAULT_ALARM, ALARM, &hviaVal, "hivl: ", ""};
     overCurrentData = {ORIGIN_X, ORIGIN_Y + 60, PURPLE, SMALL_SCRIPT, DEFAULT_ALARM, ALARM, &overCurrent, "Over Current: ", ""};
     hvorData = {ORIGIN_X, ORIGIN_Y + 80, PURPLE, SMALL_SCRIPT, DEFAULT_ALARM, ALARM, &hvorVal, "HV Alarm: ", ""};
     alarmLabel = {ORIGIN_X, ORIGIN_Y, PURPLE, MED_SCRIPT, DEFAULT_BOOL, LABEL, &zero, "Alarms", ""};
 
     //Battery/Contactor printed data
     batteryData = {ORIGIN_X, ORIGIN_Y + 80, PURPLE, SMALL_SCRIPT, DEFAULT_BOOL, BOOL, &batteryOnOff, "Battery Connection: ", ""};
-    
+
+    //Alarm state structs
     overCurrentAlarm = {&overCurrent, &hvCurrent, &overCurrentAck};
     hviaAlarm = {&hviaVal, &HVIL, &hviaAck};
     hvorAlarm = {&hvorVal, &hvVoltage, &hvorAck};
 
     //Initialize Screen structs for interface
-    batteryMonitor = Screen{BATTERY_NUM_PRINTS ,2, {&batteryData},{&batteryOn, &batteryOff}};
-    alarmMonitor = Screen{ALARM_NUM_PRINTS,1, {&alarmLabel, &hivaData, &overCurrentData, &hvorData}, {&alarmButton}};
-    measurementMonitor = Screen{MEASURE_NUM_PRINTS,0, {&measurementLabel, &socDataPrint, &temperatureData, &hvCurrentData, &hvVoltageData, &hvilData}, {}};
+    batteryMonitor = Screen{BATTERY_NUM_PRINTS , 2, {&batteryData}, {&batteryOn, &batteryOff}};
+    alarmMonitor = Screen{ALARM_NUM_PRINTS, 1, {&alarmLabel, &hviaData, &overCurrentData, &hvorData}, {&alarmButton}};
+    measurementMonitor = Screen{MEASURE_NUM_PRINTS, 0, {&measurementLabel, &socDataPrint, &temperatureData, &hvCurrentData, &hvVoltageData, &hvilData}, {}};
 
     // Initialize Measurement TCB
     measure                     = {&HVIL, &hvilPin, &temperature, &temperaturePin, &hvCurrent, &hvCurrentPin, &hvVoltage, &hvVoltagePin};

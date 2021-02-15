@@ -2,12 +2,8 @@
 #include <stdbool.h>
 #include "Measurement.h"
 
-float temperatureValues[] = { -10, 5, 25};
-float currentValues[] = { -20, 0, 20};
-float voltageValues[] = {10, 150, 45};
 
-
-void updateHVIL(volatile float* hvilReadingPtr, int* pin) {
+void updateHVIL(float* hvilReadingPtr, int* pin) {
     /****************
         Function name: updateHVIL
         Function inputs: hvilReadingPtr: pointer to status of HVIL, pin: hardware input pin of HVIL measurement
@@ -21,7 +17,7 @@ void updateHVIL(volatile float* hvilReadingPtr, int* pin) {
     return;
 }
 
-void updateTemperature(volatile float* temperatureReadingPtr, int*pin) {
+void updateTemperature(float* temperatureReadingPtr, int*pin) {
     /****************
         Function name:updateTemperature
         Function inputs:temperatureReadingPtr: pointer to status of temperature value, clockCountPtr: pointer to value of the cycle count
@@ -29,11 +25,11 @@ void updateTemperature(volatile float* temperatureReadingPtr, int*pin) {
         Function description: updates the value of the temperature through the measured value
         Authors:    Long Nguyen / Chase Arline
     *****************/
-    *temperatureReadingPtr = ((float)(analogRead(*pin))*55.0/1024.0)-10;
+    *temperatureReadingPtr = ((float)(analogRead(*pin)) * 55.0 / 1024.0) - 10;
     return;
 }
 
-void updateHvCurrent(volatile float* currentReadingPtr, int *pin) {
+void updateHvCurrent(float* currentReadingPtr, int *pin) {
     /****************
         Function name: updateHvCurrent
         Function inputs: currentReadingPtr: pointer to status of current value, clockCountPtr: pointer to the value of the cycle count
@@ -41,11 +37,11 @@ void updateHvCurrent(volatile float* currentReadingPtr, int *pin) {
         Function description: updates the value of the current through the measured value
         Authors:    Long Nguyen / Chase Arline
     *****************/
-    *currentReadingPtr = ((float)analogRead(*pin))*50.0/1024.0-25;
+    *currentReadingPtr = ((float)analogRead(*pin)) * 50.0 / 1024.0 - 25;
     return;
 }
 
-void updateHvVoltage(volatile float* voltageReadingPtr, int*pin) {
+void updateHvVoltage(float* voltageReadingPtr, int*pin) {
     /****************
         Function name: updateHvVoltage
         Function inputs: voltageReadingPtr: pointer to status of voltage value, clockCountPtr: pointer to the value of the cycle count
@@ -53,7 +49,7 @@ void updateHvVoltage(volatile float* voltageReadingPtr, int*pin) {
         Function description: updates the value of the voltage through the measured value
         Authors:    Long Nguyen / Chase Arline
     *****************/
-    *voltageReadingPtr = ((float)analogRead(*pin))*450.0/1024.0;
+    *voltageReadingPtr = ((float)analogRead(*pin)) * 450.0 / 1024.0;
     return;
 }
 

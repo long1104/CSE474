@@ -11,10 +11,10 @@ extern "C" {
 #include <Arduino.h>
 
 typedef struct AlarmStruct {
-  volatile float* alarmVal;
-  volatile float* measuredVal;
-  volatile bool* ack;
-}Alarm;
+    volatile float* alarmVal;   //volatile for hvil alarm reading
+    float* measuredVal;
+    bool* ack;
+} Alarm;
 
 //Used for updating the three alarms using a TCB
 typedef struct AlarmTaskData {

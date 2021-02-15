@@ -12,7 +12,7 @@ extern "C" {
 //Used for updating the contactor output through a TCB
 typedef struct ContactorTaskData {
     int *contactorPin;
-    volatile float* contactorStatus;
+    volatile float* contactorStatus;      //volatile for contactor status (batteryOnOff var)
 } ContactorData;
 
 

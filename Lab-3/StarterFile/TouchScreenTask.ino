@@ -109,11 +109,11 @@ void drawLabel(PrintedData *printablePtr) {
     return;
 }
 
-void deletePrintedData(PrintedData *printablePtr){
+void deletePrintedData(PrintedData *printablePtr) {
     String boxDim = String(printablePtr->labelPtr);
     boxDim.concat(printDataToString(printablePtr->oldData, printablePtr->type));
     boxDim.concat(printablePtr->unitsPtr);
-    tft.fillRect(printablePtr->x+PADDING_X, printablePtr->y+PADDING_Y, boxDim.length()*PIXELS_PER_CHAR_X*printablePtr->textSize, PIXELS_PER_CHAR_Y*printablePtr->textSize, BACKGROUND_COLOR);
+    tft.fillRect(printablePtr->x + PADDING_X, printablePtr->y + PADDING_Y, boxDim.length()*PIXELS_PER_CHAR_X * printablePtr->textSize, PIXELS_PER_CHAR_Y * printablePtr->textSize, BACKGROUND_COLOR);
 }
 
 void drawData(PrintedData* printablePtr, bool newScreen) {
@@ -130,14 +130,14 @@ void drawData(PrintedData* printablePtr, bool newScreen) {
     if (temp != printablePtr->oldData || newScreen) {
         String clearBox = printDataToString(printablePtr->oldData, printablePtr->type);
         clearBox.concat(printablePtr->unitsPtr);
-        tft.fillRect(printablePtr->x+pixelShift+PADDING_X, printablePtr->y+PADDING_Y, clearBox.length()*PIXELS_PER_CHAR_X*printablePtr->textSize,PIXELS_PER_CHAR_Y*printablePtr->textSize, BACKGROUND_COLOR);
+        tft.fillRect(printablePtr->x + pixelShift + PADDING_X, printablePtr->y + PADDING_Y, clearBox.length()*PIXELS_PER_CHAR_X * printablePtr->textSize, PIXELS_PER_CHAR_Y * printablePtr->textSize, BACKGROUND_COLOR);
         printablePtr->oldData = temp;
         String dataString = printDataToString(printablePtr->oldData, printablePtr->type);
         dataString.concat(printablePtr->unitsPtr);
         setCursor(printablePtr->x + pixelShift, printablePtr->y);
         tft.setTextColor(printablePtr->color);
         tft.setTextSize(printablePtr->textSize);
-        tft.print(dataString);                                                          //prints new data where old data used to be (normal text color)       
+        tft.print(dataString);                                                          //prints new data where old data used to be (normal text color)
     }
     return;
 }
@@ -217,12 +217,12 @@ bool inputTask(int* currScreenPtr, Screen screenList[], Alarm alarms[], int* las
         *currScreenPtr = 1;
         newScreen = true;
     }
-    if (isButton(point, *(screenList[2].buttonsPtr[0])) && *currScreenPtr == 2 && *(alarms[1].alarmVal)==0) {
+    if (isButton(point, *(screenList[2].buttonsPtr[0])) && *currScreenPtr == 2 && *(alarms[1].alarmVal) == 0) {
         *(screenList[2].dataPtr[0]->dataInPtr) = 1;
-    }else if(isButton(point, *(screenList[2].buttonsPtr[1])) && *currScreenPtr == 2){
+    } else if (isButton(point, *(screenList[2].buttonsPtr[1])) && *currScreenPtr == 2) {
         *(screenList[2].dataPtr[0]->dataInPtr) = 0;
     }
-    
+
 
     if (isButton(point, *(screenList[1].buttonsPtr[0])) && *currScreenPtr == 1) {
         for (int i = 0; i < 3; i++) {
@@ -247,20 +247,20 @@ void drawScreen(Screen screens[], bool newScreen, Alarm alarms[], int* currScree
         for (int i = 0; i < screens[*lastScreenPtr].dataLen; i++) {
             deletePrintedData(screens[*lastScreenPtr].dataPtr[i]); //for each printed data, print its label
         }
-        if(screens[*lastScreenPtr].buttonLen > 0){
-             for(int i=0; i<screens[*lastScreenPtr].buttonLen; i++){
-                  deleteButton(*(screens[*lastScreenPtr].buttonsPtr[i]));
-             }
+        if (screens[*lastScreenPtr].buttonLen > 0) {
+            for (int i = 0; i < screens[*lastScreenPtr].buttonLen; i++) {
+                deleteButton(*(screens[*lastScreenPtr].buttonsPtr[i]));
+            }
         }
         *acknowledgeDrawn = false;
         for (int i = 0; i < screens[*currScreenPtr].dataLen; i++) {
             drawLabel(screens[*currScreenPtr].dataPtr[i]);                               //for each printed data, print its label
         }
-        
+
         if (screens[*currScreenPtr].buttonLen > 0) {
             if (*currScreenPtr != 1) {
-                for(int i=0; i<screens[*currScreenPtr].buttonLen; i++){
-                  drawButton(*(screens[*currScreenPtr].buttonsPtr[i]));
+                for (int i = 0; i < screens[*currScreenPtr].buttonLen; i++) {
+                    drawButton(*(screens[*currScreenPtr].buttonsPtr[i]));
                 }
             } else if (emergencyCheck(alarms)) {
                 *acknowledgeDrawn = true;
