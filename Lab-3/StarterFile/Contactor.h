@@ -12,12 +12,12 @@ extern "C" {
 //Used for updating the contactor output through a TCB
 typedef struct ContactorTaskData {
     int *contactorPin;
-    float* contactorStatus;
+    volatile float* contactorStatus;
 } ContactorData;
 
 
 void contactorTask (void*);
-void updateContactor(float* contactorStatus, int *contactorPin);
+void updateContactor(volatile float* contactorStatus, int *contactorPin);
 
 #endif
 

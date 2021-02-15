@@ -11,9 +11,9 @@ extern "C" {
 #include <Arduino.h>
 
 typedef struct AlarmStruct {
-  float* alarmVal;
-  float* measuredVal;
-  bool* ack;
+  volatile float* alarmVal;
+  volatile float* measuredVal;
+  volatile bool* ack;
 }Alarm;
 
 //Used for updating the three alarms using a TCB

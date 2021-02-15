@@ -9,6 +9,9 @@ extern "C" {
 #include <stdbool.h>
 #include <Arduino.h>
 
+#define MAX_BUTTONS 2
+#define MAX_DATA 6
+
 //PRINT_TYPE represents the variable type for printing
 typedef enum {
     ALARM, NUMBER, BOOL, LABEL
@@ -23,18 +26,18 @@ typedef struct XYButtonStruct {
 //PrintedData represents data that can be printed/updated on the TFT screen
 typedef struct PrintedDataStruct {
     int x, y, color, textSize;
-    float oldData;
+    volatile float oldData;
     PRINT_TYPE type;
-    float* dataInPtr;
+    volatile float* dataInPtr;
     char* labelPtr;
     char* unitsPtr;
 } PrintedData;
 
 //Screen represents a screen to be drawn on the display
 typedef struct ScreenStruct {
-    XYButton *buttonPtr;
-    int dataLen;
-    PrintedData **dataPtr;
+    int dataLen, buttonLen;
+    PrintedData *dataPtr[MAX_DATA];
+    XYButton *buttonsPtr[MAX_BUTTONS];
 } Screen;
 
 //Point represents XY coordinates

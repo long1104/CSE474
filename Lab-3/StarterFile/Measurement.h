@@ -12,22 +12,22 @@ extern "C" {
 
 
 typedef struct MeasurementTaskData {
-    float* hvilStatus;
+    volatile float* hvilStatus;
     int* hvilPin;
-    float* temperature;
+    volatile float* temperature;
     int* temperaturePin;
-    float* hvCurrent;
+    volatile float* hvCurrent;
     int* hvCurrentPin;
-    float* hvVoltage;
+    volatile float* hvVoltage;
     int* hvVoltagePin;
 } MeasurementData;
 
 
 void measurementTask (void*);
-void updateHVIL(float* hvilReadingPtr, int *pin);
-void updateTemperature(float* temperatureReadingPtr, int *pin) ;
-void updateHvCurrent(float* currentReadingPtr, int *pin) ;
-void updateHvVoltage(float* voltageReadingPtr, int*pin);
+void updateHVIL(volatile float* hvilReadingPtr, int *pin);
+void updateTemperature(volatile float* temperatureReadingPtr, int *pin) ;
+void updateHvCurrent(volatile float* currentReadingPtr, int *pin) ;
+void updateHvVoltage(volatile float* voltageReadingPtr, int*pin);
 
 #endif
 

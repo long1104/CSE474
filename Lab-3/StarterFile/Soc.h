@@ -11,7 +11,7 @@ extern "C" {
 
 //
 typedef struct SocTaskData {
-    float* stateOfCharge;
+    volatile float* stateOfCharge;
 } SocData;
 
 void socTask (void*);

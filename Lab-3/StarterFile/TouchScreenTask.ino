@@ -217,11 +217,14 @@ bool inputTask(int* currScreenPtr, Screen screenList[], Alarm alarms[], int* las
         *currScreenPtr = 1;
         newScreen = true;
     }
-    if (isButton(point, *(screenList[2].buttonPtr)) && *currScreenPtr == 2 && *(alarms[1].alarmVal)==0) {
-        *(screenList[2].dataPtr[0]->dataInPtr) = ((int) * (screenList[2].dataPtr[0]->dataInPtr) + 1) % 2;
+    if (isButton(point, *(screenList[2].buttonsPtr[0])) && *currScreenPtr == 2 && *(alarms[1].alarmVal)==0) {
+        *(screenList[2].dataPtr[0]->dataInPtr) = 1;
+    }else if(isButton(point, *(screenList[2].buttonsPtr[1])) && *currScreenPtr == 2){
+        *(screenList[2].dataPtr[0]->dataInPtr) = 0;
     }
+    
 
-    if (isButton(point, *(screenList[1].buttonPtr)) && *currScreenPtr == 1) {
+    if (isButton(point, *(screenList[1].buttonsPtr[0])) && *currScreenPtr == 1) {
         for (int i = 0; i < 3; i++) {
             if (*(alarms[i].alarmVal) == 1) {
                 *(alarms[i].ack) = 1;
@@ -244,30 +247,32 @@ void drawScreen(Screen screens[], bool newScreen, Alarm alarms[], int* currScree
         for (int i = 0; i < screens[*lastScreenPtr].dataLen; i++) {
             deletePrintedData(screens[*lastScreenPtr].dataPtr[i]); //for each printed data, print its label
         }
-        if(screens[*lastScreenPtr].buttonPtr != NULL &&*lastScreenPtr == 2){
-            deleteButton(*(screens[*lastScreenPtr].buttonPtr));
+        if(screens[*lastScreenPtr].buttonLen > 0){
+             for(int i=0; i<screens[*lastScreenPtr].buttonLen; i++){
+                  deleteButton(*(screens[*lastScreenPtr].buttonsPtr[i]));
+             }
         }
         *acknowledgeDrawn = false;
         for (int i = 0; i < screens[*currScreenPtr].dataLen; i++) {
             drawLabel(screens[*currScreenPtr].dataPtr[i]);                               //for each printed data, print its label
         }
         
-        if (screens[*currScreenPtr].buttonPtr != NULL) {
+        if (screens[*currScreenPtr].buttonLen > 0) {
             if (*currScreenPtr != 1) {
-                drawButton(*(screens[*currScreenPtr].buttonPtr));
+                for(int i=0; i<screens[*currScreenPtr].buttonLen; i++){
+                  drawButton(*(screens[*currScreenPtr].buttonsPtr[i]));
+                }
             } else if (emergencyCheck(alarms)) {
                 *acknowledgeDrawn = true;
-                drawButton(*(screens[*currScreenPtr].buttonPtr));
+                drawButton(*(screens[*currScreenPtr].buttonsPtr[0]));
             }
         }
     } else if (*currScreenPtr == 1 && !emergencyCheck(alarms) && *acknowledgeDrawn) {
         *acknowledgeDrawn = false;
-        Serial.println(emergencyCheck(alarms));
-        deleteButton(*(screens[*currScreenPtr].buttonPtr));
+        deleteButton(*(screens[*currScreenPtr].buttonsPtr[0]));
     } else if (*currScreenPtr == 1 && emergencyCheck(alarms) && !*acknowledgeDrawn) {
         *acknowledgeDrawn = true;
-        Serial.println(emergencyCheck(alarms));
-        drawButton(*(screens[*currScreenPtr].buttonPtr));
+        drawButton(*(screens[*currScreenPtr].buttonsPtr[0]));
     }
     return;
 }

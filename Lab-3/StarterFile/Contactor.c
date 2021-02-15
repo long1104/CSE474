@@ -4,7 +4,7 @@
 
 
 
-void updateContactor(float* contactorStatusPtr, int *contactorPin) {
+void updateContactor(volatile float* contactorStatusPtr, int *contactorPin) {
     /****************
         Function name: updateContactor
         Function inputs: contactorStatusPtr: pointer to boolean status of contactor (held in float as 1.0 or 0.0)
