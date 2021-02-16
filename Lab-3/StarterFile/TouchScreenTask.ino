@@ -114,6 +114,7 @@ void deletePrintedData(PrintedData *printablePtr) {
     boxDim.concat(printDataToString(printablePtr->oldData, printablePtr->type));
     boxDim.concat(printablePtr->unitsPtr);
     tft.fillRect(printablePtr->x + PADDING_X, printablePtr->y + PADDING_Y, boxDim.length()*PIXELS_PER_CHAR_X * printablePtr->textSize, PIXELS_PER_CHAR_Y * printablePtr->textSize, BACKGROUND_COLOR);
+    return;
 }
 
 void drawData(PrintedData* printablePtr, bool newScreen) {
