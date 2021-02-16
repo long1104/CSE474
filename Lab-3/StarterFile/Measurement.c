@@ -11,45 +11,43 @@ void updateHVIL(float* hvilReadingPtr, int* pin) {
         Function description: updates the value of the HVIL through the measurement pin
         Authors:    Long Nguyen / Chase Arline
     *****************/
-    noInterrupts();
     *hvilReadingPtr = !(float)(int)digitalRead(*pin);                //read HVIL input
-    interrupts();
     return;
 }
 
 void updateTemperature(float* temperatureReadingPtr, int*pin) {
     /****************
         Function name:updateTemperature
-        Function inputs:temperatureReadingPtr: pointer to status of temperature value, clockCountPtr: pointer to value of the cycle count
+        Function inputs:temperatureReadingPtr: pointer to status of temperature value, pin: the pin to perform analog read from potentiometer
         Function outputs: void return
         Function description: updates the value of the temperature through the measured value
         Authors:    Long Nguyen / Chase Arline
     *****************/
-    *temperatureReadingPtr = ((float)(analogRead(*pin)) * 55.0 / 1024.0) - 10;
+    *temperatureReadingPtr = ((float)(analogRead(*pin)) * 55.0 / 1023.0) - 10;
     return;
 }
 
 void updateHvCurrent(float* currentReadingPtr, int *pin) {
     /****************
         Function name: updateHvCurrent
-        Function inputs: currentReadingPtr: pointer to status of current value, clockCountPtr: pointer to the value of the cycle count
+        Function inputs: currentReadingPtr: pointer to status of current value, pin: the pin to perform analog read from potentiometer
         Function outputs: void return
         Function description: updates the value of the current through the measured value
         Authors:    Long Nguyen / Chase Arline
     *****************/
-    *currentReadingPtr = ((float)analogRead(*pin)) * 50.0 / 1024.0 - 25;
+    *currentReadingPtr = ((float)analogRead(*pin)) * 50.0 / 1023.0 - 25;
     return;
 }
 
 void updateHvVoltage(float* voltageReadingPtr, int*pin) {
     /****************
         Function name: updateHvVoltage
-        Function inputs: voltageReadingPtr: pointer to status of voltage value, clockCountPtr: pointer to the value of the cycle count
+        Function inputs: voltageReadingPtr: pointer to status of voltage value, pin: the pin to perform analog read from potentiometer
         Function outputs: void return
         Function description: updates the value of the voltage through the measured value
         Authors:    Long Nguyen / Chase Arline
     *****************/
-    *voltageReadingPtr = ((float)analogRead(*pin)) * 450.0 / 1024.0;
+    *voltageReadingPtr = ((float)analogRead(*pin)) * 450.0 / 1023.0;
     return;
 }
 

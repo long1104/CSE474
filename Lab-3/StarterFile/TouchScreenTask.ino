@@ -195,9 +195,9 @@ bool emergencyCheck(Alarm alarms[]) {
 bool inputTask(int* currScreenPtr, Screen screenList[], Alarm alarms[], int* lastScreenPtr) {
     /****************
         Function name: inputTask
-        Function inputs: currScreenPtr: points to value of current screen, screenList: list of Screens
+        Function inputs: currScreenPtr: points to value of current screen, screenList: list of Screens, alarms: array of Alarms, needed to set acknowledgement flags, lastScreenPtr: the last screen the display was on
         Function outputs: bool, returns whether or not the display needs to be re-drawn
-        Function description: handles touch input from the user and whether any buttons are pressed, determines if a new screen needs to be drawn
+        Function description: handles touch input from the user and whether any buttons are pressed, determines if a new screen needs to be drawn, sets alarm acknowledgement flags
         Authors:    Long Nguyen / Chase Arline
     ****************/
     bool emergency = emergencyCheck(alarms);
@@ -217,9 +217,9 @@ bool inputTask(int* currScreenPtr, Screen screenList[], Alarm alarms[], int* las
         *currScreenPtr = 1;
         newScreen = true;
     }
-    if (isButton(point, *(screenList[2].buttonsPtr[0])) && *currScreenPtr == 2 && *(alarms[1].alarmVal) == 0) {
-        *(screenList[2].dataPtr[0]->dataInPtr) = 1;
-    } else if (isButton(point, *(screenList[2].buttonsPtr[1])) && *currScreenPtr == 2) {
+    if (isButton(point, *(screenList[2].buttonsPtr[0])) && *currScreenPtr == 2 && *(alarms[1].alarmVal) == 0) { //turn on battery if hvil alarm is not active and button is pressed
+        *(screenList[2].dataPtr[0]->dataInPtr) = 1 && (*(alarms[1].alarmVal) == 0);                             //safety check against hvil alarm to make sure code stays atomic (both variable checks are volatile)
+    } else if (isButton(point, *(screenList[2].buttonsPtr[1])) && *currScreenPtr == 2) {                        //turn off battery if button is pressed
         *(screenList[2].dataPtr[0]->dataInPtr) = 0;
     }
 
@@ -237,9 +237,10 @@ bool inputTask(int* currScreenPtr, Screen screenList[], Alarm alarms[], int* las
 void drawScreen(Screen screens[], bool newScreen, Alarm alarms[], int* currScreenPtr, int* lastScreenPtr, bool* acknowledgeDrawn) {
     /****************
         Function name: drawScreen
-        Function inputs: screen: the screen to be drawn, newScreen: are we updating the screen? (function is called every task loop)
+        Function inputs: screen: the screen to be drawn, newScreen: determines whether we are switching screens, alarms: array of alarms displayed on Alarm screen,
+                          currScreenPtr: current screen, lastScreenPtr: last screen the display was on, acknowledgeDrawn: status of the acknowledge button on alarm screen
         Function outputs: void return
-        Function description: draws the screen if newScreen == true
+        Function description: deletes the last screen and draws the new one if newScreen==true
         Authors:    Long Nguyen / Chase Arline
     ****************/
     if (newScreen) {
@@ -280,9 +281,9 @@ void drawScreen(Screen screens[], bool newScreen, Alarm alarms[], int* currScree
 void touchScreenTask(void* tscreenDataPtr) {
     /****************
         Function name: touchScreenTask
-        Function inputs:
+        Function inputs:  tscreenDataPtr: touch scren task data
         Function outputs: None
-        Function description: updates the hvor alarm status every three cycles
+        Function description: manages both the input task and display task for the touchscreen
         Authors:    Long Nguyen / Chase Arline
     ****************/
     TouchScreenData* datasPtr = (TouchScreenData*) tscreenDataPtr;

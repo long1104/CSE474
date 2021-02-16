@@ -3,7 +3,7 @@
 void updateStateOfCharge(float* stateOfChargeReadingPtr) {
     /****************
         Function name: updateStateOfCharge
-        Function inputs: stateOfChargeReadingPtr: pointer to the status of the state of charge value, clockCountPtr: pointer to the value of cycle count
+        Function inputs: stateOfChargeReadingPtr: pointer to the status of the state of charge value
         Function outputs: void return
         Function description: updates the value of the state of charge data through the measured value
         Authors:    Long Nguyen / Chase Arline

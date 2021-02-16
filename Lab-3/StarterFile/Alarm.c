@@ -6,9 +6,9 @@ char *alarm_arr[] = {"NOT ACTIVE", "ACTIVE, NOT ACKNOWLEDGED", "ACTIVE, ACKNOWLE
 void updateCurrentAlarm(Alarm alarm) {
     /****************
         Function name: updateCurrentAlarm
-        Function inputs: currentPtr: pointer to overCurrent alarm
+        Function inputs: alarm: Alarm struct holding overCurrent alarm data
         Function outputs: None
-        Function description: updates the overCurrent alarm status every 2 cycles
+        Function description:  updates the overCurrent alarm using shared variables from measurement task and display task
         Authors:    Long Nguyen / Chase Arline
     ****************/
     *(alarm.alarmVal) = (float)(*(alarm.measuredVal) >= 20.0 || (int) * (alarm.measuredVal) <= -5.0);
@@ -23,9 +23,9 @@ void updateCurrentAlarm(Alarm alarm) {
 void updateHVORAlarm(Alarm alarm) {
     /****************
         Function name: updateHVORAlarm
-        Function inputs: hvorPtr: pointer to hvor alarm
+        Function inputs: alarm: Alarm struct holding hvor alarm data
         Function outputs: None
-        Function description: updates the hvor alarm status every three cycles
+        Function description:  updates the hvor alarm using shared variables from measurement task and display task
         Authors:    Long Nguyen / Chase Arline
     ****************/
     *(alarm.alarmVal) = (float)((int) * (alarm.measuredVal) >= 405.0 || (int) * (alarm.measuredVal) <= 280.0);
@@ -40,9 +40,9 @@ void updateHVORAlarm(Alarm alarm) {
 void updateHVIAAlarm(Alarm alarm) {
     /****************
         Function name: updateHVIAAlarm
-        Function inputs: hviaPtr: pointer to hvia alarm, clockCountPtr: pointer to clockCount
+        Function inputs: alarm: Alarm struct holding hvil alarm data
         Function outputs: None
-        Function description: updates the hvia alarm status every cycle
+        Function description: updates the hvil alarm using shared variables from measurement task and display task
         Authors:    Long Nguyen / Chase Arline
     ****************/
     *(alarm.alarmVal) = !*(alarm.measuredVal);

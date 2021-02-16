@@ -89,7 +89,7 @@ volatile float hviaVal = 0;                                                     
 float overCurrent = 0;                                                              // over-current alarm status
 float hvorVal = 0;                                                                  // high voltage out of range alarm status
 
-bool hviaAck = false;
+bool hviaAck = false;                                                               //Acknowledgement values for each alarm
 bool hvorAck = false;
 bool overCurrentAck = false;
 
@@ -106,7 +106,7 @@ int currentScreen = 0;
 int lastScreen = 0;                                                                 // indicates which screen is currently displayed
 bool acknowledgeDrawn = false;
 
-volatile int timerFlag = 0;
+volatile int timerFlag = 0;                                                         //Establishes time base in main loop
 
 void timerISR() {
     timerFlag = 1;                      //set time base flag
@@ -131,9 +131,9 @@ void loop() {
     unsigned long ms = millis();
     while (1) {
         if (timerFlag) {
-        Serial.println(millis()-ms);
-        ms=millis();
-            Scheduler(); 
+            Serial.println(millis() - ms);
+            ms = millis();
+            Scheduler();
             timerFlag = 0;
         }
 
@@ -147,7 +147,7 @@ void setup() {
         Function name: setup
         Function inputs: None
         Function outputs: None
-        Function description: initializes global variables, sets up and queues scheduler tasks, initialize display, set pinmodes for IO
+        Function description: initializes global variables, sets up and queues scheduler tasks, initialize display, set pinmodes for IO, sets up interrupts
         Authors:    Long Nguyen / Chase Arline
       *****************/
     pinMode(hvilPin, INPUT);                                                                        //hvil -> input pin

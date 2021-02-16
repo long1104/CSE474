@@ -9,8 +9,8 @@ extern "C" {
 #include <stdbool.h>
 #include <Arduino.h>
 
-#define MAX_BUTTONS 2
-#define MAX_DATA 6
+#define MAX_BUTTONS 2       //max buttons on any screen (excluding prev/next). defines length of button array
+#define MAX_DATA 6          //max printed data on any screen. defines length of printed data array
 
 //PRINT_TYPE represents the variable type for printing
 typedef enum {
@@ -35,7 +35,7 @@ typedef struct PrintedDataStruct {
 
 //Screen represents a screen to be drawn on the display
 typedef struct ScreenStruct {
-    int dataLen, buttonLen;
+    int dataLen, buttonLen;             //real amount of printed data/buttons, only occupies a fraction of the array below
     PrintedData *dataPtr[MAX_DATA];
     XYButton *buttonsPtr[MAX_BUTTONS];
 } Screen;
