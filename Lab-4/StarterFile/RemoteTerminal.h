@@ -1,4 +1,5 @@
-
+#ifndef REMOTE_TERMINAL_H_
+#define REMOTE_TERMINAL_H_
 
 typedef struct RemoteTerminalDataStruct{
     MeasurementStatus* temperature;
@@ -8,7 +9,9 @@ typedef struct RemoteTerminalDataStruct{
 }RemoteTerminalData;
 
 
-void printOptions(RemoteTerminalData* data);
+void printOptions();
 void getUserInput(RemoteTerminalData* data);
 void printMeasurementStatus(MeasurementStatus* state);
 void remoteTerminalTask(void*);
+
+#endif

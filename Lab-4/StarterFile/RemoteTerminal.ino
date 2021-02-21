@@ -1,7 +1,7 @@
 #include "RemoteTerminal.h"
 
 
-void printOptions(RemoteTerminalData* data) {
+void printOptions() {
     Serial.println("[1] Reset EEPROM");
     Serial.println("[2] HV Current Range [Hi, Lo]");
     Serial.println("[3] HV Voltage Range [Hi, Lo]");

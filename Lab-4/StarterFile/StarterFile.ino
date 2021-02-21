@@ -16,6 +16,7 @@
 #include "Soc.h"
 #include "TouchScreenTask.h"
 #include "Scheduler.h"
+#include "RemoteTerminal.h"
 
 Elegoo_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);                       // Display initialization
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, 374);                                  // TFT initialization
