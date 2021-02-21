@@ -9,9 +9,9 @@ void printOptions() {
     Serial.print("Enter your menu choice [1-4]: ");
 }
 void getUserInput(RemoteTerminalData* data) {
-    char data = Serial.read();
+    char datas = Serial.read();
     bool goodData = true;
-    switch(data) {
+    switch((int)datas) {
     case 1:
         *(data->resetEEPROM)=1;
         Serial.println("CLEARING EEPROM...");

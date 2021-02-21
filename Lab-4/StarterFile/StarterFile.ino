@@ -211,7 +211,7 @@ void setup() {
     touchScreenTCB.taskDataPtr  = (void*) &tscreenData;
     touchScreenTCB.next         = &contactorTCB;
     touchScreenTCB.prev         = &socTCB;
-    touchScreenTCB.taskName     = "touchScreen"
+    touchScreenTCB.taskName     = "touchScreen";
 
     // Initialize Contactor TCB
     contactor = {&contactorPin,  &batteryOnOff};
