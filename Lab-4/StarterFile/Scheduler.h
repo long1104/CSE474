@@ -6,8 +6,10 @@
 
 
 extern TCB *tasksPtr;
-extern *head = NULL;
-extern *tail = NULL;
+extern TCB *head;
+extern TCB *tail;
 void Scheduler();
+void insert(TCB* node);
+void deleteNode(TCB* node);
 
 #endif
