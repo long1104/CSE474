@@ -8,7 +8,7 @@ typedef struct RemoteTerminalDataStruct{
 }RemoteTerminalData;
 
 
-void printOptions(RemoteTerminalData* data);
+void printOptions();
 void getUserInput(RemoteTerminalData* data);
 void printMeasurementStatus(MeasurementStatus* state);
 void remoteTerminalTask(void*);

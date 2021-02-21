@@ -1,7 +1,7 @@
 #include "RemoteTerminal.h"
 
 
-void printOptions(RemoteTerminalData* data) {
+void printOptions() {
     Serial.println("[1] Reset EEPROM");
     Serial.println("[2] HV Current Range [Hi, Lo]");
     Serial.println("[3] HV Voltage Range [Hi, Lo]");
@@ -9,9 +9,9 @@ void printOptions(RemoteTerminalData* data) {
     Serial.print("Enter your menu choice [1-4]: ");
 }
 void getUserInput(RemoteTerminalData* data) {
-    char data = Serial.read();
+    char datas = Serial.read();
     bool goodData = true;
-    switch(data) {
+    switch((int)datas) {
     case 1:
         *(data->resetEEPROM)=1;
         Serial.println("CLEARING EEPROM...");
