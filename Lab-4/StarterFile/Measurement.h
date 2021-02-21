@@ -10,24 +10,31 @@ extern "C" {
 #include <stdbool.h>
 #include <Arduino.h>
 
+typedef struct MeasurementStatusStruct {
+    float maximum;
+    bool* maxFlag;
+    float* data;
+    bool* minFlag;
+    float minimum;
+}MeasurementStatus;
 
 typedef struct MeasurementTaskData {
     float* hvilStatus;
     int* hvilPin;
-    float* temperature;
+    MeasurementStatus* temperature;
     int* temperaturePin;
-    float* hvCurrent;
-    int* hvCurrentPin;
-    float* hvVoltage;
-    int* hvVoltagePin;
+    MeasurementStatus* current;
+    int* currentPin;
+    MeasurementStatus* voltage;
+    int* voltagePin;
 } MeasurementData;
 
-
+void updateMeasurementStatus(MeasurementStatus* history, float newVal);
 void measurementTask (void*);
 void updateHVIL(float* hvilReadingPtr, int *pin);
-void updateTemperature(float* temperatureReadingPtr, int *pin) ;
-void updateHvCurrent(float* currentReadingPtr, int *pin) ;
-void updateHvVoltage(float* voltageReadingPtr, int*pin);
+void updateTemperature(MeasurementStatus* temperature, int *pin) ;
+void updateHvCurrent(MeasurementStatus* current, int *pin) ;
+void updateHvVoltage(MeasurementStatus* voltage, int*pin);
 
 #endif
 
