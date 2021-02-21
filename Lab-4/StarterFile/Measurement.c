@@ -15,7 +15,7 @@ void updateHVIL(float* hvilReadingPtr, int* pin) {
     return;
 }
 
-void updateTemperature(float* temperatureReadingPtr, int*pin) {
+void updateTemperature(MeasurementStatus* temperature, int*pin) {
     /****************
         Function name:updateTemperature
         Function inputs:temperatureReadingPtr: pointer to status of temperature value, pin: the pin to perform analog read from potentiometer
@@ -23,11 +23,12 @@ void updateTemperature(float* temperatureReadingPtr, int*pin) {
         Function description: updates the value of the temperature through the measured value
         Authors:    Long Nguyen / Chase Arline
     *****************/
-    *temperatureReadingPtr = ((float)(analogRead(*pin)) * 55.0 / 1023.0) - 10;
+    float readT = ((float)(analogRead(*pin)) * 55.0 / 1023.0) - 10;
+    updateMeasurementStatus(temperature, readT);
     return;
 }
 
-void updateHvCurrent(float* currentReadingPtr, int *pin) {
+void updateHvCurrent(MeasurementStatus* current, int *pin) {
     /****************
         Function name: updateHvCurrent
         Function inputs: currentReadingPtr: pointer to status of current value, pin: the pin to perform analog read from potentiometer
@@ -35,11 +36,12 @@ void updateHvCurrent(float* currentReadingPtr, int *pin) {
         Function description: updates the value of the current through the measured value
         Authors:    Long Nguyen / Chase Arline
     *****************/
-    *currentReadingPtr = ((float)analogRead(*pin)) * 50.0 / 1023.0 - 25;
+    float readC = ((float)analogRead(*pin)) * 50.0 / 1023.0 - 25;
+    updateMeasurementStatus(current, readC);
     return;
 }
 
-void updateHvVoltage(float* voltageReadingPtr, int*pin) {
+void updateHvVoltage(MeasurementStatus* voltage, int*pin) {
     /****************
         Function name: updateHvVoltage
         Function inputs: voltageReadingPtr: pointer to status of voltage value, pin: the pin to perform analog read from potentiometer
@@ -47,8 +49,20 @@ void updateHvVoltage(float* voltageReadingPtr, int*pin) {
         Function description: updates the value of the voltage through the measured value
         Authors:    Long Nguyen / Chase Arline
     *****************/
-    *voltageReadingPtr = ((float)analogRead(*pin)) * 450.0 / 1023.0;
+    float readV = ((float)analogRead(*pin)) * 450.0 / 1023.0;
+    updateMeasurementStatus(voltage, readV);
     return;
+}
+
+void updateMeasurementStatus(MeasurementStatus* history, float newVal){
+    *(*history).data = newVal;
+    if(newVal>(*history).maximum){
+        *(*history).maxFlag=true;
+        (*history).maximum = newVal;
+    } else if (newVal<(*history).minimum){
+        *(*history).minFlag=true;
+        (*history).minimum=newVal;
+    }
 }
 
 void measurementTask(void* mDataPtr) {
@@ -64,8 +78,8 @@ void measurementTask(void* mDataPtr) {
     // Update all sensors
     updateHVIL(data->hvilStatus, data->hvilPin);
     updateTemperature(data->temperature, data->temperaturePin);
-    updateHvCurrent(data->hvCurrent, data->hvCurrentPin);
-    updateHvVoltage(data->hvVoltage, data->hvVoltagePin);
+    updateHvCurrent(data->current, data->currentPin);
+    updateHvVoltage(data->voltage, data->voltagePin);
 
     return;
 }
