@@ -6,6 +6,8 @@
 
 
 extern TCB *tasksPtr;
+extern *head = NULL;
+extern *tail = NULL;
 void Scheduler();
 
 #endif

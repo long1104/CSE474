@@ -8,6 +8,7 @@
 typedef struct taskControlBlock {
     void (*task)(void*);
     void *taskDataPtr;
+    char *taskName;
     struct taskControlBlock* next;
     struct taskControlBlock* prev;
 } TCB;

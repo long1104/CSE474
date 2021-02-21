@@ -1,6 +1,8 @@
 #include "Scheduler.h"
 
 TCB *tasksPtr = NULL;
+TCB *head = NULL;
+TCB *tail = NULL;
 
 void Scheduler() {
     /****************
@@ -14,6 +16,18 @@ void Scheduler() {
     while (current != NULL) {
         current->task(current->taskDataPtr);
         current = current->next;
+    }
+    return;
+}
+
+void insert(TCB* node) {
+    if (head == NULL) {
+        head = node;
+        tail = node;
+    } else {
+        tail->next = node;
+        node->prev = tail;
+        tail = node;
     }
     return;
 }

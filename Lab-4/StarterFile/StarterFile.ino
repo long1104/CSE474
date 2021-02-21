@@ -198,13 +198,15 @@ void setup() {
     measurementTCB.taskDataPtr  = (void*) &measure;
     measurementTCB.next         = &alarmTCB;
     measurementTCB.prev         = NULL;
+    measurementTCB.taskName     = "measurement";
 
     //Initialize touchscreen/display TCB
     tscreenData = {&acknowledgeDrawn, &clockCount, &currentScreen, &lastScreen, &changeScreen ,  {overCurrentAlarm, hviaAlarm, hvorAlarm}, {measurementMonitor, alarmMonitor, batteryMonitor}};
-    touchScreenTCB.task = &touchScreenTask;
-    touchScreenTCB.taskDataPtr = (void*) &tscreenData;
-    touchScreenTCB.next = &contactorTCB;
-    touchScreenTCB.prev = &socTCB;
+    touchScreenTCB.task         = &touchScreenTask;
+    touchScreenTCB.taskDataPtr  = (void*) &tscreenData;
+    touchScreenTCB.next         = &contactorTCB;
+    touchScreenTCB.prev         = &socTCB;
+    touchScreenTCB.taskName     = "touchScreen"
 
     // Initialize Contactor TCB
     contactor = {&contactorPin,  &batteryOnOff};
@@ -212,8 +214,7 @@ void setup() {
     contactorTCB.taskDataPtr   = (void*) &contactor;
     contactorTCB.next          = NULL;
     contactorTCB.prev          = &touchScreenTCB;
-
-
+    contactorTCB.taskName      = "contactor";
 
     // Initialize Alarm TCB
     alarm                      = {&overCurrentAlarm, &hvorAlarm, &hviaAlarm};
@@ -221,6 +222,7 @@ void setup() {
     alarmTCB.taskDataPtr       = (void*) &alarm;
     alarmTCB.next              = &socTCB;
     alarmTCB.prev              = &measurementTCB;
+    alarmTCB.taskName          = "alarm";
 
 
     // Initialize SOC TCB
@@ -229,6 +231,7 @@ void setup() {
     socTCB.taskDataPtr         = (void*) &soc;
     socTCB.next                = &touchScreenTCB;
     socTCB.prev                = &alarmTCB;
+    socTCB.taskName            = "soc";
 
     tasksPtr = &measurementTCB;
 
