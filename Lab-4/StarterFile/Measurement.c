@@ -57,11 +57,11 @@ void updateHvVoltage(MeasurementStatus* voltage, int*pin) {
 void updateMeasurementStatus(MeasurementStatus* history, float newVal){
     *(*history).data = newVal;
     if(newVal>(*history).maximum){
-        *(*history).maxFlag=true;
-        (*history).maximum = newVal;
+        history->maxFlag=true;
+        history->maximum = newVal;
     } else if (newVal<(*history).minimum){
-        *(*history).minFlag=true;
-        (*history).minimum=newVal;
+        history->minFlag=true;
+        history->minimum=newVal;
     }
 }
 

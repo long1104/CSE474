@@ -12,9 +12,9 @@ extern "C" {
 
 typedef struct MeasurementStatusStruct {
     float maximum;
-    bool* maxFlag;
+    bool maxFlag;
     float* data;
-    bool* minFlag;
+    bool minFlag;
     float minimum;
 }MeasurementStatus;
 

@@ -57,6 +57,9 @@ PrintedData overCurrentData = {};                                               
 PrintedData hvorData = {};                                                          // High Voltage Out of Range Alarm
 PrintedData batteryData = {};                                                       // Battery On/Off data
 
+MeasurementStatus* temperatureState = {};
+MeasurementStatus* currentState = {};
+MeasurementStatus* voltageState = {};
 
 //Labels for screens (non changing data)
 PrintedData measurementLabel = {};                                                  // Label for measurement screen
@@ -136,7 +139,6 @@ void loop() {
             Scheduler();
             timerFlag = 0;
         }
-
     }
     return;
 }
@@ -162,6 +164,8 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(hvilPin), hvilISR, RISING);
 
     // initialize all printed data values for the touch screen
+
+    temperatureState->max
 
     //State of charged printed data
     socDataPrint = {ORIGIN_X, ORIGIN_Y + 40, PURPLE, SMALL_SCRIPT, DEFAULT_FLOAT, NUMBER, &socVal, "SOC value: ", ""};
