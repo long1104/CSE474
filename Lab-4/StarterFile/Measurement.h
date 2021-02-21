@@ -27,8 +27,10 @@ typedef struct MeasurementTaskData {
     int* currentPin;
     MeasurementStatus* voltage;
     int* voltagePin;
+    bool* resetFlag;
 } MeasurementData;
 
+void resetMinMax(MeasurementStatus* history);
 void updateMeasurementStatus(MeasurementStatus* history, float newVal);
 void measurementTask (void*);
 void updateHVIL(float* hvilReadingPtr, int *pin);

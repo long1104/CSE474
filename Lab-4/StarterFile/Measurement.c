@@ -65,6 +65,11 @@ void updateMeasurementStatus(MeasurementStatus* history, float newVal){
     }
 }
 
+void resetMinMax(MeasurementStatus* history){
+    history->minimum = *(history->data);
+    history->maximum = *(history->data);
+}
+
 void measurementTask(void* mDataPtr) {
     /****************
         Function name: measurementTask
@@ -80,6 +85,10 @@ void measurementTask(void* mDataPtr) {
     updateTemperature(data->temperature, data->temperaturePin);
     updateHvCurrent(data->current, data->currentPin);
     updateHvVoltage(data->voltage, data->voltagePin);
-
+    if(*(data->resetFlag)){
+        resetMinMax(data->temperature);
+        resetMinMax(data->current);
+        resetMinMax(data->voltage);
+    }
     return;
 }

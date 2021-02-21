@@ -40,7 +40,9 @@ TCB alarmTCB = {};                                                              
 TCB contactorTCB = {};                                                              // Declare contactor TCB
 TCB socTCB = {};                                                                    // Declare soc TCB
 TCB touchScreenTCB = {};
-
+TCB remoteTerminalTCB = {};                                                         // Declare remote terminal TCB
+RemoteTerminalData remoteTerminalTaskData = {};
+bool resetEEPROM = false;
 bool changeScreen = true;
 
 Screen batteryMonitor = {};
@@ -58,9 +60,9 @@ PrintedData overCurrentData = {};                                               
 PrintedData hvorData = {};                                                          // High Voltage Out of Range Alarm
 PrintedData batteryData = {};                                                       // Battery On/Off data
 
-MeasurementStatus* temperatureState = {};
-MeasurementStatus* currentState = {};
-MeasurementStatus* voltageState = {};
+MeasurementStatus temperatureState = {};
+MeasurementStatus currentState = {};
+MeasurementStatus voltageState = {};
 
 //Labels for screens (non changing data)
 PrintedData measurementLabel = {};                                                  // Label for measurement screen
@@ -132,11 +134,8 @@ void loop() {
         Function description:
         Authors:    Long Nguyen / Chase Arline
       *****************/
-    unsigned long ms = millis();
     while (1) {
         if (timerFlag) {
-            Serial.println(millis() - ms);
-            ms = millis();
             Scheduler();
             timerFlag = 0;
         }
@@ -165,8 +164,6 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(hvilPin), hvilISR, RISING);
 
     // initialize all printed data values for the touch screen
-
-    temperatureState->max
 
     //State of charged printed data
     socDataPrint = {ORIGIN_X, ORIGIN_Y + 40, PURPLE, SMALL_SCRIPT, DEFAULT_FLOAT, NUMBER, &socVal, "SOC value: ", ""};
@@ -197,8 +194,12 @@ void setup() {
     alarmMonitor = Screen{ALARM_NUM_PRINTS, 1, {&alarmLabel, &hviaData, &overCurrentData, &hvorData}, {&alarmButton}};
     measurementMonitor = Screen{MEASURE_NUM_PRINTS, 0, {&measurementLabel, &socDataPrint, &temperatureData, &hvCurrentData, &hvVoltageData, &hvilData}, {}};
 
+    temperatureState.data = &temperature;
+    currentState.data = &hvCurrent;
+    voltageState.data = &hvVoltage;
+
     // Initialize Measurement TCB
-    measure                     = {&HVIL, &hvilPin, &temperature, &temperaturePin, &hvCurrent, &hvCurrentPin, &hvVoltage, &hvVoltagePin};
+    measure                     = {&HVIL, &hvilPin, &temperatureState, &temperaturePin, &currentState, &hvCurrentPin, &voltageState, &hvVoltagePin};
     measurementTCB.task         = &measurementTask;
     measurementTCB.taskDataPtr  = (void*) &measure;
     measurementTCB.next         = &alarmTCB;
@@ -217,10 +218,18 @@ void setup() {
     contactor = {&contactorPin,  &batteryOnOff};
     contactorTCB.task          = &contactorTask;
     contactorTCB.taskDataPtr   = (void*) &contactor;
-    contactorTCB.next          = NULL;
+    contactorTCB.next          = &remoteTerminalTCB;
     contactorTCB.prev          = &touchScreenTCB;
     contactorTCB.taskName      = "contactor";
 
+    remoteTerminalTaskData = {&temperatureState, &currentState, &voltageState, &resetEEPROM, true};
+    remoteTerminalTCB.task = &remoteTerminalTask;
+    remoteTerminalTCB.taskDataPtr = (void*) &remoteTerminalTaskData;
+    remoteTerminalTCB.next = NULL;
+    remoteTerminalTCB.prev = &contactorTCB;
+    remoteTerminalTCB.taskName = "remote terminal";
+
+    
     // Initialize Alarm TCB
     alarm                      = {&overCurrentAlarm, &hvorAlarm, &hviaAlarm};
     alarmTCB.task              = &alarmTask;

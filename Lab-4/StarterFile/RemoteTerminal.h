@@ -6,6 +6,7 @@ typedef struct RemoteTerminalDataStruct{
     MeasurementStatus* current;
     MeasurementStatus* voltage;
     bool* resetEEPROM;
+    bool printOps;
 }RemoteTerminalData;
 
 

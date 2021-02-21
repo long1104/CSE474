@@ -5,36 +5,37 @@ void printOptions() {
     Serial.println("[1] Reset EEPROM");
     Serial.println("[2] HV Current Range [Hi, Lo]");
     Serial.println("[3] HV Voltage Range [Hi, Lo]");
-    Serial.println("[4] Temperature Range [Hi, Lo]\n");
+    Serial.println("[4] Temperature Range [Hi, Lo]");
     Serial.print("Enter your menu choice [1-4]: ");
 }
 void getUserInput(RemoteTerminalData* data) {
     char datas = Serial.read();
-    bool goodData = true;
-    switch((int)datas) {
-    case 1:
+    data->printOps = true;
+    switch(datas) {
+    case '1':
         *(data->resetEEPROM)=1;
         Serial.println("CLEARING EEPROM...");
         break;
-    case 2:
+    case '2':
         printMeasurementStatus(data->current);
         break;
-    case 3:
+    case '3':
         printMeasurementStatus(data->voltage);
         break;
-    case 4:
+    case '4':
         printMeasurementStatus(data->temperature);
         break;
     default:
-        goodData=false;
+        data->printOps=false;
     }
+    
 }
 void printMeasurementStatus(MeasurementStatus* state) {
-    String p = "[";
+    String p = "\n[";
     p.concat(String(state->maximum));
     p.concat(",");
     p.concat(String(state->minimum));
-    p.concat("]");
+    p.concat("]\n");
     Serial.println(p);
 }
 
@@ -48,9 +49,11 @@ void remoteTerminalTask(void* rDataPtr) {
         Authors:    Long Nguyen / Chase Arline
     *****************/
     RemoteTerminalData* data = (RemoteTerminalData*) rDataPtr;
-
+    if(data->printOps){
+        printOptions();
+    }
     // Update all sensors
-
+    getUserInput(data);
 
     return;
 }
