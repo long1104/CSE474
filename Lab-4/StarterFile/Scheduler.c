@@ -31,3 +31,24 @@ void insert(TCB* node) {
     }
     return;
 }
+
+void deleteNode(TCB* node) {
+    if (head != NULL) {
+        if (head == tail) {
+            head = NULL;
+            tail = NULL;
+        } else if (head == node) {
+            head = head->next;
+            head->prev = NULL;
+        } else if (tail == node) {
+            tail = tail->prev;
+            tail->next = NULL;
+        } else {
+            node->prev->next = node->next;
+            node->next->prev = node->prev;
+            node->prev = NULL;
+            node->next = NULL;
+        }
+    }
+    return;
+}
