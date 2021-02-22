@@ -137,13 +137,17 @@ void loop() {
     while (1) {
         if (timerFlag) {
             if (clockCount % 10 == 0 && clockCount != 0) {
-                insert(&touchScreenTCB);
                 insert(&remoteTerminalTCB);
+            }
+            if (clockCount %3 == 0 && clockCount != 0){
+                insert(&touchScreenTCB);
             }
             Scheduler();
             timerFlag = 0;
             if (clockCount % 10 == 0) {
                 deleteNode(&remoteTerminalTCB);
+            }
+            if (clockCount % 3 == 0) {
                 deleteNode(&touchScreenTCB);
             }
             clockCount++;
