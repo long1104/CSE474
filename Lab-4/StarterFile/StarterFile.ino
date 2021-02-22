@@ -136,7 +136,7 @@ void loop() {
       *****************/
     while (1) {
         if (timerFlag) {
-            if (clockCount % 10 == 0) {
+            if (clockCount % 10 == 0 && clockCount != 0) {
                 insert(&touchScreenTCB);
                 insert(&remoteTerminalTCB);
             }
