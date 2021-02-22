@@ -287,13 +287,14 @@ void touchScreenTask(void* tscreenDataPtr) {
         Function description: manages both the input task and display task for the touchscreen
         Authors:    Long Nguyen / Chase Arline
     ****************/
+    Serial.println("TouchScreenTask");
     TouchScreenData* datasPtr = (TouchScreenData*) tscreenDataPtr;
     if (*(datasPtr->clockCount) == 0) {
         tft.fillScreen(BACKGROUND_COLOR);
         drawButton(previous);
         drawButton(next);
         displayTask(datasPtr->currentScreenPtr, datasPtr->screens, true, datasPtr->alarms, datasPtr->lastScreenPtr, datasPtr->acknowledgeDrawn);  // if its the first time running the task, draw the whole screen
-        *(datasPtr->clockCount)++;
+//        *(datasPtr->clockCount)++;
     }
     *(datasPtr->changeScreenPtr) = inputTask(datasPtr->currentScreenPtr, datasPtr->screens, datasPtr->alarms, datasPtr->lastScreenPtr);    // get input from the touchscreen
     displayTask(datasPtr->currentScreenPtr, datasPtr->screens, *(datasPtr->changeScreenPtr), datasPtr->alarms, datasPtr->lastScreenPtr, datasPtr->acknowledgeDrawn);   // display data/labels/buttons

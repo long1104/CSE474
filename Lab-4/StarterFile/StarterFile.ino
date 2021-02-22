@@ -136,8 +136,17 @@ void loop() {
       *****************/
     while (1) {
         if (timerFlag) {
+            if (clockCount % 10 == 0) {
+                insert(&touchScreenTCB);
+                insert(&remoteTerminalTCB);
+            }
             Scheduler();
             timerFlag = 0;
+            if (clockCount % 10 == 0) {
+                deleteNode(&remoteTerminalTCB);
+                deleteNode(&touchScreenTCB);
+            }
+            clockCount++;
         }
     }
     return;
@@ -247,7 +256,8 @@ void setup() {
     socTCB.prev                = &alarmTCB;
     socTCB.taskName            = "soc";
 
-    tasksPtr = &measurementTCB;
+    head = &measurementTCB;
+    tail = &remoteTerminalTCB;
 
     // Initialize serial communication
     Serial.begin(9600);

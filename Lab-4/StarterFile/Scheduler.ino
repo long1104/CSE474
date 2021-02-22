@@ -12,7 +12,7 @@ void Scheduler() {
          Function description: This is the scheduler implementation. It starts at the head of the task queue and executes each sequential task until there is not another task left to be executed.
          Authors:    Long Nguyen / Chase Arline
        *****************/
-    TCB* current = tasksPtr;
+    TCB* current = head;
     while (current != NULL) {
         current->task(current->taskDataPtr);
         current = current->next;
@@ -35,20 +35,24 @@ void insert(TCB* node) {
 void deleteNode(TCB* node) {
     if (head != NULL) {
         if (head == tail) {
+            Serial.print("TouchScreen1");
             head = NULL;
             tail = NULL;
         } else if (head == node) {
+            Serial.print("TouchScreen2");
             head = head->next;
             head->prev = NULL;
         } else if (tail == node) {
+            Serial.print("TouchScreen3");
             tail = tail->prev;
             tail->next = NULL;
-        } else {
+        } else if (node->prev != NULL && node->next != NULL){
+            Serial.print("TouchScreen4");
             node->prev->next = node->next;
             node->next->prev = node->prev;
-            node->prev = NULL;
-            node->next = NULL;
         }
+        node->prev = NULL;
+        node->next = NULL;
     }
     return;
 }
