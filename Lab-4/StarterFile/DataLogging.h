@@ -1,11 +1,12 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
+//#ifdef __cplusplus
+//extern "C" {
+//#endif
 
 #ifndef DATA_LOGGING_H_
 #define DATA_LOGGING_H_
 
 #include "Measurement.h"
+#include "EEPROM.h"
 
 #define EEPROM_POS_TEMP_MIN 0
 #define EEPROM_POS_TEMP_MAX 4
@@ -34,6 +35,6 @@ void dataLoggingTask (void*);
 
 #endif
 
-#ifdef __cplusplus
-}
-#endif
+//#ifdef __cplusplus
+//}
+//#endif
