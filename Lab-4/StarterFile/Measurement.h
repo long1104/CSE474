@@ -16,6 +16,7 @@ typedef struct MeasurementStatusStruct {
     float* data;
     bool minFlag;
     float minimum;
+    bool resetFlag;
 }MeasurementStatus;
 
 typedef struct MeasurementTaskData {

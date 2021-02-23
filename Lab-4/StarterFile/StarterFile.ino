@@ -177,7 +177,7 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(hvilPin), hvilISR, RISING);
 
     // initialize all printed data values for the touch screen
-
+    
     //State of charged printed data
     socDataPrint = {ORIGIN_X, ORIGIN_Y + 40, PURPLE, SMALL_SCRIPT, DEFAULT_FLOAT, NUMBER, &socVal, "SOC value: ", ""};
 

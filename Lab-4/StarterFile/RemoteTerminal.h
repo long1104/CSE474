@@ -1,3 +1,7 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef REMOTE_TERMINAL_H_
 #define REMOTE_TERMINAL_H_
 
@@ -15,4 +19,8 @@ void getUserInput(RemoteTerminalData* data);
 void printMeasurementStatus(MeasurementStatus* state);
 void remoteTerminalTask(void*);
 
+#endif
+
+#ifdef __cplusplus
+}
 #endif

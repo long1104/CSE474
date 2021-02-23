@@ -54,18 +54,22 @@ void updateHvVoltage(MeasurementStatus* voltage, int*pin) {
     return;
 }
 
-void updateMeasurementStatus(MeasurementStatus* history, float newVal){
+void updateMeasurementStatus(MeasurementStatus* history, float newVal) {
     *(*history).data = newVal;
-    if(newVal>(*history).maximum){
+    if(history->resetFlag) {
+        history->maximum=newVal;
+        history->minimum=newVal;
+        history->resetFlag=false;
+    } else if(newVal>(*history).maximum) {
         history->maxFlag=true;
         history->maximum = newVal;
-    } else if (newVal<(*history).minimum){
+    } else if (newVal<(*history).minimum) {
         history->minFlag=true;
         history->minimum=newVal;
     }
 }
 
-void resetMinMax(MeasurementStatus* history){
+void resetMinMax(MeasurementStatus* history) {
     history->minimum = *(history->data);
     history->maximum = *(history->data);
 }
@@ -85,7 +89,7 @@ void measurementTask(void* mDataPtr) {
     updateTemperature(data->temperature, data->temperaturePin);
     updateHvCurrent(data->current, data->currentPin);
     updateHvVoltage(data->voltage, data->voltagePin);
-    if(*(data->resetFlag)){
+    if(*(data->resetFlag)) {
         resetMinMax(data->temperature);
         resetMinMax(data->current);
         resetMinMax(data->voltage);

@@ -35,19 +35,15 @@ void insert(TCB* node) {
 void deleteNode(TCB* node) {
     if (head != NULL) {
         if (head == tail) {
-            Serial.print("TouchScreen1");
             head = NULL;
             tail = NULL;
         } else if (head == node) {
-            Serial.print("TouchScreen2");
             head = head->next;
             head->prev = NULL;
         } else if (tail == node) {
-            Serial.print("TouchScreen3");
             tail = tail->prev;
             tail->next = NULL;
         } else if (node->prev != NULL && node->next != NULL){
-            Serial.print("TouchScreen4");
             node->prev->next = node->next;
             node->next->prev = node->prev;
         }
