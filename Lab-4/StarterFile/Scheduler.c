@@ -43,7 +43,7 @@ void deleteNode(TCB* node) {
         } else if (tail == node) {
             tail = tail->prev;
             tail->next = NULL;
-        } else if (node->prev != NULL && node->next != NULL){
+        } else if (node->prev != NULL && node->next != NULL) {
             node->prev->next = node->next;
             node->next->prev = node->prev;
         }

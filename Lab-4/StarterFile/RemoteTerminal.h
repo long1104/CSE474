@@ -5,13 +5,13 @@ extern "C" {
 #ifndef REMOTE_TERMINAL_H_
 #define REMOTE_TERMINAL_H_
 
-typedef struct RemoteTerminalDataStruct{
+typedef struct RemoteTerminalDataStruct {
     MeasurementStatus* temperature;
     MeasurementStatus* current;
     MeasurementStatus* voltage;
     bool* resetEEPROM;
     bool printOps;
-}RemoteTerminalData;
+} RemoteTerminalData;
 
 
 void printOptions();
