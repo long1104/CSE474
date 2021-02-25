@@ -14,7 +14,6 @@ void getUserInput(RemoteTerminalData* data) {
     switch(datas) {
     case '1':
         *(data->resetEEPROM)=1;
-        Serial.println("CLEARING EEPROM...");
         break;
     case '2':
         printMeasurementStatus(data->current);
@@ -28,7 +27,7 @@ void getUserInput(RemoteTerminalData* data) {
     default:
         data->printOps=false;
     }
-    
+
 }
 void printMeasurementStatus(MeasurementStatus* state) {
     String p = "\n[";
@@ -48,9 +47,9 @@ void remoteTerminalTask(void* rDataPtr) {
         Function description: Gives the user options in the serial monitor and responds to the user input
         Authors:    Long Nguyen / Chase Arline
     *****************/
-    Serial.println("Remote Terminal");
+    Serial.println("REMOTE_TERMINAL");
     RemoteTerminalData* data = (RemoteTerminalData*) rDataPtr;
-    if(data->printOps){
+    if(data->printOps) {
         printOptions();
     }
     // Update all sensors

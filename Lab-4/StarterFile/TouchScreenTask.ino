@@ -154,15 +154,20 @@ String printDataToString(float val, PRINT_TYPE type) {
     ****************/
     String ret;
     switch (type) {
-        case ALARM: ret = alarm_arr[(int)val];
-            break;
-        case NUMBER: ret = String(val);
-            break;
-        case BOOL: ret = (int)val ? "CLOSED" : "OPEN";
-            break;
-        case LABEL: ret = "";                         // label does not have any changing data
-            break;
-        default: ret = String(val);
+    case ALARM:
+        ret = alarm_arr[(int)val];
+        break;
+    case NUMBER:
+        ret = String(val);
+        break;
+    case BOOL:
+        ret = (int)val ? "CLOSED" : "OPEN";
+        break;
+    case LABEL:
+        ret = "";                         // label does not have any changing data
+        break;
+    default:
+        ret = String(val);
     }
     return ret;
 }
@@ -287,7 +292,6 @@ void touchScreenTask(void* tscreenDataPtr) {
         Function description: manages both the input task and display task for the touchscreen
         Authors:    Long Nguyen / Chase Arline
     ****************/
-    Serial.println("TouchScreenTask");
     TouchScreenData* datasPtr = (TouchScreenData*) tscreenDataPtr;
     if (*(datasPtr->clockCount) == 0) {
         tft.fillScreen(BACKGROUND_COLOR);

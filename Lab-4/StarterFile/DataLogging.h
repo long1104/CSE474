@@ -17,11 +17,11 @@
 
 
 typedef struct DataLoggingTaskStruct {
-    MeasurementStatus* current;
     MeasurementStatus* temperature;
+    MeasurementStatus* current;
     MeasurementStatus* voltage;
     bool* resetFlag;
-}DataLoggingTaskData;
+} DataLoggingTaskData;
 
 
 void writeFloatToEEPROM(float value, int pos);

@@ -3,42 +3,66 @@
 
 
 
-void writeFloatToEEPROM(float value, int pos){
+void writeFloatToEEPROM(float value, int pos) {
+    noInterrupts();
     EEPROM.put(value, pos);
+    interrupts();
     return;
+    /** EXTRA CREDIT VERSION:
+     for(int i=0; i<sizeof(value);i++){
+        EEPROM.write((value>>(8*i))&&0xFF, pos+i)
+     }
+
+     */
 }
 
-float readFloatFromEEPROM(int pos){
+float readFloatFromEEPROM(int pos) {
     float value;
+    noInterrupts();
     EEPROM.get(pos, value);
+    Serial.println(value);
+    interrupts();
+     /** EXTRA CREDIT VERSION:
+      uint_8 *perByte = (uint8_t*)&value;                           //used to set each byte in the float representation
+     for(int i=0; i<sizeof(value);i++){
+        perByte[i]=EEPROM.get((value>>(8*i))&&0xFF, pos+i)          // set each individual byte in the float to the correct value
+     }
+     */
     return value;
 }
 
-void updateEEPROM(MeasurementStatus* measurements, int posMin, int posMax){
-    if(measurements->minFlag){
+void updateEEPROM(MeasurementStatus* measurements, int posMin, int posMax) {
+    if(measurements->minFlag) {
         writeFloatToEEPROM(measurements->minimum, posMin);
+        measurements->minFlag=false;
     }
-    if(measurements->maxFlag){
+    if(measurements->maxFlag) {
         writeFloatToEEPROM(measurements->maximum, posMax);
+        measurements->maxFlag=false;
     }
     return;
 }
 
-void resetMeasurements(MeasurementStatus* measurements, float resetValue, int posMin, int posMax){
+void resetMeasurements(MeasurementStatus* measurements, float resetValue, int posMin, int posMax) {
     measurements->minimum=resetValue;
     measurements->maximum=resetValue;
+    measurements->resetFlag=true;
     writeFloatToEEPROM(resetValue, posMin);
     writeFloatToEEPROM(resetValue, posMax);
 }
 
-void dataLoggingTask (void* dlDataPtr){
-     DataLoggingTaskData* data = (DataLoggingTaskData*) dlDataPtr;
-     updateEEPROM(data->temperature, EEPROM_POS_TEMP_MIN, EEPROM_POS_TEMP_MAX);
-     updateEEPROM(data->current, EEPROM_POS_CURRENT_MIN, EEPROM_POS_CURRENT_MAX);
-     updateEEPROM(data->voltage, EEPROM_POS_VOLTAGE_MIN, EEPROM_POS_VOLTAGE_MAX);
-     if(*(data->resetFlag)){
+void dataLoggingTask (void* dlDataPtr) {
+    DataLoggingTaskData* data = (DataLoggingTaskData*) dlDataPtr;
+    Serial.println("DATA_LOGGING");
+    if(*(data->resetFlag)) {
+        Serial.println("CLEARING EEPROM...");
         resetMeasurements(data->current, 0, EEPROM_POS_CURRENT_MIN, EEPROM_POS_CURRENT_MAX);
         resetMeasurements(data->voltage, -1, EEPROM_POS_VOLTAGE_MIN, EEPROM_POS_VOLTAGE_MAX);
         resetMeasurements(data->temperature,0, EEPROM_POS_TEMP_MIN, EEPROM_POS_TEMP_MAX);
-     }
+        *(data->resetFlag)=false;
+    }
+    updateEEPROM(data->temperature, EEPROM_POS_TEMP_MIN, EEPROM_POS_TEMP_MAX);
+    updateEEPROM(data->current, EEPROM_POS_CURRENT_MIN, EEPROM_POS_CURRENT_MAX);
+    updateEEPROM(data->voltage, EEPROM_POS_VOLTAGE_MIN, EEPROM_POS_VOLTAGE_MAX);
+
 }

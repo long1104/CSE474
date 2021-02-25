@@ -17,6 +17,8 @@
 #include "TouchScreenTask.h"
 #include "Scheduler.h"
 #include "RemoteTerminal.h"
+#include "EEPROM.h"
+#include "DataLogging.h";
 
 Elegoo_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);                       // Display initialization
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, 374);                                  // TFT initialization
@@ -41,6 +43,8 @@ TCB contactorTCB = {};                                                          
 TCB socTCB = {};                                                                    // Declare soc TCB
 TCB touchScreenTCB = {};
 TCB remoteTerminalTCB = {};                                                         // Declare remote terminal TCB
+TCB dataLoggingTCB = {};
+DataLoggingTaskData dataLoggingTaskData = {};
 RemoteTerminalData remoteTerminalTaskData = {};
 bool resetEEPROM = false;
 bool changeScreen = true;
@@ -136,19 +140,26 @@ void loop() {
       *****************/
     while (1) {
         if (timerFlag) {
+
+            if (clockCount %3 == 0 && clockCount != 0) {
+                insert(&touchScreenTCB);
+            }
+            if(clockCount %50 == 0 && clockCount != 0 ) {
+                insert(&dataLoggingTCB);
+            }
             if (clockCount % 10 == 0 && clockCount != 0) {
                 insert(&remoteTerminalTCB);
             }
-            if (clockCount %3 == 0 && clockCount != 0){
-                insert(&touchScreenTCB);
-            }
             Scheduler();
-            timerFlag = 0;
+            timerFlag = 0; 
             if (clockCount % 10 == 0) {
                 deleteNode(&remoteTerminalTCB);
             }
             if (clockCount % 3 == 0) {
                 deleteNode(&touchScreenTCB);
+            }
+            if(clockCount %50 == 0  ) {
+                deleteNode(&dataLoggingTCB);
             }
             clockCount++;
         }
@@ -156,6 +167,16 @@ void loop() {
     return;
 }
 
+void initializeMeasurementHistory(){
+    noInterrupts();
+    EEPROM.get(EEPROM_POS_TEMP_MIN, (temperatureState.minimum));
+    EEPROM.get(EEPROM_POS_TEMP_MAX, (temperatureState.maximum));
+    EEPROM.get(EEPROM_POS_CURRENT_MIN, (currentState.minimum));
+    EEPROM.get(EEPROM_POS_CURRENT_MAX, (currentState.maximum));
+    EEPROM.get(EEPROM_POS_VOLTAGE_MIN, (voltageState.minimum));
+    EEPROM.get(EEPROM_POS_VOLTAGE_MAX, (voltageState.maximum));
+    interrupts();
+}
 
 void setup() {
     /****************
@@ -177,7 +198,7 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(hvilPin), hvilISR, RISING);
 
     // initialize all printed data values for the touch screen
-    
+
     //State of charged printed data
     socDataPrint = {ORIGIN_X, ORIGIN_Y + 40, PURPLE, SMALL_SCRIPT, DEFAULT_FLOAT, NUMBER, &socVal, "SOC value: ", ""};
 
@@ -219,6 +240,8 @@ void setup() {
     measurementTCB.prev         = NULL;
     measurementTCB.taskName     = "measurement";
 
+    initializeMeasurementHistory();
+
     //Initialize touchscreen/display TCB
     tscreenData = {&acknowledgeDrawn, &clockCount, &currentScreen, &lastScreen, &changeScreen ,  {overCurrentAlarm, hviaAlarm, hvorAlarm}, {measurementMonitor, alarmMonitor, batteryMonitor}};
     touchScreenTCB.task         = &touchScreenTask;
@@ -231,7 +254,7 @@ void setup() {
     contactor = {&contactorPin,  &batteryOnOff};
     contactorTCB.task          = &contactorTask;
     contactorTCB.taskDataPtr   = (void*) &contactor;
-    contactorTCB.next          = &remoteTerminalTCB;
+    contactorTCB.next          = &dataLoggingTCB;
     contactorTCB.prev          = &touchScreenTCB;
     contactorTCB.taskName      = "contactor";
 
@@ -239,10 +262,16 @@ void setup() {
     remoteTerminalTCB.task = &remoteTerminalTask;
     remoteTerminalTCB.taskDataPtr = (void*) &remoteTerminalTaskData;
     remoteTerminalTCB.next = NULL;
-    remoteTerminalTCB.prev = &contactorTCB;
+    remoteTerminalTCB.prev = &dataLoggingTCB;
     remoteTerminalTCB.taskName = "remote terminal";
 
-    
+    dataLoggingTaskData = {&temperatureState, &currentState, &voltageState, &resetEEPROM};
+    dataLoggingTCB.task = &dataLoggingTask;
+    dataLoggingTCB.taskDataPtr = (void*) &dataLoggingTaskData;
+    dataLoggingTCB.next = &remoteTerminalTCB;
+    dataLoggingTCB.prev = &contactorTCB;
+    dataLoggingTCB.taskName = "data logging";
+
     // Initialize Alarm TCB
     alarm                      = {&overCurrentAlarm, &hvorAlarm, &hviaAlarm};
     alarmTCB.task              = &alarmTask;
@@ -266,7 +295,7 @@ void setup() {
     // Initialize serial communication
     Serial.begin(9600);
     Serial1.begin(9600);
-    Serial1.setTimeout(1000);
+    Serial1.setTimeout(20);
     tft.reset();
     uint16_t identifier = tft.readID();
     if (identifier == 0x9325) {
@@ -300,5 +329,6 @@ void setup() {
     }
     tft.begin(identifier);
     Timer1.start();
+    
     return;
 }
