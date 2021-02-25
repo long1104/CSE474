@@ -253,7 +253,7 @@ void setup() {
 
 
     // Initialize SOC TCB
-    soc                        = {&socVal};
+    soc                        = {&socVal, &temperature, &hvCurrent, &hvVoltage};
     socTCB.task                = &socTask;
     socTCB.taskDataPtr         = (void*) &soc;
     socTCB.next                = &touchScreenTCB;

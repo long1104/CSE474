@@ -12,10 +12,20 @@ extern "C" {
 //
 typedef struct SocTaskData {
     float* stateOfCharge;
+    float* measuredTemperature;
+    float* measuredHvCurrent;
+    float* measuredHvVoltage;
 } SocData;
 
+extern float tempArr[4];
+extern float voltArr[5];
+extern float dataChart[4][5];
+
 void socTask (void*);
-void updateStateOfCharge(float* stateOfChargeReading);
+void updateStateOfCharge(float* stateOfChargeReadingPtr, float* temperature, float* hvCurrent, float* hvVoltage);
+float computeOpenCircuitVoltage(float hvCurrent, float hvVoltage);
+void getTemperatureBound(float temperatureVal, int* lowerBound, int* upperBound);
+void getVoltageBound(float voltageOCVal, int* lowerBound, int* upperBound);
 
 #endif
 
