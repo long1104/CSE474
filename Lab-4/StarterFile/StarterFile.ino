@@ -169,10 +169,10 @@ void loop() {
 
 void initializeMeasurementHistory(){
     noInterrupts();
-    EEPROM.get(EEPROM_POS_TEMP_MIN, (temperatureState.minimum));
-    EEPROM.get(EEPROM_POS_TEMP_MAX, (temperatureState.maximum));
-    EEPROM.get(EEPROM_POS_CURRENT_MIN, (currentState.minimum));
-    EEPROM.get(EEPROM_POS_CURRENT_MAX, (currentState.maximum));
+    EEPROM.get(EEPROM_POS_TEMP_MIN, (temperatureState.minimum)); Serial.println(temperatureState.minimum);
+    EEPROM.get(EEPROM_POS_TEMP_MAX, (temperatureState.maximum)); Serial.println(temperatureState.maximum);
+    EEPROM.get(EEPROM_POS_CURRENT_MIN, (currentState.minimum)); Serial.println(currentState.minimum);
+    EEPROM.get(EEPROM_POS_CURRENT_MAX, (currentState.maximum)); Serial.println(currentState.maximum);
     EEPROM.get(EEPROM_POS_VOLTAGE_MIN, (voltageState.minimum));
     EEPROM.get(EEPROM_POS_VOLTAGE_MAX, (voltageState.maximum));
     interrupts();
@@ -186,6 +186,7 @@ void setup() {
         Function description: initializes global variables, sets up and queues scheduler tasks, initialize display, set pinmodes for IO, sets up interrupts
         Authors:    Long Nguyen / Chase Arline
       *****************/
+    Serial.begin(9600);
     pinMode(hvilPin, INPUT);                                                                        //hvil -> input pin
     pinMode(contactorPin, OUTPUT);                                                                  //contactor -> output pin
     pinMode(temperaturePin, INPUT_PULLUP);
@@ -293,7 +294,7 @@ void setup() {
     tail = &remoteTerminalTCB;
 
     // Initialize serial communication
-    Serial.begin(9600);
+
     Serial1.begin(9600);
     Serial1.setTimeout(20);
     tft.reset();

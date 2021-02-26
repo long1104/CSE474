@@ -4,8 +4,9 @@
 
 
 void writeFloatToEEPROM(float value, int pos) {
+    Serial.print("AT EEPROM ");Serial.print(pos);Serial.print(" is getting value: ");Serial.println(value);
     noInterrupts();
-    EEPROM.put(value, pos);
+    EEPROM.put(pos, value);
     interrupts();
     return;
     /** EXTRA CREDIT VERSION:
@@ -53,7 +54,6 @@ void resetMeasurements(MeasurementStatus* measurements, float resetValue, int po
 
 void dataLoggingTask (void* dlDataPtr) {
     DataLoggingTaskData* data = (DataLoggingTaskData*) dlDataPtr;
-    Serial.println("DATA_LOGGING");
     if(*(data->resetFlag)) {
         Serial.println("CLEARING EEPROM...");
         resetMeasurements(data->current, 0, EEPROM_POS_CURRENT_MIN, EEPROM_POS_CURRENT_MAX);
