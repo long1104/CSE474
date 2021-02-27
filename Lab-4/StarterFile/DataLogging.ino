@@ -6,29 +6,28 @@
 void writeFloatToEEPROM(float value, int pos) {
     Serial.print("AT EEPROM ");Serial.print(pos);Serial.print(" is getting value: ");Serial.println(value);
     noInterrupts();
-    EEPROM.put(pos, value);
-    interrupts();
-    return;
-    /** EXTRA CREDIT VERSION:
+    //EEPROM.put(pos, value);
+    byte *perByte = (byte*)&value;
      for(int i=0; i<sizeof(value);i++){
-        EEPROM.write((value>>(8*i))&&0xFF, pos+i)
+        EEPROM.write(pos+i, perByte[i]);
+        Serial.print(" Byte: ");Serial.print(perByte[i]);
      }
-
-     */
+     Serial.println();
+     interrupts();
+     return;
 }
 
 float readFloatFromEEPROM(int pos) {
     float value;
     noInterrupts();
-    EEPROM.get(pos, value);
+    //EEPROM.get(pos, value);
+ 
+    byte *perByte = (byte*)&value;                           //used to set each byte in the float representation
+    for(int i=0; i<sizeof(value);i++){
+       perByte[i]=EEPROM.read(pos+i);          // set each individual byte in the float to the correct value
+    }
     Serial.println(value);
     interrupts();
-     /** EXTRA CREDIT VERSION:
-      uint_8 *perByte = (uint8_t*)&value;                           //used to set each byte in the float representation
-     for(int i=0; i<sizeof(value);i++){
-        perByte[i]=EEPROM.get((value>>(8*i))&&0xFF, pos+i)          // set each individual byte in the float to the correct value
-     }
-     */
     return value;
 }
 
