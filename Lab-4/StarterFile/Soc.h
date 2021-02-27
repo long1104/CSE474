@@ -26,6 +26,7 @@ void updateStateOfCharge(float* stateOfChargeReadingPtr, float* temperature, flo
 float computeOpenCircuitVoltage(float hvCurrent, float hvVoltage);
 void getTemperatureBound(float temperatureVal, int* lowerBound, int* upperBound);
 void getVoltageBound(float voltageOCVal, int* lowerBound, int* upperBound);
+float oneDInterpolation(float x1, float y1, float x2, float y2, float value);
 
 #endif
 

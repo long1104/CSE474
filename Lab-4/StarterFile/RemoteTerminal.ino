@@ -47,6 +47,7 @@ void remoteTerminalTask(void* rDataPtr) {
         Function description: Gives the user options in the serial monitor and responds to the user input
         Authors:    Long Nguyen / Chase Arline
     *****************/
+//    Serial.println("REMOTE_TERMINAL");
     RemoteTerminalData* data = (RemoteTerminalData*) rDataPtr;
     if(data->printOps) {
         printOptions();

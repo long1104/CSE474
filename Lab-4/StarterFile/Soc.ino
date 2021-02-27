@@ -16,8 +16,10 @@ void updateStateOfCharge(float* stateOfChargeReadingPtr, float* temperature, flo
         Function description: updates the value of the state of charge data through the measured value
         Authors:    Long Nguyen / Chase Arline
     *****************/
-    *stateOfChargeReadingPtr = 0;
     float voltageOC = computeOpenCircuitVoltage(*hvCurrent, *hvVoltage);
+//    Serial.println(voltageOC);
+//    Serial.println(*temperature);
+    *stateOfChargeReadingPtr = getStateOfCharge(*temperature, voltageOC);
     return;
 }
 
@@ -27,8 +29,8 @@ float computeOpenCircuitVoltage(float hvCurrent, float hvVoltage) {
 
 float getStateOfCharge(float temperature, float voltageOC) {
     float returnSOC = 0;
-    int temperatureLower = -1;
-    int temperatureUpper = -1;
+    int temperLower = -1;
+    int temperUpper = -1;
     int voltageLower     = -1;
     int voltageUpper     = -1;
     if (voltageOC <= 200)  {
@@ -38,13 +40,24 @@ float getStateOfCharge(float temperature, float voltageOC) {
         returnSOC = 100;
 //        Serial.println("Full battery");
     } else {
-        getTemperatureBound(temperature, &temperatureLower, &temperatureUpper);
+        getTemperatureBound(temperature, &temperLower, &temperUpper);
         getVoltageBound(voltageOC, &voltageLower, &voltageUpper);
-//        Serial.print("temperatureLowerBound: "); Serial.println(temperatureLower);
-//        Serial.print("temperatureUpperBound: "); Serial.println(temperatureUpper);
+//        Serial.print("temperatureLowerBound: "); Serial.println(temperLower);
+//        Serial.print("temperatureUpperBound: "); Serial.println(temperUpper);
 //        Serial.print("voltageLowerBound: "); Serial.println(voltageLower);
 //        Serial.print("voltageUpperBound: "); Serial.println(voltageUpper);
+        float firstIntplt = oneDInterpolation(tempArr[temperLower], dataChart[temperLower][voltageLower] ,tempArr[temperUpper], dataChart[temperUpper][voltageLower], temperature);
+        float secondIntplt = oneDInterpolation(tempArr[temperLower], dataChart[temperLower][voltageUpper] ,tempArr[temperUpper], dataChart[temperUpper][voltageUpper], temperature);
+//        Serial.print("First interpolation: "); Serial.println(firstIntplt);
+//        Serial.print("Second interpolation: "); Serial.println(secondIntplt);
+        returnSOC = oneDInterpolation(voltArr[voltageLower], firstIntplt,voltArr[voltageUpper], secondIntplt, voltageOC);
+//        Serial.print("SOC value: "); Serial.println(returnSOC);
     }
+    return returnSOC;
+}
+
+float oneDInterpolation(float x1, float y1, float x2, float y2, float value) {
+    return ((y2 - y1)/(x2 - x1))*(value - x1) + y1;
 }
 
 void getTemperatureBound(float temperatureVal, int* lowerBound, int* upperBound) {
