@@ -169,10 +169,10 @@ void loop() {
 
 void initializeMeasurementHistory(){
     noInterrupts();
-    EEPROM.get(EEPROM_POS_TEMP_MIN, (temperatureState.minimum)); Serial.println(temperatureState.minimum);
-    EEPROM.get(EEPROM_POS_TEMP_MAX, (temperatureState.maximum)); Serial.println(temperatureState.maximum);
-    EEPROM.get(EEPROM_POS_CURRENT_MIN, (currentState.minimum)); Serial.println(currentState.minimum);
-    EEPROM.get(EEPROM_POS_CURRENT_MAX, (currentState.maximum)); Serial.println(currentState.maximum);
+    EEPROM.get(EEPROM_POS_TEMP_MIN, (temperatureState.minimum));
+    EEPROM.get(EEPROM_POS_TEMP_MAX, (temperatureState.maximum));
+    EEPROM.get(EEPROM_POS_CURRENT_MIN, (currentState.minimum));
+    EEPROM.get(EEPROM_POS_CURRENT_MAX, (currentState.maximum));
     EEPROM.get(EEPROM_POS_VOLTAGE_MIN, (voltageState.minimum));
     EEPROM.get(EEPROM_POS_VOLTAGE_MAX, (voltageState.maximum));
     interrupts();

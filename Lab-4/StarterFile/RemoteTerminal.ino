@@ -14,6 +14,7 @@ void getUserInput(RemoteTerminalData* data) {
     switch(datas) {
     case '1':
         *(data->resetEEPROM)=1;
+        Serial.println();
         break;
     case '2':
         printMeasurementStatus(data->current);

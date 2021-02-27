@@ -66,7 +66,6 @@ void updateMeasurementStatus(MeasurementStatus* history, float newVal) {
         history->maxFlag=true;
         history->maximum = newVal;
     } else if (newVal<(*history).minimum) {
-        Serial.println(newVal);
         history->minFlag=true;
         history->minimum=newVal;
     }

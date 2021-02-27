@@ -17,8 +17,6 @@ void updateStateOfCharge(float* stateOfChargeReadingPtr, float* temperature, flo
         Authors:    Long Nguyen / Chase Arline
     *****************/
     float voltageOC = computeOpenCircuitVoltage(*hvCurrent, *hvVoltage);
-//    Serial.println(voltageOC);
-//    Serial.println(*temperature);
     *stateOfChargeReadingPtr = getStateOfCharge(*temperature, voltageOC);
     return;
 }
@@ -35,23 +33,14 @@ float getStateOfCharge(float temperature, float voltageOC) {
     int voltageUpper     = -1;
     if (voltageOC <= 200)  {
         returnSOC = 0;
-//        Serial.println("Out of battery");
     } else if (voltageOC >= 400)  {
         returnSOC = 100;
-//        Serial.println("Full battery");
     } else {
         getTemperatureBound(temperature, &temperLower, &temperUpper);
         getVoltageBound(voltageOC, &voltageLower, &voltageUpper);
-//        Serial.print("temperatureLowerBound: "); Serial.println(temperLower);
-//        Serial.print("temperatureUpperBound: "); Serial.println(temperUpper);
-//        Serial.print("voltageLowerBound: "); Serial.println(voltageLower);
-//        Serial.print("voltageUpperBound: "); Serial.println(voltageUpper);
         float firstIntplt = oneDInterpolation(tempArr[temperLower], dataChart[temperLower][voltageLower] ,tempArr[temperUpper], dataChart[temperUpper][voltageLower], temperature);
         float secondIntplt = oneDInterpolation(tempArr[temperLower], dataChart[temperLower][voltageUpper] ,tempArr[temperUpper], dataChart[temperUpper][voltageUpper], temperature);
-//        Serial.print("First interpolation: "); Serial.println(firstIntplt);
-//        Serial.print("Second interpolation: "); Serial.println(secondIntplt);
         returnSOC = oneDInterpolation(voltArr[voltageLower], firstIntplt,voltArr[voltageUpper], secondIntplt, voltageOC);
-//        Serial.print("SOC value: "); Serial.println(returnSOC);
     }
     return returnSOC;
 }
