@@ -5,7 +5,6 @@
 
 void writeFloatToEEPROM(float value, int pos) {
     noInterrupts();
-    //EEPROM.put(pos, value);
     byte *perByte = (byte*)&value;
      for(int i=0; i<sizeof(value);i++){
         EEPROM.write(pos+i, perByte[i]);
