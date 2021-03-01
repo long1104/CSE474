@@ -61,12 +61,12 @@ void drawButton(XYButton button);
 bool isButton(Point point, XYButton button);
 void drawLabel(char* label, int x, int y, int color);
 void drawData(PrintedData* printable, bool newScreen);
-String printDataToString(float val, PRINT_TYPE type);
 void displayTask(int* currScreen, Screen screenList[], bool newScreen, Alarm alarms[], int* lastScreenPtr, bool* acknowledgeDrawn);
 bool inputTask(int* currScreen, Screen screenList[], Alarm alarms[], int* lastScreenPtr);
 void drawScreen(Screen screen, bool newScreen, int* currScreenPtr, int* lastScreenPtr, bool* acknowledgeDrawn);
 void touchScreenTask(void* tscreenData);
 void setCursor(int x, int y);
+bool activeAlarmCheck(Alarm alarms[]);
 
 #endif
 

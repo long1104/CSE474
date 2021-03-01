@@ -198,6 +198,17 @@ bool emergencyCheck(Alarm alarms[]) {
     return emergency;
 }
 
+bool activeAlarmCheck(Alarm alarms[]) {
+    bool active = false;
+    for (int i = 0; i < 3; i++) {
+        if (*(alarms[i].alarmVal) == 1 || *(alarms[i].alarmVal) == 2) {
+            active = true;
+            break;
+        }
+    }
+    return active;
+}
+
 bool inputTask(int* currScreenPtr, Screen screenList[], Alarm alarms[], int* lastScreenPtr) {
     /****************
         Function name: inputTask
@@ -223,8 +234,8 @@ bool inputTask(int* currScreenPtr, Screen screenList[], Alarm alarms[], int* las
         *currScreenPtr = 1;
         newScreen = true;
     }
-    if (isButton(point, *(screenList[2].buttonsPtr[0])) && *currScreenPtr == 2 && *(alarms[1].alarmVal) == 0) { //turn on battery if hvil alarm is not active and button is pressed
-        *(screenList[2].dataPtr[0]->dataInPtr) = 1 && (*(alarms[1].alarmVal) == 0);                             //safety check against hvil alarm to make sure code stays atomic (both variable checks are volatile)
+    if (isButton(point, *(screenList[2].buttonsPtr[0])) && *currScreenPtr == 2) { //turn on battery if hvil alarm is not active and button is pressed
+        *(screenList[2].dataPtr[0]->dataInPtr) = 1 && !activeAlarmCheck(alarms);                             //safety check against hvil alarm to make sure code stays atomic (both variable checks are volatile)
     } else if (isButton(point, *(screenList[2].buttonsPtr[1])) && *currScreenPtr == 2) {                        //turn off battery if button is pressed
         *(screenList[2].dataPtr[0]->dataInPtr) = 0;
     }
