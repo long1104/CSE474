@@ -10,7 +10,7 @@ void updateContactor(volatile float* contactorStatusPtr, int *contactorPin, Alar
         Function description: updates the output pin of the contactor using shared flag from display
         Authors:    Long Nguyen / Chase Arline
     *****************/
-    if(*contactorStatusPtr && activeAlarmCheck(alarms)){
+    if(activeAlarmCheck(alarms)){
         *contactorStatusPtr=0;
     }
     digitalWrite(*contactorPin, (int)(*contactorStatusPtr && !activeAlarmCheck(alarms)));           //set contactor output high/low
