@@ -20,7 +20,7 @@ void getUserInput(RemoteTerminalData* dataPtr) {
     dataPtr->printOps = true;
     switch(datas) {
     case '1':
-        *(data->resetEEPROM)=1;
+        *(dataPtr->resetEEPROM)=1;
         break;
     case '2':
         printMeasurementStatus(dataPtr->current);

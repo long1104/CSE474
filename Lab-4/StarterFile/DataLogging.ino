@@ -58,7 +58,6 @@ void updateEEPROM(MeasurementStatus* measurementsPtr, int posMin, int posMax) {
 }
 
 void resetMeasurements(MeasurementStatus* measurementsPtr, float resetValue, int posMin, int posMax) {
-    +
     /****************
     Function name: resetMeasurements
     Function inputs: measurements: the measurement history to reset, resetValue: default resetValue: posMin: eeprom address min, posMax: eeprom address max
