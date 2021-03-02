@@ -110,6 +110,13 @@ void drawLabel(PrintedData *printablePtr) {
 }
 
 void deletePrintedData(PrintedData *printablePtr) {
+    /****************
+    Function name: deletePrintedData
+    Function inputs: printablePtr: pointer to the printed data that needs to be deleted
+    Function outputs: void return
+    Function description: deletes the printed data on the screen
+    Authors:    Long Nguyen / Chase Arline
+    *****************/
     String boxDim = String(printablePtr->labelPtr);
     boxDim.concat(printDataToString(printablePtr->oldData, printablePtr->type));
     boxDim.concat(printablePtr->unitsPtr);
@@ -188,6 +195,13 @@ void displayTask(int* currScreenPtr, Screen screenList[], bool newScreen, Alarm 
 }
 
 bool emergencyCheck(Alarm alarms[]) {
+    /****************
+    Function name: emergencyCheck
+    Function inputs: alarms: the alarms to check for emergency conditions
+    Function outputs: bool: returns true if any emergency conditions are found
+    Function description: checks if any alarms are active, not acknowledged
+    Authors:    Long Nguyen / Chase Arline
+    *****************/
     bool emergency = false;
     for (int i = 0; i < 3; i++) {
         if (*(alarms[i].alarmVal) == 1 && *(alarms[i].ack) == 0) {
@@ -198,7 +212,15 @@ bool emergencyCheck(Alarm alarms[]) {
     return emergency;
 }
 
+
 bool activeAlarmCheck(Alarm alarms[]) {
+    /****************
+    Function name: activeAlarmCheck
+    Function inputs: alarms: the alarms to check for active states
+    Function outputs: bool: returns true if any alarms are active
+    Function description: checks if any of the given alarms are in any active state
+    Authors:    Long Nguyen / Chase Arline
+    *****************/
     bool active = false;
     for (int i = 0; i < 3; i++) {
         if (*(alarms[i].alarmVal) == 1 || *(alarms[i].alarmVal) == 2) {

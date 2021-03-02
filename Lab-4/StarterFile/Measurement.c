@@ -15,59 +15,66 @@ void updateHVIL(float* hvilReadingPtr, int* pin) {
     return;
 }
 
-void updateTemperature(MeasurementStatus* temperature, int*pin) {
+void updateTemperature(MeasurementStatus* temperaturePtr, int*pin) {
     /****************
         Function name:updateTemperature
-        Function inputs:temperatureReadingPtr: pointer to status of temperature value, pin: the pin to perform analog read from potentiometer
+        Function inputs:temperaturePtr: measurement history for the temperature, pin: the pin to perform analog read from potentiometer
         Function outputs: void return
         Function description: updates the value of the temperature through the measured value
         Authors:    Long Nguyen / Chase Arline
     *****************/
     float readT = ((float)(analogRead(*pin)) * 55.0 / 1023.0) - 10;
-    updateMeasurementStatus(temperature, readT);
+    updateMeasurementStatus(temperaturePtr, readT);
     return;
 }
 
-void updateHvCurrent(MeasurementStatus* current, int *pin) {
+void updateHvCurrent(MeasurementStatus* currentPtr, int *pin) {
     /****************
         Function name: updateHvCurrent
-        Function inputs: currentReadingPtr: pointer to status of current value, pin: the pin to perform analog read from potentiometer
+        Function inputs: currentPtr: measurement history for the current, pin: the pin to perform analog read from potentiometer
         Function outputs: void return
         Function description: updates the value of the current through the measured value
         Authors:    Long Nguyen / Chase Arline
     *****************/
     float readC = ((float)analogRead(*pin)) * 50.0 / 1023.0 - 25;
-    updateMeasurementStatus(current, readC);
+    updateMeasurementStatus(currentPtr, readC);
     return;
 }
 
-void updateHvVoltage(MeasurementStatus* voltage, int*pin) {
+void updateHvVoltage(MeasurementStatus* voltagePtr, int*pin) {
     /****************
         Function name: updateHvVoltage
-        Function inputs: voltageReadingPtr: pointer to status of voltage value, pin: the pin to perform analog read from potentiometer
+        Function inputs: voltagePtr: measurement history for voltage, pin: the pin to perform analog read from potentiometer
         Function outputs: void return
         Function description: updates the value of the voltage through the measured value
         Authors:    Long Nguyen / Chase Arline
     *****************/
     float readV = ((float)analogRead(*pin)) * 450.0 / 1023.0;
-    updateMeasurementStatus(voltage, readV);
+    updateMeasurementStatus(voltagePtr, readV);
     return;
 }
 
-void updateMeasurementStatus(MeasurementStatus* history, float newVal) {
-    *(*history).data = newVal;
-    if(history->resetFlag) {
-        history->maximum=newVal;
-        history->minimum=newVal;
-        history->maxFlag=true;
-        history->minFlag=true;
-        history->resetFlag=false;
-    } else if(newVal>(*history).maximum) {
-        history->maxFlag=true;
-        history->maximum = newVal;
-    } else if (newVal<(*history).minimum) {
-        history->minFlag=true;
-        history->minimum=newVal;
+void updateMeasurementStatus(MeasurementStatus* historyPtr, float newVal) {
+    /****************
+    Function name: updateMeasurementStatus
+    Function inputs: historyPtr: measurement status history, newVal: the newly read value from the measurement pins
+    Function outputs: void return
+    Function description: updates the measurement history and sets flags for the EEPROM if needed
+    Authors:    Long Nguyen / Chase Arline
+    *****************/
+    *(*historyPtr).data = newVal;
+    if(historyPtr->resetFlag) {
+        historyPtr->maximum=newVal;
+        historyPtr->minimum=newVal;
+        historyPtr->maxFlag=true;
+        historyPtr->minFlag=true;
+        historyPtr->resetFlag=false;
+    } else if(newVal>(*historyPtr).maximum) {
+        historyPtr->maxFlag=true;
+        historyPtr->maximum = newVal;
+    } else if (newVal<(*historyPtr).minimum) {
+        historyPtr->minFlag=true;
+        historyPtr->minimum=newVal;
     }
 }
 

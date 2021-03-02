@@ -21,6 +21,13 @@ void Scheduler() {
 }
 
 void insert(TCB* node) {
+    /****************
+    Function name: insert
+    Function inputs: node: pointer to the TCB node to be inserted in the list
+    Function outputs: void return
+    Function description: inserts the TCB node into the linked list
+    Authors:    Long Nguyen / Chase Arline
+    *****************/
     if (head == NULL) {
         head = node;
         tail = node;
@@ -33,6 +40,13 @@ void insert(TCB* node) {
 }
 
 void deleteNode(TCB* node) {
+    /****************
+    Function name: deleteNode
+    Function inputs: node: pointer to TCB node to be inserted into the linked list
+    Function outputs: void return
+    Function description: inserts the TCB node into the linked list
+    Authors:    Long Nguyen / Chase Arline
+    *****************/
     if (head != NULL) {
         if (head == tail && head == node) {
             head = NULL;

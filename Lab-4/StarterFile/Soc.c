@@ -22,10 +22,24 @@ void updateStateOfCharge(float* stateOfChargeReadingPtr, float* temperature, flo
 }
 
 float computeOpenCircuitVoltage(float hvCurrent, float hvVoltage) {
+    /****************
+    Function name: computeOpenCircuitVoltage
+    Function inputs: hvCurrent: the measured current, hvVoltage: the measured closed circuit voltage
+    Function outputs: the estimated open circuit voltage
+    Function description: computes open circuit voltage from the closed circuit voltage + the voltage dropped by internal resistance + current
+    Authors:    Long Nguyen / Chase Arline
+    *****************/
     return hvVoltage + (0.5) * hvCurrent;
 }
 
 float getStateOfCharge(float temperature, float voltageOC) {
+    /****************
+    Function name: getStateOfCharge
+    Function inputs: temperature: measured temperature, voltageOC: open circuit voltage
+    Function outputs: float: state of charge percentage (0-100%)
+    Function description: estimates the state of charge by using the temperature and open circuit voltage
+    Authors:    Long Nguyen / Chase Arline
+    *****************/
     float returnSOC = 0;
     int temperLower = -1;
     int temperUpper = -1;
@@ -46,10 +60,24 @@ float getStateOfCharge(float temperature, float voltageOC) {
 }
 
 float oneDInterpolation(float x1, float y1, float x2, float y2, float value) {
+    /****************
+    Function name: oneDInterpolation
+    Function inputs: x1/y1: the first data point, x2/y2: the second data point
+    Function outputs: void the estimated interpolated value
+    Function description: gives an estimation of a point by interpolating two XY data points
+    Authors:    Long Nguyen / Chase Arline
+    *****************/
     return ((y2 - y1)/(x2 - x1))*(value - x1) + y1;
 }
 
 void getTemperatureBound(float temperatureVal, int* lowerBound, int* upperBound) {
+    /****************
+    Function name: getTemperatureBound
+    Function inputs: temperatureVal: measured temperature, lowerBound/upperBound: points for returning the indices for the temperature in the lookup table
+    Function outputs: void return (returns through parameters)
+    Function description: returns the temperature bounds for the lookup table for the temperature
+    Authors:    Long Nguyen / Chase Arline
+    *****************/
     int tempLowerBound = -1;
     int tempUpperBound = -1;
     for (int i = 0; i < 3; i++) {
@@ -75,6 +103,13 @@ void getTemperatureBound(float temperatureVal, int* lowerBound, int* upperBound)
 }
 
 void getVoltageBound(float voltageOCVal, int* lowerBound, int* upperBound) {
+    /****************
+    Function name: getVoltageBound
+    Function inputs: voltageOCVal: measured open circuit voltage, lowerBound/upperBound: points for returning the indices for the temperature in the lookup table
+    Function outputs: void return (returns through parameters)
+    Function description: returns the voltage bounds for the lookup table for the open circuit voltage
+    Authors:    Long Nguyen / Chase Arline
+    *****************/
     int voltLowerBound = -1;
     int voltUpperBound = -1;
     for (int i = 0; i < 4; i++) {
@@ -101,11 +136,11 @@ void getVoltageBound(float voltageOCVal, int* lowerBound, int* upperBound) {
 
 void socTask(void* sDataPtr) {
     /****************
-        Function name: socTask
-        Function inputs: sDataPtr: pointer to state of charge task data
-        Function outputs: void return
-        Function description: updates the state of charge value through the task data
-        Authors:    Long Nguyen / Chase Arline
+    Function name: socTask
+    Function inputs: sDataPtr: pointer to state of charge task data
+    Function outputs: void return
+    Function description: updates the state of charge value through the task data
+    Authors:    Long Nguyen / Chase Arline
     *****************/
     SocData* data = (SocData*) sDataPtr;
     updateStateOfCharge(data->stateOfCharge, data->measuredTemperature, data->measuredHvCurrent, data->measuredHvVoltage);

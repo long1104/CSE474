@@ -151,7 +151,7 @@ void loop() {
                 insert(&remoteTerminalTCB);
             }
             Scheduler();
-            timerFlag = 0; 
+            timerFlag = 0;
             if (clockCount % 10 == 0) {
                 deleteNode(&remoteTerminalTCB);
             }
@@ -167,7 +167,14 @@ void loop() {
     return;
 }
 
-void initializeMeasurementHistory(){
+void initializeMeasurementHistory() {
+    /****************
+    Function name: initializeMeasurementHistory
+    Function inputs: none (uses global variables)
+    Function outputs: void return
+    Function description: sets the min/max for each measurement history to it's respective EEPROM value
+    Authors:    Long Nguyen / Chase Arline
+    *****************/
     noInterrupts();
     EEPROM.get(EEPROM_POS_TEMP_MIN, (temperatureState.minimum));
     EEPROM.get(EEPROM_POS_TEMP_MAX, (temperatureState.maximum));
@@ -201,7 +208,7 @@ void setup() {
     // initialize all printed data values for the touch screen
 
     //State of charged printed data
-    socDataPrint = {ORIGIN_X, ORIGIN_Y + 40, PURPLE, SMALL_SCRIPT, DEFAULT_FLOAT, NUMBER, &socVal, "SOC value: ", ""};
+    socDataPrint = {ORIGIN_X, ORIGIN_Y + 40, PURPLE, SMALL_SCRIPT, DEFAULT_FLOAT, NUMBER, &socVal, "SOC value: ", "%"};
 
     //Measurement printed data
     temperatureData = {ORIGIN_X, ORIGIN_Y + 60, PURPLE, SMALL_SCRIPT, DEFAULT_FLOAT, NUMBER, &temperature, "Temperature: ", "C"};
@@ -330,6 +337,6 @@ void setup() {
     }
     tft.begin(identifier);
     Timer1.start();
-    
+
     return;
 }

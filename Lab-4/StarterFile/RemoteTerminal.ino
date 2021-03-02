@@ -8,33 +8,46 @@ void printOptions() {
     Serial.println("[4] Temperature Range [Hi, Lo]");
     Serial.print("Enter your menu choice [1-4]: ");
 }
-void getUserInput(RemoteTerminalData* data) {
+void getUserInput(RemoteTerminalData* dataPtr) {
+    /****************
+    Function name: getUserInputw
+    Function inputs: data: the remote terminal task data
+    Function outputs: void return
+    Function description: gets user input from serial monitor and responds appropriately
+    Authors:    Long Nguyen / Chase Arline
+    *****************/
     char datas = Serial.read();
-    data->printOps = true;
+    dataPtr->printOps = true;
     switch(datas) {
     case '1':
         *(data->resetEEPROM)=1;
-        Serial.println();
         break;
     case '2':
-        printMeasurementStatus(data->current);
+        printMeasurementStatus(dataPtr->current);
         break;
     case '3':
-        printMeasurementStatus(data->voltage);
+        printMeasurementStatus(dataPtr->voltage);
         break;
     case '4':
-        printMeasurementStatus(data->temperature);
+        printMeasurementStatus(dataPtr->temperature);
         break;
     default:
-        data->printOps=false;
+        dataPtr->printOps=false;
     }
 
 }
-void printMeasurementStatus(MeasurementStatus* state) {
+void printMeasurementStatus(MeasurementStatus* statePtr) {
+    /****************
+    Function name: printMeasurementStatus
+    Function inputs: statePtr: the measurement history state (min/max data)
+    Function outputs: void return
+    Function description: prints the measurement histry [MAX, MIN] to the serial monitor
+    Authors:    Long Nguyen / Chase Arline
+    *****************/
     String p = "\n[";
-    p.concat(String(state->maximum));
+    p.concat(String(statePtr->maximum));
     p.concat(",");
-    p.concat(String(state->minimum));
+    p.concat(String(statePtr->minimum));
     p.concat("]\n");
     Serial.println(p);
 }
