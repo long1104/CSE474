@@ -34,7 +34,7 @@ void insert(TCB* node) {
 
 void deleteNode(TCB* node) {
     if (head != NULL) {
-        if (head == tail) {
+        if (head == tail && head == node) {
             head = NULL;
             tail = NULL;
         } else if (head == node) {
