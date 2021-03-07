@@ -19,6 +19,7 @@
 #include "RemoteTerminal.h"
 #include "EEPROM.h"
 #include "DataLogging.h";
+#include "Accelerometer.h";
 
 Elegoo_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, LCD_RESET);                       // Display initialization
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, 374);                                  // TFT initialization
@@ -44,6 +45,8 @@ TCB socTCB = {};                                                                
 TCB touchScreenTCB = {};
 TCB remoteTerminalTCB = {};                                                         // Declare remote terminal TCB
 TCB dataLoggingTCB = {};
+TCB accelerometerTCB = {};
+AccelerometerTaskData accelerometerTaskData = {};
 DataLoggingTaskData dataLoggingTaskData = {};
 RemoteTerminalData remoteTerminalTaskData = {};
 bool resetEEPROM = false;
@@ -85,10 +88,25 @@ float hvVoltage = 0;                                                            
 float temperature = 0;                                                              // temperature value
 float HVIL = 0;                                                                     // high voltage interlock status
 int hvilPin = 21;                                                                   // IO pin for hvil input
+
 int temperaturePin = A13;
 int hvVoltagePin = A14;
 int hvCurrentPin = A15;
 
+
+byte xAccelPin = A12;
+byte yAccelPin = A11;
+byte zAccelPin = A10;
+
+float xDistance = 0;
+float yDistance = 0;
+float zDistance = 0;
+
+float xDegrees = 0;
+float yDegrees = 0;
+float zDegrees = 0;
+
+float totalDistance = 0;
 
 //ContactorData
 ContactorData contactor = {};                                                       // contactor data structure, used in TCB
@@ -140,7 +158,6 @@ void loop() {
       *****************/
     while (1) {
         if (timerFlag) {
-
             if (clockCount %3 == 0 && clockCount != 0) {
                 insert(&touchScreenTCB);
             }
@@ -150,6 +167,7 @@ void loop() {
             if (clockCount % 10 == 0 && clockCount != 0) {
                 insert(&remoteTerminalTCB);
             }
+            accelerometerTCB.task(accelerometerTCB.taskDataPtr);
             Scheduler();
             timerFlag = 0;
             if (clockCount % 10 == 0) {
@@ -269,7 +287,7 @@ void setup() {
     remoteTerminalTaskData = {&temperatureState, &currentState, &voltageState, &resetEEPROM, true};
     remoteTerminalTCB.task = &remoteTerminalTask;
     remoteTerminalTCB.taskDataPtr = (void*) &remoteTerminalTaskData;
-    remoteTerminalTCB.next = NULL;
+    remoteTerminalTCB.next = &accelerometerTCB;
     remoteTerminalTCB.prev = &dataLoggingTCB;
     remoteTerminalTCB.taskName = "remote terminal";
 
@@ -288,6 +306,14 @@ void setup() {
     alarmTCB.prev              = &measurementTCB;
     alarmTCB.taskName          = "alarm";
 
+
+    //Initialize accelerometer TCB
+    accelerometerTaskData = {{&xDistance, &xDegrees, xAccelPin}, {&yDistance, &yDegrees, yAccelPin}, {&zDistance, &zDegrees, zAccelPin},&totalDistance, millis()};
+    accelerometerTCB.task = &accelerometerTask;
+    accelerometerTCB.taskDataPtr = (void*)&accelerometerTaskData;
+    accelerometerTCB.next=NULL;
+    accelerometerTCB.prev=&remoteTerminalTCB;
+    accelerometerTCB.taskName = "accelerometer";
 
     // Initialize SOC TCB
     soc                        = {&socVal, &temperature, &hvCurrent, &hvVoltage};
