@@ -3,6 +3,7 @@
 
 
 float getMeasurement(byte pin, float CALIBRATION_VALUE) {
+//    Serial.println(analogRead(pin)/1023.0 *5);
     return analogRead(pin)/675.0 * 3.0 -1.5 +CALIBRATION_VALUE;
 }
 
@@ -14,12 +15,16 @@ float calculateMagnitude(float aX, float aY, float aZ) {
     return sqrt(aX*aX+aY*aY+aZ*aZ);
 }
 
+float rounding(float value) {
+    return (((int)(value*100.0))/10)/10.0;
+}
+
 void accelerometerTask(void* taskData) {
     AccelerometerTaskData *aData = (AccelerometerTaskData*)(taskData);
-    float xAccel = getMeasurement(aData->x.pin,X_CALIBRATION);
-    float yAccel = getMeasurement(aData->y.pin,Y_CALIBRATION);
-    float zAccel = getMeasurement(aData->z.pin,Z_CALIBRATION);
-    float accelMag = calculateMagnitude(xAccel,yAccel,zAccel);
+    float xAccel = rounding(getMeasurement(aData->x.pin,X_CALIBRATION));
+    float yAccel = rounding(getMeasurement(aData->y.pin,Y_CALIBRATION));
+    float zAccel = rounding(getMeasurement(aData->z.pin,Z_CALIBRATION));
+    float accelMag = rounding(calculateMagnitude(xAccel,yAccel,zAccel));
     float s = 0.1;
     if(accelMag >0.03 || accelMag<-0.03) {
         aData->totalVelocity += accelMag*9.8*100*s;
@@ -41,10 +46,10 @@ void accelerometerTask(void* taskData) {
     *aData->y.angle = getDegrees(*aData->y.distance, *aData->totalDistance);
     *aData->z.angle = getDegrees(*aData->z.distance, *aData->totalDistance);
     Serial.print("X: ");
-    Serial.print(*aData->x.distance);
+    Serial.print(xAccel);
     Serial.print("   Y: ");
-    Serial.print(*aData->y.distance);
+    Serial.print(yAccel);
     Serial.print("   Z: ");
-    Serial.println(*aData->z.distance);
+    Serial.println(zAccel);
     aData->timeInMS = millis();
 }
