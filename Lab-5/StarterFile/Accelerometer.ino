@@ -21,7 +21,7 @@ void accelerometerTask(void* taskData) {
     float zAccel = getMeasurement(aData->z.pin,Z_CALIBRATION);
     float accelMag = calculateMagnitude(xAccel,yAccel,zAccel);
     float s = 0.1;
-    if(accelMag >0.05 || accelMag<-0.05) {
+    if(accelMag >0.03 || accelMag<-0.03) {
         aData->totalVelocity += accelMag*9.8*100*s;
         totalDistance += aData->totalVelocity*s;
     }
