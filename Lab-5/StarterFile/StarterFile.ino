@@ -218,11 +218,11 @@ void setup() {
     pinMode(hvVoltagePin, INPUT_PULLUP);
     pinMode(hvCurrentPin, INPUT_PULLUP);
     //setup time base interrupt to be 100ms
-    Timer1.initialize(50000);
+    Timer1.initialize(25000);
     Timer1.attachInterrupt(timerISR);
     //setup hvil interrupt routine on the rising edge of hvil pin
     attachInterrupt(digitalPinToInterrupt(hvilPin), hvilISR, RISING);
-
+    calibrateAccelerometer(xAccelPin, yAccelPin, zAccelPin);
     // initialize all printed data values for the touch screen
 
     //State of charged printed data
