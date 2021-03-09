@@ -12,6 +12,8 @@ typedef struct  AccelerometerValueStruct {
     float* angle;
     byte pin;
     float velocity;
+    float lastAccel;
+    float lastVelocity;
 } AccelerometerValue;
 
 

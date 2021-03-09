@@ -106,6 +106,10 @@ float xDegrees = 0;
 float yDegrees = 0;
 float zDegrees = 0;
 
+AccelerometerValue xAxis = {};
+AccelerometerValue yAxis = {};
+AccelerometerValue zAxis = {};
+
 float totalDistance = 0;
 
 //ContactorData
@@ -306,9 +310,14 @@ void setup() {
     alarmTCB.prev              = &measurementTCB;
     alarmTCB.taskName          = "alarm";
 
+    xAxis = {&xDistance, &xDegrees, xAccelPin};
+    yAxis = {&yDistance, &yDegrees, yAccelPin};
+    zAxis = {&zDistance, &zDegrees, zAccelPin};
+    initializeAccelerometer(&xAxis, &yAxis, &zAxis);
+
 
     //Initialize accelerometer TCB
-    accelerometerTaskData = {{&xDistance, &xDegrees, xAccelPin}, {&yDistance, &yDegrees, yAccelPin}, {&zDistance, &zDegrees, zAccelPin},&totalDistance, millis()};
+    accelerometerTaskData = {xAxis, yAxis, zAxis,&totalDistance, millis()};
     accelerometerTCB.task = &accelerometerTask;
     accelerometerTCB.taskDataPtr = (void*)&accelerometerTaskData;
     accelerometerTCB.next=NULL;
