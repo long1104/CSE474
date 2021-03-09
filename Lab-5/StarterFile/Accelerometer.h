@@ -8,6 +8,7 @@ typedef struct  AccelerometerValueStruct {
     float* distance;
     float* angle;
     byte pin;
+    float velocity;
 } AccelerometerValue;
 
 
@@ -17,6 +18,7 @@ typedef struct AccelerometerTaskDataStruct {
     AccelerometerValue z;
     float *totalDistance;
     unsigned long timeInMS;
+    float totalVelocity;
 } AccelerometerTaskData;
 
 
