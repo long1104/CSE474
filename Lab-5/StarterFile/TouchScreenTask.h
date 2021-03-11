@@ -53,7 +53,7 @@ typedef struct TouchScreenTaskData {
     int* currentScreenPtr;
     int* lastScreenPtr;
     bool *changeScreenPtr;
-    Alarm alarms[4];
+    Alarm alarms[3];
     Screen screens[4];
 } TouchScreenData;
 

@@ -169,7 +169,7 @@ void loop() {
       *****************/
     while (1) {
         if (timerFlag) {
-            if (clockCount %20 == 0 && clockCount != 0) {
+            if (clockCount %15 == 0 && clockCount != 0) {
                 insert(&touchScreenTCB);
             }
             if(clockCount %50 == 0 && clockCount != 0 ) {
