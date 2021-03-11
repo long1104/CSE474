@@ -198,7 +198,7 @@ String printDataToString(PrintedData* printablePtr) {
         }
         break;
     default:
-        ret = String(printablePtr->oldData[0]);
+        ret = "";
     }
     return ret;
 }

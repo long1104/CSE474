@@ -115,7 +115,7 @@ AccelerometerValue zAxis = {};
 PrintedData axisPositions = {};
 PrintedData axisAngles = {};
 PrintedData totalDist = {};
-
+PrintedData accelerometerLabel = {};
 
 float totalDistance = 0;
 
@@ -255,20 +255,22 @@ void setup() {
     //Battery/Contactor printed data
     batteryData = {ORIGIN_X, ORIGIN_Y + 80, PURPLE, SMALL_SCRIPT, {DEFAULT_BOOL}, BOOL, {&batteryOnOff}, 1, "Battery Connection: ", ""};
 
-    axisPositions = {ORIGIN_X, ORIGIN_Y+20, PURPLE, SMALL_SCRIPT, {DEFAULT_FLOAT, DEFAULT_FLOAT, DEFAULT_FLOAT}, ARRAY, {&xDistance, &yDistance, &zDistance}, 3, "XYZ Dist: ", " cm"}; 
-    axisAngles = {ORIGIN_X, ORIGIN_Y+20, PURPLE, SMALL_SCRIPT, {DEFAULT_FLOAT, DEFAULT_FLOAT, DEFAULT_FLOAT}, ARRAY, {&xDegrees, &yDegrees, &zDegrees}, 3, "XYZ Angle: ", " deg"}; 
     //Alarm state structs
     overCurrentAlarm = {&overCurrent, &hvCurrent, &overCurrentAck};
     hviaAlarm = {&hviaVal, &HVIL, &hviaAck};
     hvorAlarm = {&hvorVal, &hvVoltage, &hvorAck};
 
+    axisPositions = {ORIGIN_X, ORIGIN_Y+40, PURPLE, SMALL_SCRIPT, {DEFAULT_FLOAT, DEFAULT_FLOAT, DEFAULT_FLOAT}, ARRAY, {&xDistance, &yDistance, &zDistance}, 3, "XYZ Dist: ", " cm"};
+    axisAngles = {ORIGIN_X, ORIGIN_Y+60, PURPLE, SMALL_SCRIPT, {DEFAULT_FLOAT, DEFAULT_FLOAT, DEFAULT_FLOAT}, ARRAY, {&xDegrees, &yDegrees, &zDegrees}, 3, "XYZ Angle: ", " deg"};
+    accelerometerLabel = {ORIGIN_X, ORIGIN_Y, PURPLE, MED_SCRIPT, {}, LABEL, {}, 0, "Accelerometer: ", ""};
 
-    accelerometerMonitor = Screen{1, 0, {&axisAngles}, {}};
+    
+    accelerometerMonitor = Screen{3, 0, {&accelerometerLabel, &axisPositions, &axisAngles}, {}};
     //Initialize Screen structs for interface
     batteryMonitor = Screen{BATTERY_NUM_PRINTS , 2, {&batteryData}, {&batteryOn, &batteryOff}};
     alarmMonitor = Screen{ALARM_NUM_PRINTS, 1, {&alarmLabel, &hviaData, &overCurrentData, &hvorData}, {&alarmButton}};
     measurementMonitor = Screen{MEASURE_NUM_PRINTS, 0, {&measurementLabel, &socDataPrint, &temperatureData, &hvCurrentData, &hvVoltageData, &hvilData}, {}};
-
+    
     temperatureState.data = &temperature;
     currentState.data = &hvCurrent;
     voltageState.data = &hvVoltage;
