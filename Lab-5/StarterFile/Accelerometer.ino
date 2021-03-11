@@ -42,22 +42,22 @@ void calibrateAccelerometer(int xPin, int yPin, int zPin) {
     int ySum = 0;
     int zSum = 0;
     unsigned long startMs = millis();
-    for(int i=0; i<10; i++) {
-        while((millis()-startMs)<5);
+    for(int i=0; i<20; i++) {
+        while((millis()-startMs)<3);
         xSum+=analogRead(xPin);
         ySum+=analogRead(yPin);
         zSum+=analogRead(zPin);
         startMs=millis();
 
     }
-    X_CALIBRATION=-xSum/10;
-    Y_CALIBRATION=-ySum/10;
-    Z_CALIBRATION=-zSum/10 + 163.84;
+    X_CALIBRATION=-xSum/20;
+    Y_CALIBRATION=-ySum/20;
+    Z_CALIBRATION=-zSum/20 + 163.84;
 }
 
 float trapezoidIntegrate(float lastPeak, float currentPeak, float dt) {
     float area = lastPeak*dt;
-    area+=(currentPeak-lastPeak)*dt;
+    area+=(currentPeak-lastPeak)*dt/2.0;
     return  area;
 }
 
@@ -65,13 +65,16 @@ float trapezoidIntegrate(float lastPeak, float currentPeak, float dt) {
 
 void updateVelocity(AccelerometerValue *axis, float dt) {
     axis->lastVelocity = axis->velocity;
-    if(axis->rollingAccel>0.01 || axis->rollingAccel<-0.01) {
-        axis->velocity += 9.8*100*axis->rollingAccel*dt;
+    if(axis->rollingAccel>0.015 || axis->rollingAccel<-0.015) {
+        axis->velocity += 9.8*100*trapezoidIntegrate(axis->lastRolling, axis->rollingAccel, dt);
+    }
+    if(axis->rollingAccel <0.01 && axis->rollingAccel > -0.01){
+        axis->velocity=0;
     }
 }
 
 void updateDistance(AccelerometerValue *axis, float dt) {
-    *axis->distance += axis->velocity*dt;
+    *axis->distance += trapezoidIntegrate(axis->lastVelocity, axis->velocity, dt);
 }
 
 void accelerometerTask(void* taskData) {
@@ -91,13 +94,6 @@ void accelerometerTask(void* taskData) {
     *aData->x.angle = getDegrees(aData->x.rollingAccel, accelMagDeg);
     *aData->y.angle = getDegrees(aData->y.rollingAccel, accelMagDeg);
     *aData->z.angle = getDegrees(aData->z.rollingAccel, accelMagDeg);
-    Serial.print("s: ");
-    Serial.print(s);
-    Serial.print("   X: ");
-    Serial.print(*aData->x.angle);
-    Serial.print("   Y: ");
-    Serial.print(*aData->y.angle);
-    Serial.print("   Z: ");
-    Serial.println(*aData->z.angle);
+
     aData->timeInMS = millis();
 }

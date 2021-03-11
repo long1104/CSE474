@@ -172,22 +172,22 @@ void loop() {
             if (clockCount %15 == 0 && clockCount != 0) {
                 insert(&touchScreenTCB);
             }
-            if(clockCount %50 == 0 && clockCount != 0 ) {
+            if(clockCount %200 == 0 && clockCount != 0 ) {
                 insert(&dataLoggingTCB);
             }
-            if (clockCount % 10 == 0 && clockCount != 0) {
+            if (clockCount % 40 == 0 && clockCount != 0) {
                 insert(&remoteTerminalTCB);
             }
             accelerometerTCB.task(accelerometerTCB.taskDataPtr);
             Scheduler();
             timerFlag = 0;
-            if (clockCount % 10 == 0) {
+            if (clockCount % 40 == 0) {
                 deleteNode(&remoteTerminalTCB);
             }
-            if (clockCount % 3 == 0) {
+            if (clockCount % 15 == 0) {
                 deleteNode(&touchScreenTCB);
             }
-            if(clockCount %50 == 0  ) {
+            if(clockCount %200 == 0  ) {
                 deleteNode(&dataLoggingTCB);
             }
             clockCount++;
