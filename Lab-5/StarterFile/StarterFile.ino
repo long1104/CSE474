@@ -310,12 +310,11 @@ void setup() {
     alarmTCB.prev              = &measurementTCB;
     alarmTCB.taskName          = "alarm";
 
-    xAxis = {&xDistance, &xDegrees, xAccelPin};
-    yAxis = {&yDistance, &yDegrees, yAccelPin};
-    zAxis = {&zDistance, &zDegrees, zAccelPin};
-    initializeAccelerometer(&xAxis, &yAxis, &zAxis);
-
-
+    xAxis = {&xDistance, &xDegrees, xAccelPin, {0}};
+    yAxis = {&yDistance, &yDegrees, yAccelPin, {0}};
+    zAxis = {&zDistance, &zDegrees, zAccelPin, {0}};
+    
+    
     //Initialize accelerometer TCB
     accelerometerTaskData = {xAxis, yAxis, zAxis,&totalDistance, millis()};
     accelerometerTCB.task = &accelerometerTask;
@@ -323,6 +322,7 @@ void setup() {
     accelerometerTCB.next=NULL;
     accelerometerTCB.prev=&remoteTerminalTCB;
     accelerometerTCB.taskName = "accelerometer";
+    Serial.println("after tcb setup");
 
     // Initialize SOC TCB
     soc                        = {&socVal, &temperature, &hvCurrent, &hvVoltage};
