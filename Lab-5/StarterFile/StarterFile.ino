@@ -55,6 +55,7 @@ bool changeScreen = true;
 Screen batteryMonitor = {};
 Screen alarmMonitor = {};
 Screen measurementMonitor = {};
+Screen accelerometerMonitor = {};
 
 // Data to print
 PrintedData socDataPrint = {};                                                      // State of Charge Data
@@ -109,6 +110,15 @@ float zDegrees = 0;
 AccelerometerValue xAxis = {};
 AccelerometerValue yAxis = {};
 AccelerometerValue zAxis = {};
+
+
+PrintedData xPosition = {};
+PrintedData yPosition = {};
+PrintedData zPosition = {};
+PrintedData totalDist = {};
+PrintedData xAngle = {};
+PrintedData yAngle = {};
+PrintedData zAngle = {};
 
 float totalDistance = 0;
 
@@ -230,28 +240,30 @@ void setup() {
     // initialize all printed data values for the touch screen
 
     //State of charged printed data
-    socDataPrint = {ORIGIN_X, ORIGIN_Y + 40, PURPLE, SMALL_SCRIPT, DEFAULT_FLOAT, NUMBER, &socVal, "SOC value: ", "%"};
+    socDataPrint = {ORIGIN_X, ORIGIN_Y + 40, PURPLE, SMALL_SCRIPT, {DEFAULT_FLOAT}, NUMBER, {&socVal},1, "SOC value: ", "%"};
 
     //Measurement printed data
-    temperatureData = {ORIGIN_X, ORIGIN_Y + 60, PURPLE, SMALL_SCRIPT, DEFAULT_FLOAT, NUMBER, &temperature, "Temperature: ", "C"};
-    hvCurrentData = {ORIGIN_X, ORIGIN_Y + 80, PURPLE, SMALL_SCRIPT, DEFAULT_FLOAT, NUMBER, &hvCurrent, "HV Current: ", "A"};
-    hvVoltageData = {ORIGIN_X, ORIGIN_Y + 100, PURPLE, SMALL_SCRIPT, DEFAULT_FLOAT, NUMBER, &hvVoltage, "HV Voltage: ", "V"};
-    hvilData = {ORIGIN_X, ORIGIN_Y + 120, PURPLE, SMALL_SCRIPT, DEFAULT_BOOL, BOOL, &HVIL, "hvil: ", ""};
-    measurementLabel = {ORIGIN_X, ORIGIN_Y, PURPLE, MED_SCRIPT, DEFAULT_BOOL, LABEL, &zero, "Measurements", ""};
+    temperatureData = {ORIGIN_X, ORIGIN_Y + 60, PURPLE, SMALL_SCRIPT, {DEFAULT_FLOAT}, NUMBER,{&temperature},1, "Temperature: ", "C"};
+    hvCurrentData = {ORIGIN_X, ORIGIN_Y + 80, PURPLE, SMALL_SCRIPT, {DEFAULT_FLOAT}, NUMBER, {&hvCurrent},1, "HV Current: ", "A"};
+    hvVoltageData = {ORIGIN_X, ORIGIN_Y + 100, PURPLE, SMALL_SCRIPT, {DEFAULT_FLOAT}, NUMBER, {&hvVoltage}, 1,"HV Voltage: ", "V"};
+    hvilData = {ORIGIN_X, ORIGIN_Y + 120, PURPLE, SMALL_SCRIPT, {DEFAULT_BOOL}, BOOL, {&HVIL}, 1,"hvil: ", ""};
+    measurementLabel = {ORIGIN_X, ORIGIN_Y, PURPLE, MED_SCRIPT, {DEFAULT_BOOL}, LABEL, {&zero},1, "Measurements", ""};
 
     //Alarm printed data
-    hviaData = {ORIGIN_X, ORIGIN_Y + 40, PURPLE, SMALL_SCRIPT, DEFAULT_ALARM, ALARM, &hviaVal, "hivl: ", ""};
-    overCurrentData = {ORIGIN_X, ORIGIN_Y + 60, PURPLE, SMALL_SCRIPT, DEFAULT_ALARM, ALARM, &overCurrent, "Over Current: ", ""};
-    hvorData = {ORIGIN_X, ORIGIN_Y + 80, PURPLE, SMALL_SCRIPT, DEFAULT_ALARM, ALARM, &hvorVal, "HV Alarm: ", ""};
-    alarmLabel = {ORIGIN_X, ORIGIN_Y, PURPLE, MED_SCRIPT, DEFAULT_BOOL, LABEL, &zero, "Alarms", ""};
+    hviaData = {ORIGIN_X, ORIGIN_Y + 40, PURPLE, SMALL_SCRIPT, {DEFAULT_ALARM}, ALARM, {&hviaVal},1, "hivl: ", ""};
+    overCurrentData = {ORIGIN_X, ORIGIN_Y + 60, PURPLE, SMALL_SCRIPT, {DEFAULT_ALARM}, ALARM, {&overCurrent}, 1,"Over Current: ", ""};
+    hvorData = {ORIGIN_X, ORIGIN_Y + 80, PURPLE, SMALL_SCRIPT, {DEFAULT_ALARM}, ALARM, {&hvorVal}, 1,"HV Alarm: ", ""};
+    alarmLabel = {ORIGIN_X, ORIGIN_Y, PURPLE, MED_SCRIPT, {DEFAULT_BOOL}, LABEL, {&zero}, 1, "Alarms",  ""};
 
     //Battery/Contactor printed data
-    batteryData = {ORIGIN_X, ORIGIN_Y + 80, PURPLE, SMALL_SCRIPT, DEFAULT_BOOL, BOOL, &batteryOnOff, "Battery Connection: ", ""};
+    batteryData = {ORIGIN_X, ORIGIN_Y + 80, PURPLE, SMALL_SCRIPT, {DEFAULT_BOOL}, BOOL, {&batteryOnOff}, 1, "Battery Connection: ", ""};
 
     //Alarm state structs
     overCurrentAlarm = {&overCurrent, &hvCurrent, &overCurrentAck};
     hviaAlarm = {&hviaVal, &HVIL, &hviaAck};
     hvorAlarm = {&hvorVal, &hvVoltage, &hvorAck};
+
+
 
     //Initialize Screen structs for interface
     batteryMonitor = Screen{BATTERY_NUM_PRINTS , 2, {&batteryData}, {&batteryOn, &batteryOff}};
@@ -313,8 +325,8 @@ void setup() {
     xAxis = {&xDistance, &xDegrees, xAccelPin, {0}};
     yAxis = {&yDistance, &yDegrees, yAccelPin, {0}};
     zAxis = {&zDistance, &zDegrees, zAccelPin, {0}};
-    
-    
+
+
     //Initialize accelerometer TCB
     accelerometerTaskData = {xAxis, yAxis, zAxis,&totalDistance, millis()};
     accelerometerTCB.task = &accelerometerTask;

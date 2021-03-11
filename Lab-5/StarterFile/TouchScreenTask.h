@@ -14,7 +14,7 @@ extern "C" {
 
 //PRINT_TYPE represents the variable type for printing
 typedef enum {
-    ALARM, NUMBER, BOOL, LABEL
+    ALARM, NUMBER, BOOL, LABEL, ARRAY
 } PRINT_TYPE;
 
 //XYButton represents a button on the TFT scren
@@ -26,9 +26,10 @@ typedef struct XYButtonStruct {
 //PrintedData represents data that can be printed/updated on the TFT screen
 typedef struct PrintedDataStruct {
     int x, y, color, textSize;
-    volatile float oldData;               //volatile for some printed data, not all
+    volatile float oldData[3];               //volatile for some printed data, not all
     PRINT_TYPE type;
-    volatile float* dataInPtr;           // ^^^
+    volatile float* dataInPtr[3];           // ^^^
+    int dataLen;
     char* labelPtr;
     char* unitsPtr;
 } PrintedData;
@@ -52,8 +53,8 @@ typedef struct TouchScreenTaskData {
     int* currentScreenPtr;
     int* lastScreenPtr;
     bool *changeScreenPtr;
-    Alarm alarms[3];
-    Screen screens[3];
+    Alarm alarms[4];
+    Screen screens[4];
 } TouchScreenData;
 
 

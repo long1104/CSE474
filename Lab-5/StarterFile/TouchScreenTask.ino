@@ -118,7 +118,7 @@ void deletePrintedData(PrintedData *printablePtr) {
     Authors:    Long Nguyen / Chase Arline
     *****************/
     String boxDim = String(printablePtr->labelPtr);
-    boxDim.concat(printDataToString(printablePtr->oldData, printablePtr->type));
+    boxDim.concat(printDataToString(printablePtr));
     boxDim.concat(printablePtr->unitsPtr);
     tft.fillRect(printablePtr->x + PADDING_X, printablePtr->y + PADDING_Y, boxDim.length()*PIXELS_PER_CHAR_X * printablePtr->textSize, PIXELS_PER_CHAR_Y * printablePtr->textSize, BACKGROUND_COLOR);
     return;
@@ -134,13 +134,13 @@ void drawData(PrintedData* printablePtr, bool newScreen) {
     ****************/
     String labelL = printablePtr->labelPtr;
     int pixelShift = printablePtr->textSize * labelL.length() * PIXELS_PER_CHAR_X;                    //shifting over in order to avoid redrawing label (only draw the changed data)
-    float temp = *(printablePtr->dataInPtr);
-    if (temp != printablePtr->oldData || newScreen) {
-        String clearBox = printDataToString(printablePtr->oldData, printablePtr->type);
+
+    if (compareOldData(printablePtr) || newScreen) {
+        String clearBox = printDataToString( printablePtr);
         clearBox.concat(printablePtr->unitsPtr);
         tft.fillRect(printablePtr->x + pixelShift + PADDING_X, printablePtr->y + PADDING_Y, clearBox.length()*PIXELS_PER_CHAR_X * printablePtr->textSize, PIXELS_PER_CHAR_Y * printablePtr->textSize, BACKGROUND_COLOR);
-        printablePtr->oldData = temp;
-        String dataString = printDataToString(printablePtr->oldData, printablePtr->type);
+        setOldDataToNewData(printablePtr);
+        String dataString = printDataToString(printablePtr);
         dataString.concat(printablePtr->unitsPtr);
         setCursor(printablePtr->x + pixelShift, printablePtr->y);
         tft.setTextColor(printablePtr->color);
@@ -151,7 +151,23 @@ void drawData(PrintedData* printablePtr, bool newScreen) {
 }
 
 
-String printDataToString(float val, PRINT_TYPE type) {
+bool compareOldData(PrintedData* printablePtr) {
+    bool ret=false;
+    for(int i=0; i<printablePtr->dataLen; i++) {
+        if(printablePtr->oldData[i]!=*printablePtr->dataInPtr[i]) {
+            ret = true;
+        }
+    }
+    return ret;
+}
+
+void setOldDataToNewData(PrintedData* printablePtr) {
+    for(int i=0; i<printablePtr->dataLen; i++) {
+        printablePtr->oldData[i]=*printablePtr->dataInPtr[i];
+    }
+}
+
+String printDataToString(PrintedData* printablePtr) {
     /****************
         Function name: printDataToString
         Function inputs: val: value to be converted to string, type: enum that tells type of variable
@@ -160,32 +176,40 @@ String printDataToString(float val, PRINT_TYPE type) {
         Authors:    Long Nguyen / Chase Arline
     ****************/
     String ret;
-    switch (type) {
+    switch (printablePtr->type) {
     case ALARM:
-        ret = alarm_arr[(int)val];
+        ret = alarm_arr[(int)printablePtr->oldData[0]];
         break;
     case NUMBER:
-        ret = String(val);
+        ret = String(printablePtr->oldData[0]);
         break;
     case BOOL:
-        ret = (int)val ? "CLOSED" : "OPEN";
-        break;
+        ret = (int)printablePtr->oldData[0] ? "CLOSED" : "OPEN";
+              break;
     case LABEL:
         ret = "";                         // label does not have any changing data
         break;
+    case ARRAY:
+        for(int i=0; i<printablePtr->dataLen; i++) {
+            ret.concat(printablePtr->oldData[i]);
+            if(i!=printablePtr->dataLen-1) {
+                ret.concat(",");
+            }
+        }
+        break;
     default:
-        ret = String(val);
+        ret = String(printablePtr->oldData[0]);
     }
     return ret;
 }
 
 void displayTask(int* currScreenPtr, Screen screenList[], bool newScreen, Alarm alarms[], int* lastScreenPtr, bool* acknowledgeDrawn) {
     /****************
-        Function name: displayTask
-        Function inputs: currScreenPtr: points to value of current screen, screenList: list of all screens, newScreen: are we drawing a new screen?
-        Function outputs: void return
-        Function description: draws all data structures that are inside of the screen, draws new screen if newScreen is true
-        Authors:    Long Nguyen / Chase Arline
+    Function name: displayTask
+    Function inputs: currScreenPtr: points to value of current screen, screenList: list of all screens, newScreen: are we drawing a new screen?
+    Function outputs: void return
+    Function description: draws all data structures that are inside of the screen, draws new screen if newScreen is true
+    Authors:    Long Nguyen / Chase Arline
     ****************/
     drawScreen(screenList, newScreen, alarms, currScreenPtr, lastScreenPtr, acknowledgeDrawn);
     for (int i = 0; i < screenList[*currScreenPtr].dataLen; i++) {
@@ -233,11 +257,11 @@ bool activeAlarmCheck(Alarm alarms[]) {
 
 bool inputTask(int* currScreenPtr, Screen screenList[], Alarm alarms[], int* lastScreenPtr) {
     /****************
-        Function name: inputTask
-        Function inputs: currScreenPtr: points to value of current screen, screenList: list of Screens, alarms: array of Alarms, needed to set acknowledgement flags, lastScreenPtr: the last screen the display was on
-        Function outputs: bool, returns whether or not the display needs to be re-drawn
-        Function description: handles touch input from the user and whether any buttons are pressed, determines if a new screen needs to be drawn, sets alarm acknowledgement flags
-        Authors:    Long Nguyen / Chase Arline
+    Function name: inputTask
+    Function inputs: currScreenPtr: points to value of current screen, screenList: list of Screens, alarms: array of Alarms, needed to set acknowledgement flags, lastScreenPtr: the last screen the display was on
+    Function outputs: bool, returns whether or not the display needs to be re-drawn
+    Function description: handles touch input from the user and whether any buttons are pressed, determines if a new screen needs to be drawn, sets alarm acknowledgement flags
+    Authors:    Long Nguyen / Chase Arline
     ****************/
     bool emergency = emergencyCheck(alarms);
     //    bool emergency = false;
@@ -257,9 +281,9 @@ bool inputTask(int* currScreenPtr, Screen screenList[], Alarm alarms[], int* las
         newScreen = true;
     }
     if (isButton(point, *(screenList[2].buttonsPtr[0])) && *currScreenPtr == 2) { //turn on battery if hvil alarm is not active and button is pressed
-        *(screenList[2].dataPtr[0]->dataInPtr) = 1 && !activeAlarmCheck(alarms);                             //safety check against hvil alarm to make sure code stays atomic (both variable checks are volatile)
+        *(screenList[2].dataPtr[0]->dataInPtr[0]) = 1 && !activeAlarmCheck(alarms);                             //safety check against hvil alarm to make sure code stays atomic (both variable checks are volatile)
     } else if (isButton(point, *(screenList[2].buttonsPtr[1])) && *currScreenPtr == 2) {                        //turn off battery if button is pressed
-        *(screenList[2].dataPtr[0]->dataInPtr) = 0;
+        *(screenList[2].dataPtr[0]->dataInPtr[0]) = 0;
     }
 
 
@@ -275,12 +299,12 @@ bool inputTask(int* currScreenPtr, Screen screenList[], Alarm alarms[], int* las
 
 void drawScreen(Screen screens[], bool newScreen, Alarm alarms[], int* currScreenPtr, int* lastScreenPtr, bool* acknowledgeDrawn) {
     /****************
-        Function name: drawScreen
-        Function inputs: screen: the screen to be drawn, newScreen: determines whether we are switching screens, alarms: array of alarms displayed on Alarm screen,
-                          currScreenPtr: current screen, lastScreenPtr: last screen the display was on, acknowledgeDrawn: status of the acknowledge button on alarm screen
-        Function outputs: void return
-        Function description: deletes the last screen and draws the new one if newScreen==true
-        Authors:    Long Nguyen / Chase Arline
+    Function name: drawScreen
+    Function inputs: screen: the screen to be drawn, newScreen: determines whether we are switching screens, alarms: array of alarms displayed on Alarm screen,
+    currScreenPtr: current screen, lastScreenPtr: last screen the display was on, acknowledgeDrawn: status of the acknowledge button on alarm screen
+    Function outputs: void return
+    Function description: deletes the last screen and draws the new one if newScreen==true
+    Authors:    Long Nguyen / Chase Arline
     ****************/
     if (newScreen) {
 
@@ -319,11 +343,11 @@ void drawScreen(Screen screens[], bool newScreen, Alarm alarms[], int* currScree
 
 void touchScreenTask(void* tscreenDataPtr) {
     /****************
-        Function name: touchScreenTask
-        Function inputs:  tscreenDataPtr: touch scren task data
-        Function outputs: None
-        Function description: manages both the input task and display task for the touchscreen
-        Authors:    Long Nguyen / Chase Arline
+    Function name: touchScreenTask
+    Function inputs:  tscreenDataPtr: touch scren task data
+    Function outputs: None
+    Function description: manages both the input task and display task for the touchscreen
+    Authors:    Long Nguyen / Chase Arline
     ****************/
     TouchScreenData* datasPtr = (TouchScreenData*) tscreenDataPtr;
     if (*(datasPtr->clockCount) == 0) {
@@ -331,7 +355,7 @@ void touchScreenTask(void* tscreenDataPtr) {
         drawButton(previous);
         drawButton(next);
         displayTask(datasPtr->currentScreenPtr, datasPtr->screens, true, datasPtr->alarms, datasPtr->lastScreenPtr, datasPtr->acknowledgeDrawn);  // if its the first time running the task, draw the whole screen
-//        *(datasPtr->clockCount)++;
+        //        *(datasPtr->clockCount)++;
     }
     *(datasPtr->changeScreenPtr) = inputTask(datasPtr->currentScreenPtr, datasPtr->screens, datasPtr->alarms, datasPtr->lastScreenPtr);    // get input from the touchscreen
     displayTask(datasPtr->currentScreenPtr, datasPtr->screens, *(datasPtr->changeScreenPtr), datasPtr->alarms, datasPtr->lastScreenPtr, datasPtr->acknowledgeDrawn);   // display data/labels/buttons
