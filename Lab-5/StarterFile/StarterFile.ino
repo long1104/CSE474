@@ -112,13 +112,10 @@ AccelerometerValue yAxis = {};
 AccelerometerValue zAxis = {};
 
 
-PrintedData xPosition = {};
-PrintedData yPosition = {};
-PrintedData zPosition = {};
+PrintedData axisPositions = {};
+PrintedData axisAngles = {};
 PrintedData totalDist = {};
-PrintedData xAngle = {};
-PrintedData yAngle = {};
-PrintedData zAngle = {};
+
 
 float totalDistance = 0;
 
@@ -172,7 +169,7 @@ void loop() {
       *****************/
     while (1) {
         if (timerFlag) {
-            if (clockCount %3 == 0 && clockCount != 0) {
+            if (clockCount %20 == 0 && clockCount != 0) {
                 insert(&touchScreenTCB);
             }
             if(clockCount %50 == 0 && clockCount != 0 ) {
@@ -258,13 +255,15 @@ void setup() {
     //Battery/Contactor printed data
     batteryData = {ORIGIN_X, ORIGIN_Y + 80, PURPLE, SMALL_SCRIPT, {DEFAULT_BOOL}, BOOL, {&batteryOnOff}, 1, "Battery Connection: ", ""};
 
+    axisPositions = {ORIGIN_X, ORIGIN_Y+20, PURPLE, SMALL_SCRIPT, {DEFAULT_FLOAT, DEFAULT_FLOAT, DEFAULT_FLOAT}, ARRAY, {&xDistance, &yDistance, &zDistance}, 3, "XYZ Dist: ", " cm"}; 
+    axisAngles = {ORIGIN_X, ORIGIN_Y+20, PURPLE, SMALL_SCRIPT, {DEFAULT_FLOAT, DEFAULT_FLOAT, DEFAULT_FLOAT}, ARRAY, {&xDegrees, &yDegrees, &zDegrees}, 3, "XYZ Angle: ", " deg"}; 
     //Alarm state structs
     overCurrentAlarm = {&overCurrent, &hvCurrent, &overCurrentAck};
     hviaAlarm = {&hviaVal, &HVIL, &hviaAck};
     hvorAlarm = {&hvorVal, &hvVoltage, &hvorAck};
 
 
-
+    accelerometerMonitor = Screen{1, 0, {&axisAngles}, {}};
     //Initialize Screen structs for interface
     batteryMonitor = Screen{BATTERY_NUM_PRINTS , 2, {&batteryData}, {&batteryOn, &batteryOff}};
     alarmMonitor = Screen{ALARM_NUM_PRINTS, 1, {&alarmLabel, &hviaData, &overCurrentData, &hvorData}, {&alarmButton}};
@@ -285,7 +284,8 @@ void setup() {
     initializeMeasurementHistory();
 
     //Initialize touchscreen/display TCB
-    tscreenData = {&acknowledgeDrawn, &clockCount, &currentScreen, &lastScreen, &changeScreen ,  {overCurrentAlarm, hviaAlarm, hvorAlarm}, {measurementMonitor, alarmMonitor, batteryMonitor}};
+    currentScreen = 3;
+    tscreenData = {&acknowledgeDrawn, &clockCount, &currentScreen, &lastScreen, &changeScreen ,  {overCurrentAlarm, hviaAlarm, hvorAlarm}, {measurementMonitor, alarmMonitor, batteryMonitor, accelerometerMonitor}};
     touchScreenTCB.task         = &touchScreenTask;
     touchScreenTCB.taskDataPtr  = (void*) &tscreenData;
     touchScreenTCB.next         = &contactorTCB;

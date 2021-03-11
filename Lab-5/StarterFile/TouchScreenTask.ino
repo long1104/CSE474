@@ -193,7 +193,7 @@ String printDataToString(PrintedData* printablePtr) {
         for(int i=0; i<printablePtr->dataLen; i++) {
             ret.concat(printablePtr->oldData[i]);
             if(i!=printablePtr->dataLen-1) {
-                ret.concat(",");
+                ret.concat(", ");
             }
         }
         break;
@@ -269,11 +269,11 @@ bool inputTask(int* currScreenPtr, Screen screenList[], Alarm alarms[], int* las
     bool newScreen = false;
     if (isButton(point, previous) && !emergency) {
         *lastScreenPtr = *currScreenPtr;
-        *currScreenPtr = (*currScreenPtr + 2) % 3;
+        *currScreenPtr = (*currScreenPtr + 2) % 4;
         newScreen = true;
     } else if (isButton(point, next) && !emergency) {
         *lastScreenPtr = *currScreenPtr;
-        *currScreenPtr = (*currScreenPtr + 1) % 3;
+        *currScreenPtr = (*currScreenPtr + 1) % 4;
         newScreen = true;
     } else if (emergency && *currScreenPtr != 1) {
         *lastScreenPtr = *currScreenPtr;
