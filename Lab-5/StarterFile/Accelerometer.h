@@ -2,7 +2,7 @@
 
 #ifndef ACCEL_H_
 #define ACCEL_H_
-#define SAMPLE_SIZE 10
+#define SAMPLE_SIZE 1
 
 extern int X_CALIBRATION;
 extern int Y_CALIBRATION;
