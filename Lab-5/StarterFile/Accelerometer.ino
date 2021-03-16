@@ -35,21 +35,20 @@ float calculateMagnitude(float aX, float aY, float aZ) {
 
 
 void calibrateAccelerometer(int xPin, int yPin, int zPin) {
-    int xSum = 0;
-    int ySum = 0;
-    int zSum = 0;
+    int32_t xSum = 0;
+    int32_t ySum = 0;
+    int32_t zSum = 0;
     unsigned long startMs = millis();
-    for(int i=0; i<20; i++) {
-        while((millis()-startMs)<3);
+    for(int i=0; i<100; i++) {
+        while((millis()-startMs)<5);
         xSum+=analogRead(xPin);
         ySum+=analogRead(yPin);
         zSum+=analogRead(zPin);
         startMs=millis();
-
     }
-    X_CALIBRATION=-xSum/20;
-    Y_CALIBRATION=-ySum/20;
-    Z_CALIBRATION=-zSum/20 + 163.84;
+    X_CALIBRATION=-xSum/100;
+    Y_CALIBRATION=-ySum/100;
+    Z_CALIBRATION=-zSum/100 + 163.84;
 }
 
 float trapezoidIntegrate(float lastPeak, float currentPeak, float dt) {
