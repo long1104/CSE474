@@ -261,11 +261,12 @@ void setup() {
     hvorAlarm = {&hvorVal, &hvVoltage, &hvorAck};
 
     axisPositions = {ORIGIN_X, ORIGIN_Y+40, PURPLE, SMALL_SCRIPT, {DEFAULT_FLOAT, DEFAULT_FLOAT, DEFAULT_FLOAT}, ARRAY, {&xDistance, &yDistance, &zDistance}, 3, "XYZ Dist: ", " cm"};
-    axisAngles = {ORIGIN_X, ORIGIN_Y+60, PURPLE, SMALL_SCRIPT, {DEFAULT_FLOAT, DEFAULT_FLOAT, DEFAULT_FLOAT}, ARRAY, {&xDegrees, &yDegrees, &zDegrees}, 3, "XYZ Angle: ", " deg"};
+    axisAngles = {ORIGIN_X, ORIGIN_Y+80, PURPLE, SMALL_SCRIPT, {DEFAULT_FLOAT, DEFAULT_FLOAT, DEFAULT_FLOAT}, ARRAY, {&xDegrees, &yDegrees, &zDegrees}, 3, "XYZ Angle: ", " deg"};
+    totalDist = {ORIGIN_X, ORIGIN_Y+60, PURPLE, SMALL_SCRIPT, {DEFAULT_FLOAT}, ARRAY, {&totalDistance}, 1, "Total Dist: ", " cm"};
     accelerometerLabel = {ORIGIN_X, ORIGIN_Y, PURPLE, MED_SCRIPT, {}, LABEL, {}, 0, "Accelerometer: ", ""};
 
     
-    accelerometerMonitor = Screen{3, 0, {&accelerometerLabel, &axisPositions, &axisAngles}, {}};
+    accelerometerMonitor = Screen{4, 0, {&totalDist, &accelerometerLabel, &axisPositions, &axisAngles}, {}};
     //Initialize Screen structs for interface
     batteryMonitor = Screen{BATTERY_NUM_PRINTS , 2, {&batteryData}, {&batteryOn, &batteryOff}};
     alarmMonitor = Screen{ALARM_NUM_PRINTS, 1, {&alarmLabel, &hviaData, &overCurrentData, &hvorData}, {&alarmButton}};

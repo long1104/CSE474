@@ -2,7 +2,7 @@
 
 #ifndef ACCEL_H_
 #define ACCEL_H_
-#define SAMPLE_SIZE 5
+#define SAMPLE_SIZE 10
 
 extern int X_CALIBRATION;
 extern int Y_CALIBRATION;
@@ -13,7 +13,7 @@ typedef struct  AccelerometerValueStruct {
     float* distance;
     float* angle;
     byte pin;
-    float accelerations[SAMPLE_SIZE];
+    float accelerations[SAMPLE_SIZE];                       
     float velocity;
     int movingAveragePos;
     float rollingAccel;
@@ -29,6 +29,8 @@ typedef struct AccelerometerTaskDataStruct {
     float *totalDistance;
     unsigned long timeInMS;
     float totalVelocity;
+    float lastTotalVelocity;
+    float lastTotalAccel;
 } AccelerometerTaskData;
 
 
@@ -36,7 +38,6 @@ typedef struct AccelerometerTaskDataStruct {
 void accelerometerTask(void* taskData);
 float addMeasurement(AccelerometerValue *axis, float CALIBRATION_VALUE);
 float getDegrees(float val, float magnitude);
-void updateTotalDistance(float magnitude, float *totalDistance);
 float calculateMagnitude(float aX, float aY, float aZ);
 void calibrateAccelerometer(int xPin, int yPin, int zPin);
 
