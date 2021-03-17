@@ -169,8 +169,16 @@ void loop() {
       *****************/
     while (1) {
         if (timerFlag) {
+            if (clockCount % 4 == 0 && clockCount != 0) {
+                insert(&measurementTCB);
+                insert(&alarmTCB);
+                insert(&socTCB);
+            }
             if (clockCount %15 == 0 && clockCount != 0) {
                 insert(&touchScreenTCB);
+            }
+            if (clockCount % 4 == 0 && clockCount != 0) {
+                insert(&contactorTCB);
             }
             if(clockCount %200 == 0 && clockCount != 0 ) {
                 insert(&dataLoggingTCB);
@@ -189,6 +197,12 @@ void loop() {
             }
             if(clockCount %200 == 0  ) {
                 deleteNode(&dataLoggingTCB);
+            }
+            if (clockCount % 4 == 0) {
+                deleteNode(&measurementTCB);
+                deleteNode(&alarmTCB);
+                deleteNode(&socTCB);
+                deleteNode(&contactorTCB);
             }
             clockCount++;
         }
