@@ -70,7 +70,7 @@ float trapezoidIntegrate(float lastPeak, float currentPeak, float dt) {
 void updateVelocity(float *secondLastVelocity, float *lastVelocity, float *velocity, float secondLastRolling, float lastRolling, float rollingAccel, float dt) {
     *secondLastVelocity = *lastVelocity;
     *lastVelocity = *velocity;
-    if(rollingAccel>0.0185 || rollingAccel<-0.0185) {
+    if(rollingAccel>0.02 || rollingAccel<-0.02) {
         *velocity += 9.8*100*polynomialIntegrate(secondLastRolling, lastRolling, rollingAccel, dt);
     }
     if(rollingAccel <0.015 && rollingAccel > -0.015) {
@@ -91,7 +91,7 @@ void accelerometerTask(void* taskData) {
     float accelMagDeg = calculateMagnitude(aData->x.rollingAccel, aData->y.rollingAccel ,aData->z.rollingAccel);
     double s = (millis()-aData->timeInMS)/1000.0;
     updateVelocity(&aData->x.secondLastVelocity,&aData->x.lastVelocity, &aData->x.velocity, aData->x.secondLastRolling, aData->x.lastRolling, aData->x.rollingAccel, s);
-    updateDistance(aData->x.distance, aData->y.secondLastVelocity, aData->x.lastVelocity, aData->x.velocity, s);
+    updateDistance(aData->x.distance, aData->x.secondLastVelocity, aData->x.lastVelocity, aData->x.velocity, s);
     updateVelocity(&aData->y.secondLastVelocity,&aData->y.lastVelocity, &aData->y.velocity, aData->y.secondLastRolling,aData->y.lastRolling, aData->y.rollingAccel, s);
     updateDistance(aData->y.distance, aData->y.secondLastVelocity, aData->y.lastVelocity, aData->y.velocity, s);
     updateVelocity(&aData->secondLastVelocity,&aData->lastTotalVelocity, &aData->totalVelocity, aData->secondLastAccel,aData->lastTotalAccel, accelMagDist, s);

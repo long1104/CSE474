@@ -186,7 +186,7 @@ void loop() {
             if (clockCount % 200 == 0 && clockCount != 0) {
                 insert(&remoteTerminalTCB);
             }
-            accelerometerTCB.task(accelerometerTCB.taskDataPtr);
+//            accelerometerTCB.task(accelerometerTCB.taskDataPtr);
             Scheduler();
             timerFlag = 0;
             if (clockCount % 200 == 0) {
@@ -295,7 +295,7 @@ void setup() {
     measurementTCB.task         = &measurementTask;
     measurementTCB.taskDataPtr  = (void*) &measure;
     measurementTCB.next         = &alarmTCB;
-    measurementTCB.prev         = NULL;
+    measurementTCB.prev         = &accelerometerTCB;
     measurementTCB.taskName     = "measurement";
 
     initializeMeasurementHistory();
@@ -320,7 +320,7 @@ void setup() {
     remoteTerminalTaskData = {&temperatureState, &currentState, &voltageState, &resetEEPROM, true};
     remoteTerminalTCB.task = &remoteTerminalTask;
     remoteTerminalTCB.taskDataPtr = (void*) &remoteTerminalTaskData;
-    remoteTerminalTCB.next = &accelerometerTCB;
+    remoteTerminalTCB.next = NULL;
     remoteTerminalTCB.prev = &dataLoggingTCB;
     remoteTerminalTCB.taskName = "remote terminal";
 
@@ -348,8 +348,8 @@ void setup() {
     accelerometerTaskData = {xAxis, yAxis, zAxis,&totalDistance, millis()};
     accelerometerTCB.task = &accelerometerTask;
     accelerometerTCB.taskDataPtr = (void*)&accelerometerTaskData;
-    accelerometerTCB.next=NULL;
-    accelerometerTCB.prev=&remoteTerminalTCB;
+    accelerometerTCB.next=&measurementTCB;
+    accelerometerTCB.prev=NULL;
     accelerometerTCB.taskName = "accelerometer";
     Serial.println("after tcb setup");
 
@@ -361,7 +361,7 @@ void setup() {
     socTCB.prev                = &alarmTCB;
     socTCB.taskName            = "soc";
 
-    head = &measurementTCB;
+    head = &accelerometerTCB;
     tail = &remoteTerminalTCB;
 
     // Initialize serial communication
