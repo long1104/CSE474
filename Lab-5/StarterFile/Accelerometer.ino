@@ -44,9 +44,9 @@ float calculateMagnitude(float aX, float aY, float aZ) {
 
 
 void calibrateAccelerometer(int xPin, int yPin, int zPin) {
-    int32_t xSum=0;
-    int32_t ySum=0;
-    int32_t zSum=0;
+    uint64_t xSum=0;
+    uint64_t ySum=0;
+    uint64_t zSum=0;
     unsigned long startMs = millis();
     for(int i=0; i<500; i++) {
         while((millis()-startMs)<5);
@@ -55,9 +55,9 @@ void calibrateAccelerometer(int xPin, int yPin, int zPin) {
         zSum+=analogRead(zPin);
         startMs=millis();
     }
-    X_CALIBRATION=-xSum/100.0;
-    Y_CALIBRATION=-ySum/100.0;
-    Z_CALIBRATION=-zSum/100.0 + 163.84;
+    X_CALIBRATION=-(xSum/500.0);
+    Y_CALIBRATION=-(ySum/500.0);
+    Z_CALIBRATION=-(zSum/500.0) + 163.84;
     Serial.println(X_CALIBRATION);
     Serial.println(Y_CALIBRATION);
     Serial.println(Z_CALIBRATION);
@@ -77,10 +77,10 @@ void calibrateMaxDrift(int xPin, int yPin, int zPin) {
             }
         }
     }
-    X_MAX_DRIFT *=1.2;
-    Y_MAX_DRIFT *=1.2;
+    X_MAX_DRIFT *=1.1;
+    Y_MAX_DRIFT *=1.1;
     Z_MAX_DRIFT-=1;
-    Z_MAX_DRIFT*=1.2;
+    Z_MAX_DRIFT*=1.1;
     Serial.println(X_MAX_DRIFT, 4);
     Serial.println(Y_MAX_DRIFT, 4);
     Serial.println(Z_MAX_DRIFT, 4);
