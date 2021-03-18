@@ -77,10 +77,10 @@ void calibrateMaxDrift(int xPin, int yPin, int zPin) {
             }
         }
     }
-    X_MAX_DRIFT *=1.1;
-    Y_MAX_DRIFT *=1.1;
+    X_MAX_DRIFT +=0.0015;
+    Y_MAX_DRIFT +=0.0015;
     Z_MAX_DRIFT-=1;
-    Z_MAX_DRIFT*=1.1;
+    Z_MAX_DRIFT +=0.0015;
     Serial.println(X_MAX_DRIFT, 4);
     Serial.println(Y_MAX_DRIFT, 4);
     Serial.println(Z_MAX_DRIFT, 4);
