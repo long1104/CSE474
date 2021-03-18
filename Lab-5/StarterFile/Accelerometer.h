@@ -4,11 +4,6 @@
 #define ACCEL_H_
 #define SAMPLE_SIZE 1
 
-extern int X_CALIBRATION;
-extern int Y_CALIBRATION;
-extern int Z_CALIBRATION;
-
-
 typedef struct  AccelerometerValueStruct {
     float* distance;
     float* angle;
@@ -44,5 +39,6 @@ float addMeasurement(AccelerometerValue *axis, float CALIBRATION_VALUE);
 float getDegrees(float val, float magnitude);
 float calculateMagnitude(float aX, float aY, float aZ);
 void calibrateAccelerometer(int xPin, int yPin, int zPin);
+
 
 #endif

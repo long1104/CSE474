@@ -366,7 +366,7 @@ void setup() {
 
     // Initialize serial communication
 
-    Serial1.begin(9600);
+    Serial1.begin(250000);
     Serial1.setTimeout(5);
     tft.reset();
     uint16_t identifier = tft.readID();
