@@ -169,36 +169,36 @@ void loop() {
       *****************/
     while (1) {
         if (timerFlag) {
-            if (clockCount % 4 == 0 && clockCount != 0) {
+            if (clockCount % 20 == 0 && clockCount != 0) {
                 insert(&measurementTCB);
                 insert(&alarmTCB);
                 insert(&socTCB);
             }
-            if (clockCount %15 == 0 && clockCount != 0) {
+            if (clockCount %200 == 0 && clockCount != 0) {
                 insert(&touchScreenTCB);
             }
-            if (clockCount % 4 == 0 && clockCount != 0) {
+            if (clockCount % 20 == 0 && clockCount != 0) {
                 insert(&contactorTCB);
             }
-            if(clockCount %200 == 0 && clockCount != 0 ) {
+            if(clockCount %1000 == 0 && clockCount != 0 ) {
                 insert(&dataLoggingTCB);
             }
-            if (clockCount % 40 == 0 && clockCount != 0) {
+            if (clockCount % 200 == 0 && clockCount != 0) {
                 insert(&remoteTerminalTCB);
             }
             accelerometerTCB.task(accelerometerTCB.taskDataPtr);
             Scheduler();
             timerFlag = 0;
-            if (clockCount % 40 == 0) {
+            if (clockCount % 200 == 0) {
                 deleteNode(&remoteTerminalTCB);
             }
-            if (clockCount % 15 == 0) {
+            if (clockCount % 200 == 0) {
                 deleteNode(&touchScreenTCB);
             }
-            if(clockCount %200 == 0  ) {
+            if(clockCount %1000 == 0  ) {
                 deleteNode(&dataLoggingTCB);
             }
-            if (clockCount % 4 == 0) {
+            if (clockCount % 20 == 0) {
                 deleteNode(&measurementTCB);
                 deleteNode(&alarmTCB);
                 deleteNode(&socTCB);
@@ -243,7 +243,7 @@ void setup() {
     pinMode(hvVoltagePin, INPUT_PULLUP);
     pinMode(hvCurrentPin, INPUT_PULLUP);
     //setup time base interrupt to be 100ms
-    Timer1.initialize(25000);
+    Timer1.initialize(5000);
     Timer1.attachInterrupt(timerISR);
     //setup hvil interrupt routine on the rising edge of hvil pin
     attachInterrupt(digitalPinToInterrupt(hvilPin), hvilISR, RISING);
@@ -367,7 +367,7 @@ void setup() {
     // Initialize serial communication
 
     Serial1.begin(9600);
-    Serial1.setTimeout(20);
+    Serial1.setTimeout(5);
     tft.reset();
     uint16_t identifier = tft.readID();
     if (identifier == 0x9325) {

@@ -18,7 +18,9 @@ typedef struct  AccelerometerValueStruct {
     int movingAveragePos;
     float rollingAccel;
     float lastRolling;
+    float secondLastRolling;
     float lastVelocity;
+    float secondLastVelocity;
 } AccelerometerValue;
 
 
@@ -30,7 +32,9 @@ typedef struct AccelerometerTaskDataStruct {
     unsigned long timeInMS;
     float totalVelocity;
     float lastTotalVelocity;
+    float secondLastVelocity;
     float lastTotalAccel;
+    float secondLastAccel;
 } AccelerometerTaskData;
 
 
