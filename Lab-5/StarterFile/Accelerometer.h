@@ -2,7 +2,7 @@
 
 #ifndef ACCEL_H_
 #define ACCEL_H_
-#define SAMPLE_SIZE 5
+#define SAMPLE_SIZE 1
 
 typedef struct  AccelerometerValueStruct {
     float* distance;

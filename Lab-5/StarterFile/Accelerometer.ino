@@ -69,7 +69,7 @@ void calibrateMaxDrift(int xPin, int yPin, int zPin) {
     float *xyzMax[] = {&X_MAX_DRIFT, &Y_MAX_DRIFT, &Z_MAX_DRIFT};
     float xyzCal[] = {X_CALIBRATION, Y_CALIBRATION, Z_CALIBRATION};
     Serial.println("before loop");
-    for(unsigned int i=0; i<20000; i++) {
+    for(unsigned int i=0; i<40000; i++) {
         for(int x=0; x<3; x++) {
             float reading = ((analogRead(pins[x])+xyzCal[x])/675.0 *3.3 /0.80 );
             if(reading>*xyzMax[x] || reading < -*xyzMax[x]) {
@@ -77,8 +77,8 @@ void calibrateMaxDrift(int xPin, int yPin, int zPin) {
             }
         }
     }
-    X_MAX_DRIFT +=0.0015;
-    Y_MAX_DRIFT +=0.0015;
+    X_MAX_DRIFT +=0.01;
+    Y_MAX_DRIFT +=0.01;
     Z_MAX_DRIFT-=1;
     Z_MAX_DRIFT +=0.0015;
     Serial.println(X_MAX_DRIFT, 4);
@@ -130,8 +130,8 @@ void accelerometerTask(void* taskData) {
     float zAccel= getMeasurement(&aData->z, Z_CALIBRATION);
     float accelMagDist = calculateMagnitude(aData->x.rollingAccel, aData->y.rollingAccel ,0);
     float accelMagDeg = calculateMagnitude(aData->x.rollingAccel, aData->y.rollingAccel ,aData->z.rollingAccel);
-    double s = .005;
-    updateVelocity(&aData->x.secondLastVelocity,&aData->x.lastVelocity, &aData->x.velocity, aData->x.secondLastRolling, aData->x.lastRolling, aData->x.rollingAccel, s, Z_MAX_DRIFT);
+    double s = (millis()-aData->timeInMS)/1000.0;
+    updateVelocity(&aData->x.secondLastVelocity,&aData->x.lastVelocity, &aData->x.velocity, aData->x.secondLastRolling, aData->x.lastRolling, aData->x.rollingAccel, s, X_MAX_DRIFT);
     updateDistance(aData->x.distance, aData->x.secondLastVelocity, aData->x.lastVelocity, aData->x.velocity, s);
     updateVelocity(&aData->y.secondLastVelocity,&aData->y.lastVelocity, &aData->y.velocity, aData->y.secondLastRolling,aData->y.lastRolling, aData->y.rollingAccel, s, Y_MAX_DRIFT);
     updateDistance(aData->y.distance, aData->y.secondLastVelocity, aData->y.lastVelocity, aData->y.velocity, s);
