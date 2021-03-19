@@ -148,14 +148,14 @@ bool acknowledgeDrawn = false;
 volatile int timerFlag = 0;                                                         //Establishes time base in main loop
 
 void timerISR() {
-    timerFlag = 1;                      //set time base flag
+    timerFlag = 1;                                                                  //set time base flag
 }
 
 
 void hvilISR() {
-    batteryOnOff = 0;                   //volatile write to contactor status
-    hviaVal = 1;                        //volatile write to hvil alarm status
-    digitalWrite(contactorPin, LOW);    //set contactor pin low (turn contactor off)
+    batteryOnOff = 0;                                                                //volatile write to contactor status
+    hviaVal = 1;                                                                     //volatile write to hvil alarm status
+    digitalWrite(contactorPin, LOW);                                                 //set contactor pin low (turn contactor off)
 }
 
 
@@ -226,6 +226,7 @@ void initializeMeasurementHistory() {
     EEPROM.get(EEPROM_POS_VOLTAGE_MIN, (voltageState.minimum));
     EEPROM.get(EEPROM_POS_VOLTAGE_MAX, (voltageState.maximum));
     interrupts();
+    return;
 }
 
 void setup() {
@@ -279,13 +280,13 @@ void setup() {
     totalDist = {ORIGIN_X, ORIGIN_Y+60, PURPLE, SMALL_SCRIPT, {DEFAULT_FLOAT}, ARRAY, {&totalDistance}, 1, "Total Dist: ", " cm"};
     accelerometerLabel = {ORIGIN_X, ORIGIN_Y, PURPLE, MED_SCRIPT, {}, LABEL, {}, 0, "Accelerometer: ", ""};
 
-    
+
     accelerometerMonitor = Screen{4, 0, {&totalDist, &accelerometerLabel, &axisPositions, &axisAngles}, {}};
     //Initialize Screen structs for interface
     batteryMonitor = Screen{BATTERY_NUM_PRINTS , 2, {&batteryData}, {&batteryOn, &batteryOff}};
     alarmMonitor = Screen{ALARM_NUM_PRINTS, 1, {&alarmLabel, &hviaData, &overCurrentData, &hvorData}, {&alarmButton}};
     measurementMonitor = Screen{MEASURE_NUM_PRINTS, 0, {&measurementLabel, &socDataPrint, &temperatureData, &hvCurrentData, &hvVoltageData, &hvilData}, {}};
-    
+
     temperatureState.data = &temperature;
     currentState.data = &hvCurrent;
     voltageState.data = &hvVoltage;

@@ -152,6 +152,13 @@ void drawData(PrintedData* printablePtr, bool newScreen) {
 
 
 bool compareOldData(PrintedData* printablePtr) {
+    /****************
+    Function name: compareOlddata
+    Function inputs: printablePtr: the printed data struct to check the state of
+    Function outputs: void return
+    Function description: returns true if any old data doesn't match the new data (tells whether or not the data needs to be redrawn)
+    Authors:    Long Nguyen / Chase Arline
+    *****************/
     bool ret=false;
     for(int i=0; i<printablePtr->dataLen; i++) {
         if(printablePtr->oldData[i]!=*printablePtr->dataInPtr[i]) {
@@ -162,6 +169,13 @@ bool compareOldData(PrintedData* printablePtr) {
 }
 
 void setOldDataToNewData(PrintedData* printablePtr) {
+    /****************
+    Function name: setOldDataToNewData
+    Function inputs: printablePtr: the printed data struct to modify
+    Function outputs: void return
+    Function description: sets the old data values to the current/new data values for printing purposes
+    Authors:    Long Nguyen / Chase Arline
+    *****************/
     for(int i=0; i<printablePtr->dataLen; i++) {
         printablePtr->oldData[i]=*printablePtr->dataInPtr[i];
     }
@@ -185,7 +199,7 @@ String printDataToString(PrintedData* printablePtr) {
         break;
     case BOOL:
         ret = (int)printablePtr->oldData[0] ? "CLOSED" : "OPEN";
-              break;
+        break;
     case LABEL:
         ret = "";                         // label does not have any changing data
         break;

@@ -4,11 +4,12 @@
 #define ACCEL_H_
 #define SAMPLE_SIZE 1
 
+//Defines an axis on the accelerometer
 typedef struct  AccelerometerValueStruct {
     float* distance;
     float* angle;
     byte pin;
-    float accelerations[SAMPLE_SIZE];                       
+    float accelerations[SAMPLE_SIZE];
     float velocity;
     int movingAveragePos;
     float rollingAccel;
@@ -18,7 +19,7 @@ typedef struct  AccelerometerValueStruct {
     float secondLastVelocity;
 } AccelerometerValue;
 
-
+//Defines the data measured/used by the accelerometer task
 typedef struct AccelerometerTaskDataStruct {
     AccelerometerValue x;
     AccelerometerValue y;
